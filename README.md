@@ -23,13 +23,15 @@ Don't forget to prettify, because Lea only works for paranoiacs!
 
 ## Launch timing of 1.0.0
 
-Semantically defined as: Lea creates an ePub identical to one I have previously produced manually (except for the useless stuff that Sigil inserts sometimes, like the bookmarks file).
+Semantically defined as: Lea creates an ePub identical to one I have previously produced manually (except for the useless stuff that Sigil inserts sometimes, like the bookmarks file). This would include passing EPUBchecker, and manual inspection of ZIP contents (including diffs where applicable).
 
 ## Next kilometer stone:
 
-0.0.2: Initial code commit after setting up VSCodium
+0.0.3: Conceptualise classes and folder structure (high level)
 
 ## Previous kilometer stones:
+
+0.0.2: Initial code commit after setting up VSCodium
 
 0.0.1: Figure out this new personal access token bs
 

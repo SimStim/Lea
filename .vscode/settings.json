@@ -1,0 +1,4 @@
+{
+    "php.version": "8.5",
+    "composer.executablePath": "/usr/bin/composer",
+}
