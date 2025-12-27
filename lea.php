@@ -1,8 +1,18 @@
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
+namespace Lea;
 
-use SebastianBergmann\Version;
+define(
+    constant_name: 'ROOT',
+    value: dirname(__DIR__) . "/Lea"
+);
 
-$version = new Version('0.0.1', __DIR__);
-echo "Lea: ePub anvil v" . $version->asString() . PHP_EOL;
+require_once ROOT . "/inc/ancillary.php";
+require_once ROOT . "/vendor/autoload.php";
+
+define(
+    constant_name: "NAME",
+    value: "Lea: ePub anvil, version " . leaVersion(minVersion: "0.0.4") . " [PHP " . phpversion() . "]"
+);
+
+echo NAME;
