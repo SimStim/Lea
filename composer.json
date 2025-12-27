@@ -1,5 +1,26 @@
 {
+    "name": "simstim/lea",
+    "description": "Lea: ePub anvil",
+    "type": "project",
+    "license": "proprietary, commercial use not permitted",
     "require": {
+        "php": "^8.5"
+    },
+    "require-dev": {
         "sebastian/version": "^6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Lea\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Lea\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
     }
 }

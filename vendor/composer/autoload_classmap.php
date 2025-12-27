@@ -7,5 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'Lea\\Ancillary' => $baseDir . '/src/Ancillary.php',
     'SebastianBergmann\\Version' => $vendorDir . '/sebastian/version/src/Version.php',
 );
