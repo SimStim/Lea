@@ -15,7 +15,7 @@ use Lea\Ancillary;
 
 define(
     constant_name: "NAME",
-    value: "Lea: ePub anvil, version " . Ancillary::leaVersion(minVersion: "0.0.4") . " [PHP " . phpversion() . "]"
+    value: "Lea: ePub anvil, version " . Ancillary::leaVersion(minVersion: "0.0.5") . " [PHP " . phpversion() . "]"
 );
 
 echo NAME . PHP_EOL;

@@ -1,0 +1,45 @@
+@font-face {
+	font-family: "NotoSansRunic";
+	src: url(../Fonts/NotoSansRunic-Regular.ttf)
+}
+
+@font-face {
+	font-family: "TeXGyreCursor";
+	src: url(../Fonts/TeXGyreCursor-Regular.otf)
+}
+
+@font-face {
+	font-family: "TeXGyreCursor";
+    font-style: italic;
+	src: url(../Fonts/TeXGyreCursor-Italic.otf)
+}
+
+@font-face {
+	font-family: "TeXGyreHeros";
+	src: url(../Fonts/TeXGyreHeros-Regular.otf)
+}
+
+@font-face {
+	font-family: "TeXGyreHeros";
+	font-weight: bold;
+	src: url(../Fonts/TeXGyreHeros-Bold.otf)
+}
+
+@font-face {
+	font-family: "TeXGyreHeros";
+    font-style: italic;
+	src: url(../Fonts/TeXGyreHeros-Italic.otf)
+}
+
+@font-face {
+	font-family: "TeXGyreHeros";
+	font-weight: bold;
+    font-style: italic;
+	src: url(../Fonts/TeXGyreHeros-BoldItalic.otf)
+}
+
+@font-face {
+	font-family: "Comfortaa";
+	font-weight: bold;
+	src: url(../Fonts/Comfortaa-Bold.ttf)
+}
