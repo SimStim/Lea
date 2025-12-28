@@ -27,7 +27,14 @@ class ComposerStaticInit2d9f93da1f99057b888d840591476990
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'Lea\\Ancillary' => __DIR__ . '/../..' . '/src/Ancillary.php',
+        'Lea\\Author' => __DIR__ . '/../..' . '/src/Author.php',
+        'Lea\\Cream' => __DIR__ . '/../..' . '/src/Cream.php',
+        'Lea\\Girlfriend' => __DIR__ . '/../..' . '/src/Girlfriend.php',
+        'Lea\\ISBN' => __DIR__ . '/../..' . '/src/ISBN.php',
+        'Lea\\PaisleyPark' => __DIR__ . '/../..' . '/src/PaisleyPark.php',
+        'Lea\\Segue' => __DIR__ . '/../..' . '/src/Segue.php',
+        'Lea\\Text' => __DIR__ . '/../..' . '/src/Text.php',
+        'Lea\\TheOpera' => __DIR__ . '/../..' . '/src/TheOpera.php',
         'SebastianBergmann\\Version' => __DIR__ . '/..' . '/sebastian/version/src/Version.php',
     );
 

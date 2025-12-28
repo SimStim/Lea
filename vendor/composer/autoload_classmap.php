@@ -7,6 +7,13 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
-    'Lea\\Ancillary' => $baseDir . '/src/Ancillary.php',
+    'Lea\\Author' => $baseDir . '/src/Author.php',
+    'Lea\\Cream' => $baseDir . '/src/Cream.php',
+    'Lea\\Girlfriend' => $baseDir . '/src/Girlfriend.php',
+    'Lea\\ISBN' => $baseDir . '/src/ISBN.php',
+    'Lea\\PaisleyPark' => $baseDir . '/src/PaisleyPark.php',
+    'Lea\\Segue' => $baseDir . '/src/Segue.php',
+    'Lea\\Text' => $baseDir . '/src/Text.php',
+    'Lea\\TheOpera' => $baseDir . '/src/TheOpera.php',
     'SebastianBergmann\\Version' => $vendorDir . '/sebastian/version/src/Version.php',
 );

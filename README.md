@@ -25,11 +25,16 @@ Don't forget to prettify, because Lea only works for paranoiacs!
 
 Semantically defined as: Lea creates an ePub identical to one I have previously produced manually (except for the useless stuff that Sigil inserts sometimes, like the bookmarks file). This would include passing EPUBchecker, and manual inspection of ZIP contents (including diffs where applicable).
 
-### Next kilometer stone:
+### Kilometer stones:
 
-No more next kilometer stones! Too much of a hassle dealing with unpredicted events and ideas. The burden of the creative!
+0.0.7: "You don't have to watch Dynasty to have an attitude"
 
-### Previous kilometer stones:
+*   Class structure: IPO=Cream, Segue, TheOpera
+*   Started on some component classes
+*   Releases are named from now on
+*   We also have an exclusive Girlfriend as of this release
+
+0.0.6: Added some sample files into examples folder
 
 0.0.5: VSCodium json files to facilitate
 
