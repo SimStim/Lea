@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lea;
 
+use BadMethodCallException;
 use SebastianBergmann\Version;
 
 //* You can do it because I'm your friend.
@@ -11,13 +12,16 @@ use SebastianBergmann\Version;
 final class Girlfriend
 {
     private static ?self $instance = null;
+
     private function __construct()
     {
         // Private constructor: you don't create Girlfriends directly!
     }
-    public private(set) string $leaVersion {
+
+    private(set) string $leaVersion {
         get => $this->leaVersion ??= $this->computeLeaVersion(minVersion: "0.0.8");
     }
+
     /**
      * Summary of comeToMe
      * @return Girlfriend
@@ -26,16 +30,22 @@ final class Girlfriend
     {
         return self::$instance ??= new self();
     }
-    // Prevent cloning and unserializing: true Girlfriend exclusivity (don't let an exception fool you)!
-    private function __clone(): void {} // should be default for final classes
+
+    /**
+     * Prevent cloning and unserializing: true Girlfriend exclusivity (don't let an exception fool you)!
+     */
+    private function __clone(): void
+    {
+    } // should be default for final classes
+
     public function __wakeup(): void
     {
-        throw new \BadMethodCallException(
+        throw new BadMethodCallException(
             message: "Cannot unserialize exclusive instance of " . self::class . ", you ... singleton?"
         );
     }
+
     /**
-     * Summary of computeLeaVersion
      * @param string $minVersion
      * @return string
      */

@@ -18,3 +18,5 @@ echo "Creamed result = ";
 var_dump(value: $result);
 echo PHP_EOL;
 var_dump(value: $work);
+var_dump($work->segue());
+var_dump($work->theOpera());

@@ -11,20 +11,24 @@ use Lea\Domain\{Author, Ebook, ISBN, Text};
 
 final class PaisleyPark
 {
-    public private(set) Ebook $ebook {
+    private(set) Ebook $ebook {
         get => $this->ebook ??= new Ebook();
     }
 
-    /**
-     * Summary of __construct
-     * @param string $ebookConfigFile
-     */
     public function __construct(
-        public private(set) string $ebookConfigFile = "" { set(string $value) => trim(string: $value); }
-    ) {}
+        private(set) string $ebookConfigFile = "" {
+            set => trim(string: $value);
+        }
+    )
+    {
+    }
 
-    // You got the horn so why don't you blow it?
-
+    /**
+     * @param string $ebookConfigFile
+     * @return true|array
+     *
+     * You got the horn so why don't you blow it?
+     */
     #[NoDiscard]
     public function cream(string $ebookConfigFile = ""): true|array
     {
@@ -36,17 +40,22 @@ final class PaisleyPark
         return true;
     }
 
-    // You know, if you don't give me the real story, I'll have to make one up of my own.
-
+    /**
+     * @return true|array
+     *
+     * You know, if you don't give me the real story, I'll have to make one up of my own.
+     */
     #[NoDiscard]
-
     public function segue(): true|array
     {
         return true;
     }
 
-    // Ah, the opera.
-
+    /**
+     * @return true|array
+     *
+     * Ah, the opera.
+     */
     #[NoDiscard]
     public function theOpera(): true|array
     {

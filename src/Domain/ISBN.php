@@ -9,14 +9,17 @@ namespace Lea\Domain;
 final class ISBN
 {
     public function __construct(
-        public string $isbn = "" { set(string $value) {
+        public string $isbn = "" {
+            set {
                 $value = $this->trimISBN(isbn: $value);
                 $this->isbn = ($this->isWellFormed(isbn: $value) ? $value : "");
-            } }
-    ) {}
+            }
+        }
+    )
+    {
+    }
 
     /**
-     * Summary of trimISBN
      * @param string $isbn
      * @return string
      */
@@ -26,7 +29,6 @@ final class ISBN
     }
 
     /**
-     * Summary of isWellFormed
      * @param string $isbn
      * @return bool
      * TODO: actually do something useful, like check the checksum and stuff
