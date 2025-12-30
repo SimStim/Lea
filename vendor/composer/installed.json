@@ -59,5 +59,7 @@
         }
     ],
     "dev": true,
-    "dev-package-names": []
+    "dev-package-names": [
+        "sebastian/version"
+    ]
 }

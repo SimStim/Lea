@@ -27,6 +27,11 @@ Semantically defined as: Lea creates an ePub identical to one I have previously 
 
 ### Kilometer stones:
 
+0.0.8: “I was dreamin' when I wrote this, forgive me if it goes astray”
+
+*   A bit of refactoring
+*   Added properties to DTOs
+
 0.0.7: "You don't have to watch Dynasty to have an attitude"
 
 *   Class structure: IPO=Cream, Segue, TheOpera

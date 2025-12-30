@@ -27,14 +27,12 @@ class ComposerStaticInit2d9f93da1f99057b888d840591476990
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'Lea\\Author' => __DIR__ . '/../..' . '/src/Author.php',
-        'Lea\\Cream' => __DIR__ . '/../..' . '/src/Cream.php',
+        'Lea\\Domain\\Author' => __DIR__ . '/../..' . '/src/Domain/Author.php',
+        'Lea\\Domain\\Ebook' => __DIR__ . '/../..' . '/src/Domain/Ebook.php',
+        'Lea\\Domain\\ISBN' => __DIR__ . '/../..' . '/src/Domain/ISBN.php',
+        'Lea\\Domain\\Text' => __DIR__ . '/../..' . '/src/Domain/Text.php',
         'Lea\\Girlfriend' => __DIR__ . '/../..' . '/src/Girlfriend.php',
-        'Lea\\ISBN' => __DIR__ . '/../..' . '/src/ISBN.php',
         'Lea\\PaisleyPark' => __DIR__ . '/../..' . '/src/PaisleyPark.php',
-        'Lea\\Segue' => __DIR__ . '/../..' . '/src/Segue.php',
-        'Lea\\Text' => __DIR__ . '/../..' . '/src/Text.php',
-        'Lea\\TheOpera' => __DIR__ . '/../..' . '/src/TheOpera.php',
         'SebastianBergmann\\Version' => __DIR__ . '/..' . '/sebastian/version/src/Version.php',
     );
 

@@ -2,27 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Lea;
+namespace Lea\Domain;
 
 // ISBN class
 
 final class ISBN
 {
-    public string $isbn = "" {
-        get => $this->isbn;
-        set(string $value) {
-            $value = $this->trimISBN(isbn: $value);
-            $this->isbn = ($this->isWellFormed(isbn: $value) ? $value : "");
-        }
-    }
-    /**
-     * Summary of __construct
-     * @param string $isbn
-     */
-    public function __construct(string $isbn = "")
-    {
-        $this->isbn = $isbn;
-    }
+    public function __construct(
+        public string $isbn = "" { set(string $value) {
+                $value = $this->trimISBN(isbn: $value);
+                $this->isbn = ($this->isWellFormed(isbn: $value) ? $value : "");
+            } }
+    ) {}
 
     /**
      * Summary of trimISBN

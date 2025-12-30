@@ -4,8 +4,9 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0e47801933ba6475f7c9621b1cc86394",
-    "packages": [
+    "content-hash": "37bff2183d9a7fe283a9f2c72d16b660",
+    "packages": [],
+    "packages-dev": [
         {
             "name": "sebastian/version",
             "version": "6.0.0",
@@ -61,13 +62,14 @@
             "time": "2025-02-07T05:00:38+00:00"
         }
     ],
-    "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {},
+    "platform": {
+        "php": "^8.5"
+    },
     "platform-dev": {},
     "plugin-api-version": "2.9.0"
 }
