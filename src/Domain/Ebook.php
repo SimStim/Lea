@@ -6,8 +6,9 @@ namespace Lea\Domain;
 
 use SplDoublyLinkedList;
 
-// Text class
-
+/**
+ * Ebook domain class
+ */
 final class Ebook
 {
     public function __construct(

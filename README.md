@@ -35,6 +35,11 @@ PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones:
 
+0.0.10: "Let's Go Crazy"
+
+* XMLetsGoCrazy domain helper class, initial
+* Text domain object extracting meta data from xhtml fragment files upon construction, proof of concept
+
 0.0.9: "There're thieves in the temple tonight"
 
 * VSCodium has problems with syntax highlighting - PHPStorm to the rescue; project setup

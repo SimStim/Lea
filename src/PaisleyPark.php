@@ -7,8 +7,9 @@ namespace Lea;
 use NoDiscard;
 use Lea\Domain\{Author, Ebook, ISBN, Text};
 
-// There is a park that is known 4 the face it attracts. Admission is easy, just say U believe.
-
+/**
+ * There is a park that is known 4 the face it attracts. Admission is easy, just say U believe.
+ */
 final class PaisleyPark
 {
     private(set) Ebook $ebook {
@@ -36,7 +37,7 @@ final class PaisleyPark
         $this->ebook->title = "Hubris";
         $this->ebook->author = new Author(name: "Idoru Toei", fileAs: "Pech, Eduard [Idoru Toei]");
         $this->ebook->isbn = new ISBN(isbn: "978-9908972633");
-        $this->ebook->addText(text: new Text(title: "Hubris chapter 1", author: new Author(name: "Idoru Toei", fileAs: "Eduard Pech"), blurb: "<p>We stared into the void.</p>"));
+        $this->ebook->addText(new Text("tpsf-8/AboutTheAuthors.xhtml"));
         return true;
     }
 

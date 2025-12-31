@@ -4,22 +4,25 @@ declare(strict_types=1);
 
 namespace Lea;
 
+use NoDiscard;
 use BadMethodCallException;
+use RuntimeException;
 use SebastianBergmann\Version;
 
-//* You can do it because I'm your friend.
-
+/**
+ * You can do it because I'm your friend.
+ */
 final class Girlfriend
 {
     private static ?self $instance = null;
 
-    private function __construct()
+    private function __construct() // Private constructor: you don't create Girlfriends directly!
     {
-        // Private constructor: you don't create Girlfriends directly!
     }
 
+
     private(set) string $leaVersion {
-        get => $this->leaVersion ??= $this->computeLeaVersion(minVersion: "0.0.8");
+        get => $this->leaVersion ??= $this->computeLeaVersion(minVersion: "0.0.10");
     }
 
     /**
@@ -34,9 +37,9 @@ final class Girlfriend
     /**
      * Prevent cloning and unserializing: true Girlfriend exclusivity (don't let an exception fool you)!
      */
-    private function __clone(): void
+    private function __clone(): void // should be default for final classes
     {
-    } // should be default for final classes
+    }
 
     public function __wakeup(): void
     {
@@ -55,5 +58,14 @@ final class Girlfriend
         return str_contains(haystack: $version, needle: "-g")
             ? "$version (dev build) [PHP " . phpversion() . "]"
             : $version;
+    }
+
+    #[NoDiscard]
+    public function readFileOrDie(string $fileName): string
+    {
+        $content = file_get_contents($fileName);
+        if ($content === false)
+            throw new RuntimeException(message: "Failed to load file: $fileName");
+        return $content;
     }
 }

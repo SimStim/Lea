@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Lea\Domain;
 
-// ISBN class
-
+/**
+ * ISBN domain class
+ */
 final class ISBN
 {
     public function __construct(

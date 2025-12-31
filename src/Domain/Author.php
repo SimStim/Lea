@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Lea\Domain;
 
-// Author class
-
+/**
+ * Author domain class
+ */
 final class Author
 {
     public function __construct(
