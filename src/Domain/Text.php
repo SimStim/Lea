@@ -4,46 +4,72 @@ declare(strict_types=1);
 
 namespace Lea\Domain;
 
-use Exception;
+use DOMXPath;
 use Lea\Girlfriend;
+use RuntimeException;
 
 /**
  * Text domain class
  */
 final class Text
 {
-    /**
-     * @throws Exception
-     */
+    private(set) string $title {
+        get => $this->title ??= $this->extractTitle();
+    }
+    private(set) Author|array $author {
+        get => $this->author ??= $this->extractAuthor();
+    }
+    private(set) string $blurb {
+        get => $this->blurb ??= $this->extractBlurb();
+    }
+    private string $xhtml {
+        get => $this->xhtml ??= Girlfriend::comeToMe()->readFileOrDie(fileName: REPO . "/text/" . $this->fileName);
+    }
+    private DOMXPath $xpath {
+        get => $this->xpath ??= XMLetsGoCrazy::buildXPath($this->xhtml);
+    }
+
     public function __construct(
-        string                    $fileName,
-        private(set) string       $title = "" {
-            set => trim(string: $value);
-        },
-        private(set) Author|array $author = [],
-        public string             $blurb = "" {
-            set => trim(string: $value);
-        },
-        private(set) string       $xhtml = "" {
+        private(set) string $fileName {
             set => trim(string: $value);
         }
     )
     {
-        // TODO: replace hacky error handling below
-        $fileNamePath = REPO . "/text/" . $fileName;
-        $annaStesia = Girlfriend::comeToMe();
-        $this->xhtml = $annaStesia->readFileOrDie($fileNamePath);
-        $title = XMLetsGoCrazy::extractSimpleTag(xhtml: $this->xhtml, tagName: "title");
-        $titleNo = sizeof($title);
-        if ($titleNo !== 1) throw new Exception("Need exactly one title. $titleNo found.");
-        $this->title = $title[0];
-        $authors = XMLetsGoCrazy::extractSimpleTag(xhtml: $this->xhtml, tagName: "author");
-        $authorNo = sizeof($authors);
-        if ($authorNo < 1) throw new Exception("Need at least one author. None found.");
-        $this->author = $authors;
-        $blurb = XMLetsGoCrazy::extractSimpleTag(xhtml: $this->xhtml, tagName: "blurb");
-        $blurbNo = sizeof($blurb);
-        if ($blurbNo > 1) throw new Exception("Need a maximum of one blurb. $blurbNo blurbs found.");
-        $this->blurb = $blurb[0] ?? "";
+        $this->validateTextOrDie();
+    }
+
+    private function extractTitle(): string
+    {
+        return trim($this->xpath->evaluate('string(//lea:title)'));
+    }
+
+    private function extractAuthor(): array
+    {
+        $nodes = $this->xpath->query('//lea:author');
+        if ($nodes->length === 0) return [];
+        $authors = [];
+        foreach ($nodes as $node) {
+            $name = trim($this->xpath->evaluate('string(lea:name)', $node));
+            if ($name === '') {
+                Girlfriend::comeToMe()->collectFallout("Detected an invalid author tag in file $this->fileName.");
+                continue;
+            }
+            $fileAs = trim($this->xpath->evaluate('string(lea:file-as)', $node));
+            $authors[] = new Author($name, $fileAs);
+        }
+        return $authors;
+    }
+
+    private function extractBlurb(): string
+    {
+        return trim($this->xpath->evaluate('string(//lea:blurb)'));
+    }
+
+    private function validateTextOrDie(): void
+    {
+        if ($this->title === "")
+            throw new RuntimeException("The title is required");
+        if (is_array($this->author) && count($this->author) === 0)
+            throw new RuntimeException("At least one author is required");
     }
 }

@@ -35,10 +35,16 @@ PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones:
 
+0.0.11: "I'm delirious; You, you, you get me delirious"
+
+* Have been fighting with XML, XSD and RELAX NG for the better part of the day, to no avail
+* Decided to bake the grammar into clean PHP code instead
+* Girlfriend is collecting soft errors now, might be useful at some point
+
 0.0.10: "Let's Go Crazy"
 
 * XMLetsGoCrazy domain helper class, initial
-* Text domain object extracting meta data from xhtml fragment files upon construction, proof of concept
+* Text domain object extracting metadata from xhtml fragment files upon construction, proof of concept
 
 0.0.9: "There're thieves in the temple tonight"
 

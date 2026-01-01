@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lea\Domain;
 
 use DOMDocument;
+use DOMXPath;
 use RuntimeException;
 
 /**
@@ -14,24 +15,17 @@ use RuntimeException;
  */
 final class XMLetsGoCrazy
 {
-    public static function extractSimpleTag(string $xhtml, string $tagName): array
+    private static string $leaNamespace = "https://logophilia.eu/lea";
+
+    public static function buildXPath(string $fragments): DOMXPath
     {
-        $wrapped = "<?xml version='1.0' encoding='UTF-8'?><letsgocrazy>$xhtml</letsgocrazy>";
+        $wrapped = "<xmletsgocrazy xmlns:lea='" . self::$leaNamespace . "'>$fragments</xmletsgocrazy>";
         $dom = new DOMDocument('1.0', 'UTF-8');
-        $dom->preserveWhiteSpace = false;
         if (!$dom->loadXML($wrapped, LIBXML_NONET))
-            throw new RuntimeException("Malformed XML fragment in xhtml source file.");
-        $nodes = $dom->getElementsByTagName($tagName);
-        $values = [];
-        foreach ($nodes as $node)
-            $values[] = trim($node->textContent);
-        return $values;
-        /**
-         * for attributes (later maybe)
-         *$values[] = [
-         *          'content' => trim($node->textContent),
-         *         'id'    => $node->getAttribute('id'),
-         *    ];
-         */
+            throw new RuntimeException("Malformed XML fragment");
+        $xpath = new DOMXPath($dom);
+        $xpath->registerNamespace('lea', self::$leaNamespace);
+        return $xpath;
     }
 }
+

@@ -15,7 +15,7 @@ final class Ebook
         public string                             $title = "" {
             set => trim($value);
         },
-        public Author                             $author = new Author(),
+        public Author|array                       $author = [],
         public ISBN                               $isbn = new ISBN(),
         private(set) readonly SplDoublyLinkedList $texts = new SplDoublyLinkedList()
     )

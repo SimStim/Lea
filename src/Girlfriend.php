@@ -15,18 +15,20 @@ use SebastianBergmann\Version;
 final class Girlfriend
 {
     private static ?self $instance = null;
+    private static string $minVersion = "0.0.11";
+    private(set) static string $fallout = "";
 
     private function __construct() // Private constructor: you don't create Girlfriends directly!
     {
     }
 
-
     private(set) string $leaVersion {
-        get => $this->leaVersion ??= $this->computeLeaVersion(minVersion: "0.0.10");
+        get => $this->leaVersion ??= $this->computeLeaVersion(minVersion: self::$minVersion);
     }
 
     /**
      * Summary of comeToMe
+     *
      * @return Girlfriend
      */
     public static function comeToMe(): self
@@ -60,6 +62,10 @@ final class Girlfriend
             : $version;
     }
 
+    /**
+     * @param string $fileName
+     * @return string
+     */
     #[NoDiscard]
     public function readFileOrDie(string $fileName): string
     {
@@ -67,5 +73,14 @@ final class Girlfriend
         if ($content === false)
             throw new RuntimeException(message: "Failed to load file: $fileName");
         return $content;
+    }
+
+    /**
+     * @param string $message
+     * @return void
+     */
+    public function collectFallout(string $message): void
+    {
+        self::$fallout .= $message . PHP_EOL;
     }
 }

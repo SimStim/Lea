@@ -14,10 +14,11 @@ define(constant_name: "NAME", value: "Lea: ePub anvil, version " . $annaStesia->
 echo NAME . PHP_EOL;
 
 $work = new PaisleyPark(ebookConfigFile: "aaa");
-$result = $work->cream(ebookConfigFile: "bbb");
-unset($result);
+var_dump($work->cream(ebookConfigFile: "bbb"));
+var_dump(value: $work->ebook->texts->top()->fileName);
 var_dump(value: $work->ebook->texts->top()->title);
 var_dump(value: $work->ebook->texts->top()->author);
 var_dump(value: $work->ebook->texts->top()->blurb);
 var_dump($work->segue());
 var_dump($work->theOpera());
+echo Girlfriend::comeToMe()::$fallout;
