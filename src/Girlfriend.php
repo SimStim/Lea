@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Lea;
 
-use NoDiscard;
 use BadMethodCallException;
-use RuntimeException;
+use NoDiscard;
 use SebastianBergmann\Version;
 
 /**
@@ -15,7 +14,7 @@ use SebastianBergmann\Version;
 final class Girlfriend
 {
     private static ?self $instance = null;
-    private static string $minVersion = "0.0.11";
+    private static string $minVersion = "0.0.12";
     private(set) static string $fallout = "";
 
     private function __construct() // Private constructor: you don't create Girlfriends directly!
@@ -27,7 +26,7 @@ final class Girlfriend
     }
 
     /**
-     * Summary of comeToMe
+     * Summary of comeToMe:
      *
      * @return Girlfriend
      */
@@ -51,6 +50,8 @@ final class Girlfriend
     }
 
     /**
+     * Use git describe to compute Lea version
+     *
      * @param string $minVersion
      * @return string
      */
@@ -71,11 +72,13 @@ final class Girlfriend
     {
         $content = file_get_contents($fileName);
         if ($content === false)
-            throw new RuntimeException(message: "Failed to load file: $fileName");
-        return $content;
+            self::collectFallout("Failed to load file: $fileName.");
+        return $content ?: "";
     }
 
     /**
+     * Collect all the error messages to be presented to the user in one fell swoop
+     *
      * @param string $message
      * @return void
      */
