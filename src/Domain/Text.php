@@ -13,20 +13,20 @@ use RuntimeException;
  */
 final class Text
 {
-    private(set) string $title {
-        get => $this->title ??= $this->extractTitle();
-    }
-    private(set) Author|array $author {
-        get => $this->author ??= $this->extractAuthor();
-    }
-    private(set) string $blurb {
-        get => $this->blurb ??= $this->extractBlurb();
-    }
     private string $xhtml {
         get => $this->xhtml ??= Girlfriend::comeToMe()->readFileOrDie(fileName: REPO . "/text/" . $this->fileName);
     }
     private DOMXPath $xpath {
-        get => $this->xpath ??= XMLetsGoCrazy::buildXPath($this->xhtml);
+        get => $this->xpath ??= XMLetsGoCrazy::buildXPath($this->xhtml, $this->fileName);
+    }
+    private(set) string $title {
+        get => $this->title ??= XMLetsGoCrazy::extractTitle($this->xpath, $this->fileName);
+    }
+    private(set) array $authors {
+        get => $this->authors ??= XMLetsGoCrazy::extractAuthors($this->xpath, $this->fileName);
+    }
+    private(set) string $blurb {
+        get => $this->blurb ??= XMLetsGoCrazy::extractBlurb($this->xpath);
     }
 
     public function __construct(
@@ -38,38 +38,17 @@ final class Text
         $this->validateTextOrDie();
     }
 
-    private function extractTitle(): string
-    {
-        return trim($this->xpath->evaluate('string(//lea:title)'));
-    }
-
-    private function extractAuthor(): array
-    {
-        $nodes = $this->xpath->query('//lea:author');
-        if ($nodes->length === 0) return [];
-        $authors = [];
-        foreach ($nodes as $node) {
-            $name = trim($this->xpath->evaluate('string(lea:name)', $node));
-            if ($name === '') {
-                Girlfriend::comeToMe()->collectFallout("Detected an invalid author tag in file $this->fileName.");
-                continue;
-            }
-            $fileAs = trim($this->xpath->evaluate('string(lea:file-as)', $node));
-            $authors[] = new Author($name, $fileAs);
-        }
-        return $authors;
-    }
-
-    private function extractBlurb(): string
-    {
-        return trim($this->xpath->evaluate('string(//lea:blurb)'));
-    }
-
+    /**
+     * Check if Text object is valid:
+     * - mandatory information is present
+     *
+     * @return void
+     */
     private function validateTextOrDie(): void
     {
         if ($this->title === "")
-            throw new RuntimeException("The title is required");
-        if (is_array($this->author) && count($this->author) === 0)
-            throw new RuntimeException("At least one author is required");
+            throw new RuntimeException(message: "The title is required");
+        if (count($this->authors) === 0)
+            throw new RuntimeException(message: "At least one author is required");
     }
 }
