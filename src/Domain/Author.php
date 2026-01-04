@@ -10,10 +10,10 @@ namespace Lea\Domain;
 final class Author
 {
     public function __construct(
-        private(set) string $name {
+        public string $name = "" {
             set => trim(string: $value);
         },
-        private(set) string $fileAs = "" {
+        public string $fileAs = "" {
             set => trim(string: $value);
         }
     )

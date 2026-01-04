@@ -12,15 +12,12 @@ use Lea\Domain\{Author, Ebook, ISBN, Text};
  */
 final class PaisleyPark
 {
-    private string $xml {
-        get => $this->xml ??= Girlfriend::comeToMe()->readFileOrDie(fileName: REPO . "/text/" . $this->fileName);
-    }
     private(set) Ebook $ebook {
-        get => $this->ebook ??= $this->cream();
+        get => $this->ebook ??= new Ebook();
     }
 
     public function __construct(
-        private(set) string $fileName {
+        private(set) string $ebookConfigFile = "" {
             set => trim(string: $value);
         }
     )
@@ -28,14 +25,20 @@ final class PaisleyPark
     }
 
     /**
-     * @return Ebook You got the horn so why don't you blow it?
+     * @param string $ebookConfigFile
+     * @return true|array
      *
      * You got the horn so why don't you blow it?
      */
     #[NoDiscard]
-    public function cream(): Ebook
+    public function cream(string $ebookConfigFile = ""): true|array
     {
-        return new EBook (fileName: $this->fileName);
+        if ($ebookConfigFile !== "") $this->ebookConfigFile = $ebookConfigFile;
+        $this->ebook->title = "Hubris";
+        $this->ebook->author = new Author(name: "Idoru Toei", fileAs: "Pech, Eduard [Idoru Toei]");
+        $this->ebook->isbn = new ISBN(isbn: "978-9908972633");
+        $this->ebook->addText(new Text("tpsf-8/AboutTheAuthors.xhtml"));
+        return true;
     }
 
     /**

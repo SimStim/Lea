@@ -35,11 +35,6 @@ PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones:
 
-0.0.12: "Oops, out of time."
-
-* Refactoring, mostly
-* Also added a few more properties
-
 0.0.11: "I'm delirious; You, you, you get me delirious"
 
 * Have been fighting with XML, XSD and RELAX NG for the better part of the day, to no avail
