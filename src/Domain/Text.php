@@ -14,9 +14,9 @@ use RuntimeException;
 final class Text
 {
     private string $xhtml {
-        get => $this->xhtml ??= Girlfriend::comeToMe()->readFileOrDie(fileName: REPO . "/text/" . $this->fileName);
+        get => $this->xhtml ??= Girlfriend::comeToMe()->readFile(fileName: Girlfriend::$pathText . $this->fileName);
     }
-    private DOMXPath $xpath {
+    private(set) DOMXPath $xpath {
         get => $this->xpath ??= XMLetsGoCrazy::buildXPath($this->xhtml, $this->fileName);
     }
     private(set) string $title {
@@ -35,20 +35,5 @@ final class Text
         }
     )
     {
-        $this->validateTextOrDie();
-    }
-
-    /**
-     * Check if Text object is valid:
-     * - mandatory information is present
-     *
-     * @return void
-     */
-    private function validateTextOrDie(): void
-    {
-        if ($this->title === "")
-            throw new RuntimeException(message: "The title is required");
-        if (count($this->authors) === 0)
-            throw new RuntimeException(message: "At least one author is required");
     }
 }

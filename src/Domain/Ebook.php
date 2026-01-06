@@ -6,21 +6,20 @@ namespace Lea\Domain;
 
 use DOMXPath;
 use Lea\Girlfriend;
-use RuntimeException;
 
 /**
  * Ebook domain class
  */
 final class Ebook
 {
-    private string $xhtml {
-        get => $this->xhtml ??= Girlfriend::comeToMe()->readFileOrDie(fileName: REPO . "/configs/ebooks//" . $this->fileName);
+    private string $xml {
+        get => $this->xml ??= Girlfriend::comeToMe()->readFile(fileName: Girlfriend::$pathEbooks . $this->fileName);
     }
-    private DOMXPath $xpath {
-        get => $this->xpath ??= XMLetsGoCrazy::buildXPath($this->xhtml, $this->fileName);
+    private(set) DOMXPath $xpath {
+        get => $this->xpath ??= XMLetsGoCrazy::buildXPath($this->xml);
     }
     private(set) string $title {
-        get => $this->title ??= XMLetsGoCrazy::extractTitle($this->xpath, $this->fileName);
+        get => $this->title ??= XMLetsGoCrazy::extractTitle($this->xpath);
     }
     private(set) array $authors {
         get => $this->authors ??= XMLetsGoCrazy::extractAuthors($this->xpath, $this->fileName);
@@ -38,20 +37,5 @@ final class Ebook
         }
     )
     {
-        $this->validateEbookOrDie();
-    }
-
-    /**
-     * Check if Text object is valid:
-     * - mandatory information is present
-     *
-     * @return void
-     */
-    private function validateEbookOrDie(): void
-    {
-        if ($this->title === "")
-            throw new RuntimeException(message: "The title is required");
-        if (count($this->authors) === 0)
-            throw new RuntimeException(message: "At least one author is required");
     }
 }

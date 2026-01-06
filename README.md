@@ -35,6 +35,12 @@ PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones:
 
+0.0.13: "It's time we all reach out for something new. That means you, too."
+
+* Moved validation out of collection classes; will be the gist of processing instead
+* Added a few new helper functions
+* Limited list of error messages printed; we don't want to overwhelm anyone here
+
 0.0.12: "Oops, out of time."
 
 * Refactoring, mostly

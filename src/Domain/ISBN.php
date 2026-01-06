@@ -13,9 +13,7 @@ final class ISBN
 {
     public function __construct(
         private(set) string $isbn {
-            set {
-                $this->isbn = $this->trimISBN($value);
-            }
+            set => $this->trimISBN($value);
         }
     )
     {
@@ -24,7 +22,7 @@ final class ISBN
     /**
      * Trims a passed string with an ISBN-13:
      * - removes all dashes
-     * - trims white space
+     * - trims white space around string
      *
      * @param string $isbn
      * @return string
@@ -38,15 +36,13 @@ final class ISBN
     /**
      * Checks a passed string for conformity with ISBN-13 specs
      *
-     * @param string $isbn
      * @return bool
      * TODO: actually do something useful, like check the checksum and stuff
      */
     #[NoDiscard]
-    public function isWellFormed(string $isbn): bool
+    public function isWellFormed(): bool
     {
-        $isbn = $this->trimISBN($isbn);
-        return mb_strlen(string: $isbn) === 13
-            && is_numeric(value: $isbn);
+        return mb_strlen(string: $this->isbn) === 13
+            && is_numeric(value: $this->isbn);
     }
 }

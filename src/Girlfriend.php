@@ -14,15 +14,27 @@ use SebastianBergmann\Version;
 final class Girlfriend
 {
     private static ?self $instance = null;
-    private static string $minVersion = "0.0.12";
+    private static string $minVersion = "0.0.13";
+    private(set) static string $pathEbooks = REPO . "/configs/ebooks/";
+    private(set) static string $pathImprints = REPO . "/configs/imprints/";
+    private(set) static string $pathScripts = REPO . "/configs/scripts/";
+    private(set) static string $pathFonts = REPO . "/fonts/";
+    private(set) static string $pathImages = REPO . "/images/";
+    private(set) static string $pathStyles = REPO . "/styles/";
+    private(set) static string $pathText = REPO . "/text/";
     private(set) static string $fallout = "";
-
-    private function __construct() // Private constructor: you don't create Girlfriends directly!
-    {
-    }
-
     private(set) string $leaVersion {
         get => $this->leaVersion ??= $this->computeLeaVersion(minVersion: self::$minVersion);
+    }
+    private(set) string $leaName {
+        get => $this->leaName ??= "Lea: ePub anvil, version " . self::comeToMe()->leaVersion;
+    }
+
+    /**
+     * Private constructor: you don't create Girlfriends directly!
+     */
+    private function __construct()
+    {
     }
 
     /**
@@ -50,12 +62,27 @@ final class Girlfriend
     }
 
     /**
+     * Concentrate on you is all I have to do.
+     *
+     * Purport:
+     * With proper emotional pump, you'll gain reliable internal focus.
+     * I'll do this with my one and only Girlfriend.
+     *
+     * @return void
+     */
+    public static function emotionalPump(): void
+    {
+        libxml_use_internal_errors(use_errors: true); // suppress all libxml warnings/errors
+        libxml_clear_errors(); // clear any previous
+    }
+
+    /**
      * Use git describe to compute Lea version
      *
      * @param string $minVersion
      * @return string
      */
-    private function computeLeaVersion(string $minVersion): string
+    private static function computeLeaVersion(string $minVersion): string
     {
         $version = new Version(release: $minVersion, path: ROOT)->asString();
         return str_contains(haystack: $version, needle: "-g")
@@ -64,15 +91,16 @@ final class Girlfriend
     }
 
     /**
+     * Reads a file from storage into a string in memory
+     * - returns an empty string on read error
+     *
      * @param string $fileName
      * @return string
      */
     #[NoDiscard]
-    public function readFileOrDie(string $fileName): string
+    public function readFile(string $fileName): string
     {
-        $content = file_get_contents($fileName);
-        if ($content === false)
-            self::collectFallout("Failed to load file: $fileName.");
+        $content = @file_get_contents($fileName);
         return $content ?: "";
     }
 
