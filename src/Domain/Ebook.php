@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Lea\Domain;
 
 use DOMXPath;
-use Lea\Girlfriend;
+use Lea\Adore\Girlfriend;
 
 /**
  * Ebook domain class
@@ -22,7 +22,7 @@ final class Ebook
         get => $this->title ??= XMLetsGoCrazy::extractTitle($this->xpath);
     }
     private(set) array $authors {
-        get => $this->authors ??= XMLetsGoCrazy::extractAuthors($this->xpath, $this->fileName);
+        get => $this->authors ??= XMLetsGoCrazy::extractAuthors($this->xpath);
     }
     private(set) ISBN $isbn {
         get => $this->isbn ??= new ISBN(XMLetsGoCrazy::extractISBN($this->xpath));

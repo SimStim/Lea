@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Lea\Domain;
 
+use NoDiscard;
 use DOMDocument;
 use DOMXPath;
-use Lea\Girlfriend;
-use NoDiscard;
 
 /**
  * XMLetsGoCrazy class for static domain helpers
@@ -90,11 +89,10 @@ final class XMLetsGoCrazy
      *   </lea:author>
      *
      * @param DOMXPath $xpath
-     * @param string $fileName
      * @return array
      */
     #[NoDiscard]
-    public static function extractAuthors(DOMXPath $xpath, string $fileName): array
+    public static function extractAuthors(DOMXPath $xpath): array
     {
         $nodes = $xpath->query(expression: "//lea:author");
         $authors = [];

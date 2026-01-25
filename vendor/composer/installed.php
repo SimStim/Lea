@@ -3,7 +3,7 @@
         'name' => 'simstim/lea',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '9f5f7e65207f346b76d5120f7c51df5f22d9616c',
+        'reference' => '7b1bd7b989f9915aed70a858e03f02540a4d4c57',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -22,7 +22,7 @@
         'simstim/lea' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '9f5f7e65207f346b76d5120f7c51df5f22d9616c',
+            'reference' => '7b1bd7b989f9915aed70a858e03f02540a4d4c57',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

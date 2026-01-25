@@ -1,4 +1,4 @@
-# Lea: ePub anvil
+# Lea ePub anvil
 
 Produce ePubs conforming to latest standards.  
 Support for many advanced features like semantics.  
@@ -34,6 +34,12 @@ Copyright Eduard Pech (https://logophilia.eu/the-director-without-a-service-weap
 PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones:
+
+0.0.14: "Style is not biting style when you can't find the funk."
+
+* Added Fancy class handling ANSI color codes
+* Expanded message system for more flexibility later, during user interaction
+* Updated PaisleyPark → Segue with messages using new system
 
 0.0.13: "It's time we all reach out for something new. That means you, too."
 

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Lea;
+namespace Lea\Adore;
 
-use BadMethodCallException;
 use NoDiscard;
+use BadMethodCallException;
 use SebastianBergmann\Version;
 
 /**
@@ -14,7 +14,7 @@ use SebastianBergmann\Version;
 final class Girlfriend
 {
     private static ?self $instance = null;
-    private static string $minVersion = "0.0.13";
+    private static string $minVersion = "0.0.14";
     private(set) static string $pathEbooks = REPO . "/configs/ebooks/";
     private(set) static string $pathImprints = REPO . "/configs/imprints/";
     private(set) static string $pathScripts = REPO . "/configs/scripts/";
@@ -22,13 +22,13 @@ final class Girlfriend
     private(set) static string $pathImages = REPO . "/images/";
     private(set) static string $pathStyles = REPO . "/styles/";
     private(set) static string $pathText = REPO . "/text/";
-    private(set) static string $fallout = "";
     private(set) string $leaVersion {
         get => $this->leaVersion ??= $this->computeLeaVersion(minVersion: self::$minVersion);
     }
     private(set) string $leaName {
-        get => $this->leaName ??= "Lea: ePub anvil, version " . self::comeToMe()->leaVersion;
+        get => $this->leaName ??= "[ Lea: ePub anvil, version " . self::comeToMe()->leaVersion . " ]";
     }
+    private(set) array $doveCries = [];
 
     /**
      * Private constructor: you don't create Girlfriends directly!
@@ -90,6 +90,11 @@ final class Girlfriend
             : $version;
     }
 
+    public function makeDoveCry(DoveCry $doveCry): void
+    {
+        self::comeToMe()->doveCries[] = $doveCry;
+    }
+
     /**
      * Reads a file from storage into a string in memory
      * - returns an empty string on read error
@@ -102,16 +107,5 @@ final class Girlfriend
     {
         $content = @file_get_contents($fileName);
         return $content ?: "";
-    }
-
-    /**
-     * Collect all the error messages to be presented to the user in one fell swoop
-     *
-     * @param string $message
-     * @return void
-     */
-    public function collectFallout(string $message): void
-    {
-        self::$fallout .= $message . PHP_EOL;
     }
 }

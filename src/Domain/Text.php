@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Lea\Domain;
 
 use DOMXPath;
-use Lea\Girlfriend;
-use RuntimeException;
+use Lea\Adore\Girlfriend;
 
 /**
  * Text domain class
@@ -17,13 +16,13 @@ final class Text
         get => $this->xhtml ??= Girlfriend::comeToMe()->readFile(fileName: Girlfriend::$pathText . $this->fileName);
     }
     private(set) DOMXPath $xpath {
-        get => $this->xpath ??= XMLetsGoCrazy::buildXPath($this->xhtml, $this->fileName);
+        get => $this->xpath ??= XMLetsGoCrazy::buildXPath($this->xhtml);
     }
     private(set) string $title {
-        get => $this->title ??= XMLetsGoCrazy::extractTitle($this->xpath, $this->fileName);
+        get => $this->title ??= XMLetsGoCrazy::extractTitle($this->xpath);
     }
     private(set) array $authors {
-        get => $this->authors ??= XMLetsGoCrazy::extractAuthors($this->xpath, $this->fileName);
+        get => $this->authors ??= XMLetsGoCrazy::extractAuthors($this->xpath);
     }
     private(set) string $blurb {
         get => $this->blurb ??= XMLetsGoCrazy::extractBlurb($this->xpath);

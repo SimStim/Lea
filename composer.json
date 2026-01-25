@@ -1,8 +1,14 @@
 {
   "name": "simstim/lea",
-  "description": "Lea: ePub anvil",
+  "description": "Lea ePub anvil - judgmental metadata validator and ePub-3.3 builder for your ebooks",
   "type": "project",
   "license": "PolyForm-Noncommercial-1.0.0",
+  "authors": [
+    {
+      "name": "Eduard Pech",
+      "email": "eduard.pech@logophilia.eu"
+    }
+  ],
   "require": {
     "php": "^8.5",
     "ext-mbstring": "*",
@@ -22,6 +28,11 @@
       "Lea\\Tests\\": "tests/"
     }
   },
+  "bin": [
+    "lea.php"
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "config": {
     "optimize-autoloader": true,
     "sort-packages": true
