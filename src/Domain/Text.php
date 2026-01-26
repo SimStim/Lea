@@ -12,7 +12,7 @@ use Lea\Adore\Girlfriend;
  */
 final class Text
 {
-    private string $xhtml {
+    private(set) string $xhtml {
         get => $this->xhtml ??= Girlfriend::comeToMe()->readFile(fileName: Girlfriend::$pathText . $this->fileName);
     }
     private(set) DOMXPath $xpath {

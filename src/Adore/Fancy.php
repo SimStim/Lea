@@ -53,29 +53,33 @@ final readonly class Fancy
      */
     public const string RESET = "\033[0m";
     public const string BOLD = "\033[1m";
+    public const string UNBOLD = "\033[22m";
     public const string DIM = "\033[2m";
     public const string ITALIC = "\033[3m";
     public const string UNDERLINE = "\033[4m";
     public const string BLINK = "\033[5m";
-    public const string FAST_BLINK = "\033[6m";    // rarely supported
+    public const string UNBLINK = "\033[25m";
+    public const string FAST_BLINK = "\033[6m"; // not widely supported
     public const string INVERSE = "\033[7m";
     public const string HIDDEN = "\033[8m";
     public const string STRIKETHRU = "\033[9m";
 
     /**
-     * Precomposed styles (Lea's personality palette))
+     * Precomposed styles.
+     * Lea's personality palette.
      */
-    public const string INFO = self::CYAN . self::BOLD;
+    public const string INFO = self::CYAN;
     public const string SUCCESS = self::GREEN . self::BOLD;
-    public const string WARNING = self::YELLOW . self::BOLD;
-    public const string ERROR = self::RED . self::BOLD;
-    public const string FATAL = self::BRIGHT_RED . self::BOLD . self::BLINK . self::INVERSE;
-    public const string SUGGESTION = self::BLUE . self::DIM . self::ITALIC;
-    public const string NOTICE = self::MAGENTA . self::DIM;
-    public const string DEBUG = self::BRIGHT_BLACK . self::DIM;
+    public const string WARNING = self::BRIGHT_YELLOW;
+    public const string SEVERE = self::RED;
+    public const string FATAL = self::RED . self::INVERSE . self::BOLD . self::BLINK;
+    public const string SUGGESTION = self::WHITE . self::BOLD;
+    public const string NOTICE = self::MAGENTA;
+    public const string DEBUG = self::BRIGHT_BLACK;
     public const string PURPLE_RAIN = "\033[38;2;144;99;205m";
+    public const string PURPLE_RAIN_INVERSE_WHITE = self::BG_WHITE . self::PURPLE_RAIN . self::INVERSE;
     public const string PURPLE_RAIN_BOLD = self::PURPLE_RAIN . self::BOLD;
-    public const string PURPLE_RAIN_BOLD_INVERSE = self::PURPLE_RAIN_BOLD . self::INVERSE;
+    public const string PURPLE_RAIN_BOLD_INVERSE_WHITE = self::BG_WHITE . self::PURPLE_RAIN_BOLD . self::INVERSE;
 
     /**
      * Helpers for cleaner usage
@@ -95,9 +99,9 @@ final readonly class Fancy
         return self::WARNING . $msg . self::RESET;
     }
 
-    public static function error(string $msg): string
+    public static function severe(string $msg): string
     {
-        return self::ERROR . $msg . self::RESET;
+        return self::SEVERE . $msg . self::RESET;
     }
 
     public static function fatal(string $msg): string

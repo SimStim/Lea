@@ -35,6 +35,14 @@ PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones:
 
+0.0.15: "Tell me, how're we gonna put this back together? How're we gonna think with the same mind?"
+
+* Added contributors and subjects to Ebook class
+* New Contributor class
+* More and better error handling that removed several dependent errors
+* New pretty-print message-function in PaisleyPark
+* Prepared the example files to include all required declarations
+
 0.0.14: "Style is not biting style when you can't find the funk."
 
 * Added Fancy class handling ANSI color codes

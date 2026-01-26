@@ -1,11 +1,119 @@
 <lea:title>The Pitch Science Fiction 4Q2025</lea:title>
-<lea:title>The Pitch Science Fiction 4Q2025</lea:title>
 <lea:author>
 <lea:name>Eduard Pech</lea:name>
 </lea:author>
-<lea:author>
-<lea:name></lea:name>
-</lea:author>
+<lea:date>
+<lea:created>2025-08-01</lea:created>
+<lea:modified>2025-12-09T12:51:40Z</lea:modified>
+<lea:issued>2025-11-11</lea:issued>
+</lea:date>
+<lea:description>The Pitch Science Fiction is a quarterly publication of science fiction stories by various authors, covering diverse themes.</lea:description>
+<lea:publisher>
+<lea:imprint>Logophilia</lea:imprint>
+<lea:contact>originals@logophilia.eu</lea:contact>
+</lea:publisher>
+<lea:rights>English translation of M2 (C) 2025 by Eduard Pech. Published by permission of Daria Skrinitsa. All other stories are in the public domain in the USA. All content not marked public domain (C) 2025 by Eduard Pech. Complete edition (C) 2025 by Logophilia. Logophilia is an imprint of Logophilia OÜ.</lea:rights>
+<lea:language>en</lea:language>
+<lea:text>tpsf-8/AboutTheContent.xhtml</lea:text>
+<lea:text>tpsf-8/TheStatusCivilizationByRobertSheckley.xhtml</lea:text>
+<lea:text>tpsf-8/GamblersWorldByKeithLaumer.xhtml</lea:text>
+<lea:text>tpsf-8/ArmOfTheLawByHarryHarrison.xhtml</lea:text>
+<lea:text>tpsf-8/TheWorldThatCouldntBeByCliffordDSimak.xhtml</lea:text>
+<lea:text>tpsf-8/M2ByDariaSkrinitsa.xhtml</lea:text>
+<lea:text>tpsf-8/IslandsOfSpaceByJohnWCampbellJr.xhtml</lea:text>
+<lea:text>tpsf-8/AQuestionOfCourageByJesseFBone.xhtml</lea:text>
+<lea:text>tpsf-8/TheSensitiveManByPoulAnderson.xhtml</lea:text>
+<lea:text>tpsf-8/TheMemoryOfMarsByRaymondFJones.xhtml</lea:text>
+<lea:text>tpsf-8/LetEmBreatheSpaceByLesterDelRey.xhtml</lea:text>
 <lea:text>tpsf-8/AboutTheAuthors.xhtml</lea:text>
-<lea:isbn>978-9908972633</lea:isbn>
-<lea:isbn>978-9908972633</lea:isbn>
+<lea:text>tpsf-8/AboutThisPublication.xhtml</lea:text>
+<lea:text>tpsf-8/AboutThePublisher.xhtml</lea:text>
+<lea:isbn>978-9908-9726-1-9</lea:isbn>
+<lea:contributor>
+<lea:name>Eduard Pech</lea:name>
+<lea:role>edt</lea:role>
+<lea:role>trl</lea:role>
+<lea:role>bkp</lea:role>
+<lea:role>bkd</lea:role>
+<lea:role>tyg</lea:role>
+<lea:role>mrk</lea:role>
+<lea:role>pfr</lea:role>
+<lea:role>cov</lea:role>
+<lea:role>ill</lea:role>
+<lea:role>art</lea:role>
+<lea:role>blw</lea:role>
+</lea:contributor>
+<lea:subject>Diplomats -- Fiction</lea:subject>
+<lea:subject>Extraterrestrial beings -- Fiction</lea:subject>
+<lea:subject>Farmers -- Fiction</lea:subject>
+<lea:subject>Human-alien encounters -- Fiction</lea:subject>
+<lea:subject>Hunting stories</lea:subject>
+<lea:subject>Life on other planets -- Fiction</lea:subject>
+<lea:subject>Manned space flight -- Fiction</lea:subject>
+<lea:subject>Mars (Planet) -- Fiction</lea:subject>
+<lea:subject>Psychological fiction</lea:subject>
+<lea:subject>Science fiction</lea:subject>
+<lea:subject>Science fiction, American</lea:subject>
+<lea:subject>Short stories</lea:subject>
+<lea:subject>Retief (Fictitious character) -- Fiction</lea:subject>
+<lea:subject>Robots -- Fiction</lea:subject>
+<lea:subject>War stories</lea:subject>
+<lea:cover>2025Q4-cover-inside.jpg</lea:cover>
+<lea:image>-1-cover-512-qr.jpg</lea:image>
+<lea:image>2024-cover-512-qr.jpg</lea:image>
+<lea:image>2025Q1-cover-512-qr.jpg</lea:image>
+<lea:image>2025Q2-cover-512-qr.jpg</lea:image>
+<lea:image>2025Q3-cover-512-qr.jpg</lea:image>
+<lea:image>2025Q4-cover-inside.jpg</lea:image>
+<lea:image>a-question-of-courage-new-01-512.jpg</lea:image>
+<lea:image>a-question-of-courage-org-01-normalised.jpg</lea:image>
+<lea:image>a-question-of-courage-org-02-normalised.jpg</lea:image>
+<lea:image>arm-of-the-law-new-00-512.jpg</lea:image>
+<lea:image>arm-of-the-law-new-01-512.jpg</lea:image>
+<lea:image>arm-of-the-law-new-02-512.jpg</lea:image>
+<lea:image>Calling-Aspiring-Authors-512x256.jpg</lea:image>
+<lea:image>Clifford-D-Simak-FM-Logophilia-512.jpg</lea:image>
+<lea:image>Daria-Skrinitsa-01-512.jpg</lea:image>
+<lea:image>DoL-cover-512-qr.jpg</lea:image>
+<lea:image>gamblers-world-new-00-512.jpg</lea:image>
+<lea:image>gamblers-world-new-01-512.jpg</lea:image>
+<lea:image>gamblers-world-org-01-normalised.jpg</lea:image>
+<lea:image>Harry-Harrison-FM-Logophilia-512.jpg</lea:image>
+<lea:image>Hubris-cover-512-qr.jpg</lea:image>
+<lea:image>islands-of-space-new-00-512.jpg</lea:image>
+<lea:image>islands-of-space-new-01-512.jpg</lea:image>
+<lea:image>islands-of-space-new-02-512.jpg</lea:image>
+<lea:image>islands-of-space-new-03-512.jpg</lea:image>
+<lea:image>islands-of-space-new-04-512.jpg</lea:image>
+<lea:image>islands-of-space-org-01-normalised.jpg</lea:image>
+<lea:image>Jesse-F-Bone-FM-Logophilia-512.jpg</lea:image>
+<lea:image>John-Keith-Laumer-FM-Logophilia-512.jpg</lea:image>
+<lea:image>John-W-Campbell-Jr-FM-Logophilia-512.jpg</lea:image>
+<lea:image>Lester-del-Rey-FM-Logophilia-512.jpg</lea:image>
+<lea:image>let-em-breathe-space-new-00-512.jpg</lea:image>
+<lea:image>let-em-breathe-space-org-01-normalised.jpg</lea:image>
+<lea:image>let-em-breathe-space-org-02-normalised.jpg</lea:image>
+<lea:image>let-em-breathe-space-org-03-normalised.jpg</lea:image>
+<lea:image>m2-new-01-512.jpg</lea:image>
+<lea:image>m2-new-02-512.jpg</lea:image>
+<lea:image>Poul-Anderson-Logophilia-512.jpg</lea:image>
+<lea:image>Professional-EPUB-Production-Services-512.jpg</lea:image>
+<lea:image>Raymond-F-Jones-FM-Logophilia-512.jpg</lea:image>
+<lea:image>Robert-Sheckley-FM-Logophilia-512.jpg</lea:image>
+<lea:image>star-red.png</lea:image>
+<lea:image>the-memory-of-mars-new-00-512.jpg</lea:image>
+<lea:image>the-memory-of-mars-org-01-normalised.jpg</lea:image>
+<lea:image>the-memory-of-mars-org-02-normalised.jpg</lea:image>
+<lea:image>the-sensitive-man-new-00-512.jpg</lea:image>
+<lea:image>the-sensitive-man-new-01-512.jpg</lea:image>
+<lea:image>the-sensitive-man-new-02-512.jpg</lea:image>
+<lea:image>the-status-civilization-new-00-512.jpg</lea:image>
+<lea:image>the-status-civilization-new-01-512.jpg</lea:image>
+<lea:image>the-status-civilization-new-02-512.jpg</lea:image>
+<lea:image>the-status-civilization-new-03-512.jpg</lea:image>
+<lea:image>the-status-civilization-new-04-512.jpg</lea:image>
+<lea:image>the-world-that-couldnt-be-new-01-512.jpg</lea:image>
+<lea:image>the-world-that-couldnt-be-org-01-normalised.jpg</lea:image>
+<lea:image>the-world-that-couldnt-be-org-02-normalised.jpg</lea:image>
+<lea:image>the-world-that-couldnt-be-org-03-normalised.jpg</lea:image>
+<lea:image>Welcome-to-Logohilia-512x256.jpg</lea:image>

@@ -15,7 +15,7 @@ use DOMXPath;
  */
 final class XMLetsGoCrazy
 {
-    private(set) static string $leaNamespace = "https://logophilia.eu/lea";
+    private(set) static string $leaNamespace = "https://logophilia.eu/lea/2026/xhtml";
 
     /**
      * Takes a file of XML fragments, including lea namespace directives,
@@ -106,6 +106,59 @@ final class XMLetsGoCrazy
     }
 
     /**
+     * Validates all existing <contributor> tags in passed XPath object
+     *
+     * @param DOMXPath $xpath
+     * @param array $reference
+     * @return bool
+     */
+    public static function validateContributors(DOMXPath $xpath, array $reference): bool
+    {
+        $nodes = $xpath->query(expression: "//lea:contributor");
+        $ptr = 0;
+        foreach ($nodes as $node) {
+            $name = trim($xpath->evaluate(expression: "string(lea:name)", contextNode: $node));
+            if ($name === "") return false;
+            $roleNodes = $xpath->query(expression: "lea:role", contextNode: $node);
+            if (count($roleNodes) !== $reference[$ptr++]) return false; // divergence of found versus expected roles
+            foreach ($roleNodes as $roleNode)
+                if (!in_array(strtolower(trim($roleNode->textContent)), Contributor::$permittedRoles, true)) return false;
+        }
+        return true;
+    }
+
+    /**
+     * Extract the contributor(s) from an XPath object
+     * - <lea:contributor>
+     *     <lea:name>The Unpronounceable Symbol</lea:name>
+     *     <lea:role>edt</lea:role>
+     *     <lea:role>trl</lea:role>
+     *     <lea:role>bkp</lea:role>
+     *   </lea:contributor>
+     *
+     * @param DOMXPath $xpath
+     * @return array
+     */
+    #[NoDiscard]
+    public static function extractContributors(DOMXPath $xpath): array
+    {
+        $nodes = $xpath->query(expression: "//lea:contributor");
+        $contributors = [];
+        foreach ($nodes as $node) {
+            $name = trim($xpath->evaluate(expression: "string(lea:name)", contextNode: $node));
+            if ($name === "") continue;
+            $roleNodes = $xpath->query(expression: "lea:role", contextNode: $node);
+            $roles = [];
+            foreach ($roleNodes as $roleNode)
+                $roles[] = strtolower(trim($roleNode->textContent));
+            $roles = array_intersect($roles, Contributor::$permittedRoles); // use only permitted roles
+            if (empty($roles)) continue; // at least one role is required
+            $contributors[] = new Contributor($name, $roles);
+        }
+        return $contributors;
+    }
+
+    /**
      * Extract the optional blurb from an XPath object
      * - <lea:blurb>
      *     According to the NPG operator, the most beautiful girl in the world said, "I hate u." Thus commenced operation P. Control.
@@ -118,6 +171,24 @@ final class XMLetsGoCrazy
     public static function extractBlurb(DOMXPath $xpath): string
     {
         return trim($xpath->evaluate(expression: 'string(//lea:blurb)'));
+    }
+
+    /**
+     * Extract the optional subjects from an XPath object
+     * - <lea:subject>Diplomats -- Fiction</lea:subject>
+     * - <lea:subject>Extraterrestrial beings -- Fiction</lea:subject>
+     *
+     * @param DOMXPath $xpath
+     * @return array
+     */
+    #[NoDiscard]
+    public static function extractSubjects(DOMXPath $xpath): array
+    {
+        $nodes = $xpath->query(expression: "//lea:subject");
+        $subjects = [];
+        foreach ($nodes as $node)
+            $subjects[] = trim($node->textContent);
+        return $subjects;
     }
 
     /**

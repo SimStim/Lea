@@ -12,7 +12,7 @@ use Lea\Adore\Girlfriend;
  */
 final class Ebook
 {
-    private string $xml {
+    private(set) string $xml {
         get => $this->xml ??= Girlfriend::comeToMe()->readFile(fileName: Girlfriend::$pathEbooks . $this->fileName);
     }
     private(set) DOMXPath $xpath {
@@ -24,11 +24,17 @@ final class Ebook
     private(set) array $authors {
         get => $this->authors ??= XMLetsGoCrazy::extractAuthors($this->xpath);
     }
+    private(set) array $contributors {
+        get => $this->contributors ??= XMLetsGoCrazy::extractContributors($this->xpath);
+    }
     private(set) ISBN $isbn {
         get => $this->isbn ??= new ISBN(XMLetsGoCrazy::extractISBN($this->xpath));
     }
     private(set) array $texts {
         get => $this->texts ??= XMLetsGoCrazy::extractTexts($this->xpath);
+    }
+    private(set) array $subjects {
+        get => $this->subjects ??= XMLetsGoCrazy::extractSubjects($this->xpath);
     }
 
     public function __construct(
