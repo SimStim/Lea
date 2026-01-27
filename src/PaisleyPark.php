@@ -17,11 +17,16 @@ use Lea\Domain\XMLetsGoCrazy;
  */
 final class PaisleyPark
 {
-    private(set) Ebook $ebook;
+    private(set) Ebook $ebook {
+        get => $this->ebook ??= $this->cream($this->fileName);
+    }
 
-    public function __construct(string $fileName)
+    public function __construct(
+        private string $fileName {
+            set => trim(string: $value);
+        }
+    )
     {
-        $this->ebook = $this->cream($fileName);
     }
 
     /**
@@ -57,7 +62,7 @@ final class PaisleyPark
                 flaw: Flaw::Fatal,
                 message: "The ebook XML config file could not be read.",
                 suggestion: "Check for typos in the file name given." . PHP_EOL
-                . "Ebook XML config file name given: {$this->ebook->fileName}"
+                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
             ));
             return;
         }
@@ -71,7 +76,7 @@ final class PaisleyPark
                 flaw: Flaw::Fatal,
                 message: "The content of the ebook config file is not well formed.",
                 suggestion: "Check the ebook's XML config file in your XML editor of choice." . PHP_EOL
-                . "Ebook XML config file name: '{$this->ebook->fileName}'."
+                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
             ));
             return;
         }
@@ -85,13 +90,13 @@ final class PaisleyPark
                 flaw: Flaw::Fatal,
                 message: "The title is required.",
                 suggestion: "Edit the ebook's XML config file, adding a single <lea:title> tag." . PHP_EOL
-                . "Ebook XML config file name: '{$this->ebook->fileName}'."
+                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
             ));
         /**
-         * Checks if there are more than one <title> definitions.
+         * Checks if there is more than one <lea:title> definitions.
          * - yes = use first, continue with warning message
          */
-        if ($this->ebook->xpath->evaluate(expression: 'count(//lea:title) > 1'))
+        if ($this->ebook->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:title")->length > 1)
             Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
                 domainObject: $this->ebook,
                 flaw: Flaw::Severe,
@@ -99,7 +104,84 @@ final class PaisleyPark
                 . "Until this is fixed, I will be using the first valid title found." . PHP_EOL
                 . "Using title: '{$this->ebook->title}'",
                 suggestion: "Edit the ebook's XML config file, making sure to use only one <lea:title> tag." . PHP_EOL
-                . "Ebook XML config file name: '{$this->ebook->fileName}'."
+                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
+            ));
+        /**
+         * Checks if there is at least one <lea:description>.
+         * - no = severe, continue
+         */
+        if ($this->ebook->description === "")
+            Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
+                domainObject: $this->ebook,
+                flaw: Flaw::Severe,
+                message: "The description is not mandatory, but highly recommended.",
+                suggestion: "Edit the ebook's XML config file, adding a single <lea:title> tag." . PHP_EOL
+                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
+            ));
+        /**
+         * Checks if there is more than one <lea:description> definitions.
+         * - yes = use first, continue with warning message
+         */
+        if ($this->ebook->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:description")->length > 1)
+            Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
+                domainObject: $this->ebook,
+                flaw: Flaw::Severe,
+                message: "Multiple description tags defined in ebook." . PHP_EOL
+                . "Until this is fixed, I will be using the first valid description found." . PHP_EOL
+                . "Using description: '{$this->ebook->description}'",
+                suggestion: "Edit the ebook's XML config file, making sure to use only one <lea:description> tag." . PHP_EOL
+                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
+            ));
+        /**
+         * Checks if there is at least one <lea:publisher>.
+         * - no = severe, continue
+         */
+        if (!$this->ebook->publisher->isValid())
+            Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
+                domainObject: $this->ebook,
+                flaw: Flaw::Severe,
+                message: "The publisher data is not mandatory, but highly recommended.",
+                suggestion: "Edit the ebook's XML config file, adding a single <lea:publisher> tag." . PHP_EOL
+                . "All publisher child tags are also mandatory: <lea:imprint>, and <lea:contact>." . PHP_EOL
+                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
+            ));
+        /**
+         * Checks if there is at least one <lea:rights> tag.
+         * - no = severe, continue
+         */
+        if ($this->ebook->rights === "")
+            Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
+                domainObject: $this->ebook,
+                flaw: Flaw::Severe,
+                message: "The rights declaration is not mandatory, but highly recommended.",
+                suggestion: "Edit the ebook's XML config file, adding a single <lea:rights> tag." . PHP_EOL
+                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
+            ));
+        /**
+         * Checks if there is more than one <lea:rights> definitions.
+         * - yes = use first, continue with warning message
+         */
+        if ($this->ebook->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:rights")->length > 1)
+            Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
+                domainObject: $this->ebook,
+                flaw: Flaw::Severe,
+                message: "Multiple rights tags defined in ebook." . PHP_EOL
+                . "Until this is fixed, I will be using the first valid rights declaration." . PHP_EOL
+                . "Using rights declaration: '{$this->ebook->rights}'",
+                suggestion: "Edit the ebook's XML config file, making sure to use only one <lea:rights> tag." . PHP_EOL
+                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
+            ));
+        /**
+         * Checks if there is at least one <lea:language> tag.
+         * - no = severe, continue
+         */
+        if ($this->ebook->language === "")
+            Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
+                domainObject: $this->ebook,
+                flaw: Flaw::Severe,
+                message: "The language declaration is not mandatory, but highly recommended.",
+                suggestion: "Edit the ebook's XML config file, ascertaining a single <lea:language> tag." . PHP_EOL
+                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
             ));
         /**
          * Checks if there is at least one author.
@@ -111,7 +193,7 @@ final class PaisleyPark
                 flaw: Flaw::Fatal,
                 message: "At least one author is required.",
                 suggestion: "Edit the ebook's XML config file, adding at least one <lea:author> tag." . PHP_EOL
-                . "Ebook XML config file name: '{$this->ebook->fileName}'."
+                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
             ));
         /**
          * Checks if there are invalid <author> definitions present in the ebook config.
@@ -124,7 +206,21 @@ final class PaisleyPark
                 message: "Invalid author tag(s) detected in ebook." . PHP_EOL
                 . count($this->ebook->authors) . " valid author definitions in total.",
                 suggestion: "Edit the ebook's XML config file, checking all <lea:author> tags." . PHP_EOL
-                . "Ebook XML config file name: '{$this->ebook->fileName}'."
+                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
+            ));
+        /**
+         * Checks if the date has been extracted successfully
+         * - no = fatal
+         */
+        if (!$this->ebook->date->isValid())
+            Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
+                domainObject: $this->ebook,
+                flaw: Flaw::Fatal,
+                message: "The date is missing or invalid; possibly multiple date tags declared.",
+                suggestion: "Edit the ebook's XML config file, ascertaining a single <lea:date> tag." . PHP_EOL
+                . "All of date's child tags are mandatory: <lea:created>, <lea:modified>, and <lea:issued>." . PHP_EOL
+                . "Check documentation if still unsure how to fix this." . PHP_EOL
+                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
             ));
         /**
          * Checks if there are invalid <contributor> definitions present in the ebook config.
@@ -134,16 +230,16 @@ final class PaisleyPark
             $reference = [];
             foreach ($this->ebook->contributors as $contributor)
                 $reference[] = count($contributor->roles);
-            if (!XMLetsGoCrazy::validateContributors($this->ebook->xpath, $reference))
+            if (!XMLetsGoCrazy::validateContributors(xpath: $this->ebook->xpath, reference: $reference))
                 Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
                     domainObject: $this->ebook,
-                    flaw: (count($this->ebook->authors) === 0 ? Flaw::Fatal : Flaw::Severe),
+                    flaw: Flaw::Severe,
                     message: "Invalid contributor tag(s) detected in ebook." . PHP_EOL
                     . count($this->ebook->contributors) . " valid contributor(s) in total.",
                     suggestion: "Check the ebook's XML config file for all <lea:contributor> tags." . PHP_EOL
-                    . "Most likely cause is a an error in a <lea:role>." . PHP_EOL
-                    . "Check documentation for permitted roles." . PHP_EOL
-                    . "Ebook XML config file name: '{$this->ebook->fileName}'."
+                    . "Most likely cause is a an error in one of the <lea:role> tags." . PHP_EOL
+                    . "Also check documentation for permitted roles." . PHP_EOL
+                    . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
                 ));
         }
         /**
@@ -156,13 +252,13 @@ final class PaisleyPark
                 flaw: Flaw::Fatal,
                 message: "The ISBN is invalid.",
                 suggestion: "Edit the ebook's XML config file, checking the <lea:isbn> tag." . PHP_EOL
-                . "Ebook XML config file name: '{$this->ebook->fileName}'."
+                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
             ));
         /**
          * Checks if there are more than one <isbn> definitions.
          * - yes = use first, continue with warning message
          */
-        if ($this->ebook->xpath->evaluate(expression: 'count(//lea:isbn) > 1'))
+        if ($this->ebook->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:isbn")->length > 1)
             Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
                 domainObject: $this->ebook,
                 flaw: Flaw::Severe,
@@ -170,20 +266,70 @@ final class PaisleyPark
                 . "Until this is fixed, I will be using the first valid ISBN found." . PHP_EOL
                 . "Using ISBN: '{$this->ebook->isbn->isbn}'",
                 suggestion: "Edit the ebook's XML config file, making sure to use only one <lea:isbn> tag." . PHP_EOL
-                . "Ebook XML config file name: '{$this->ebook->fileName}'."
+                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
             ));
         /**
          * Checks if there are any <lea:subject> declarations.
          * - no = warning about missing subject declarations
          */
-        if (count($this->ebook->subjects) < 1)
+        if (count($this->ebook->subjects) === 0)
             Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
                 domainObject: $this->ebook,
                 flaw: Flaw::Warning,
-                message: "No Subject declarations found for ebook.",
+                message: "No subject declarations found for ebook.",
                 suggestion: "Edit the ebook XML config file, adding <lea:subject> tags." . PHP_EOL
-                . "Ebook XML config file name: '{$this->ebook->fileName}'."
+                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
             ));
+        /**
+         * If there is <lea:cover> declaration, check if the file exists in the file system.
+         * - no = fatal
+         */
+        if (($this->ebook->cover !== "")
+            && !is_file(filename: Girlfriend::$pathImages . $this->ebook->cover))
+            Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
+                domainObject: $this->ebook,
+                flaw: Flaw::Fatal,
+                message: "The cover file name was defined, but the file cannot be found in the file system." . PHP_EOL
+                . "Cover file name: " . Girlfriend::$pathImages . $this->ebook->cover,
+                suggestion: "Edit the ebook's XML config file, ascertaining the correct cover file name." . PHP_EOL
+                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
+            ));
+        /**
+         * Check if there is more than one <lea:cover> definition.
+         * - yes = use first, continue with warning message
+         */
+        if ($this->ebook->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:cover")->length > 1)
+            Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
+                domainObject: $this->ebook,
+                flaw: Flaw::Severe,
+                message: "Multiple cover tags defined in ebook." . PHP_EOL
+                . "Until this is fixed, I will be using the first valid cover declaration." . PHP_EOL
+                . "Using cover file name: '{$this->ebook->cover}'",
+                suggestion: "Edit the ebook's XML config file, making sure to use only one <lea:cover> tag." . PHP_EOL
+                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
+            ));
+        /**
+         * Checks if there are any <lea:image> tags defining file names not found in the file system.
+         * - yes = fatal
+         */
+        $missing = [];
+        foreach ($this->ebook->images as $fileName)
+            if (!is_file(Girlfriend::$pathImages . $fileName))
+                $missing[] = Girlfriend::$pathImages . $fileName;
+        if (count($missing) > 0)
+            Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
+                domainObject: $this->ebook,
+                flaw: Flaw::Fatal,
+                message: "Number of image tag(s) defined in ebook, but missing in file system: "
+                . count($missing) . "." . PHP_EOL
+                . "List of file name(s) declared but not found: " . PHP_EOL
+                . implode(separator: PHP_EOL, array: $missing),
+                suggestion: "Edit the ebook's XML config file, making sure to use only one <lea:cover> tag." . PHP_EOL
+                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
+            ));
+        /**
+         * Time to direct our gaze at the text files
+         */
         foreach ($this->ebook->texts as $text) {
             /**
              * Checks if the text file has been read successfully.
@@ -195,7 +341,7 @@ final class PaisleyPark
                     flaw: Flaw::Fatal,
                     message: "The text file could not be read.",
                     suggestion: "Check for typos in the file name given in the ebook XML config file." . PHP_EOL
-                    . "Text file name given: '$text->fileName'",
+                    . "Text file name given: '" . Girlfriend::$pathText . "$text->fileName'.",
                 ));
                 continue;
             }
@@ -209,7 +355,7 @@ final class PaisleyPark
                     flaw: Flaw::Fatal,
                     message: "The content of a text config file is not well formed.",
                     suggestion: "Check the text file in your XML editor of choice." . PHP_EOL
-                    . "Text file name: '$text->fileName'",
+                    . "Text file name given: '" . Girlfriend::$pathText . "$text->fileName'.",
                 ));
                 continue;
             }
@@ -223,13 +369,13 @@ final class PaisleyPark
                     flaw: Flaw::Fatal,
                     message: "The title of the text is required.",
                     suggestion: "Edit the text file, adding a single <lea:title> tag." . PHP_EOL
-                    . "Text file name: '$text->fileName'.",
+                    . "Text file name given: '" . Girlfriend::$pathText . "$text->fileName'.",
                 ));
             /**
              * Checks if there are more than one <title> definitions.
              * - yes = use first, continue with warning message
              */
-            if ($text->xpath->evaluate(expression: 'count(//lea:title) > 1'))
+            if ($text->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:title")->length > 1)
                 Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
                     domainObject: $text,
                     flaw: Flaw::Severe,
@@ -237,7 +383,7 @@ final class PaisleyPark
                     . "Until this is fixed, I will be using the first valid title found." . PHP_EOL
                     . "Using title: '$text->title'",
                     suggestion: "Edit the text file, making sure to use only one <lea:title> tag." . PHP_EOL
-                    . "Text file name: '$text->fileName'.",
+                    . "Text file name given: '" . Girlfriend::$pathText . "$text->fileName'.",
                 ));
             /**
              * Checks if there is at least one author.
@@ -249,7 +395,7 @@ final class PaisleyPark
                     flaw: Flaw::Fatal,
                     message: "At least one author of the text is required.",
                     suggestion: "Edit the text file, adding at least one <lea:author> tag." . PHP_EOL
-                    . "Text file name: '$text->fileName'.",
+                    . "Text file name given: '" . Girlfriend::$pathText . "$text->fileName'.",
                 ));
             /**
              * Checks if there are invalid <author> definitions present in the text file.
@@ -262,13 +408,13 @@ final class PaisleyPark
                     message: "Invalid author tag(s) detected in text." . PHP_EOL
                     . count($text->authors) . " valid author definitions in total.",
                     suggestion: "Edit the text file, checking all <lea:author> tags." . PHP_EOL
-                    . "Text file name: '$text->fileName'.",
+                    . "Text file name given: '" . Girlfriend::$pathText . "$text->fileName'.",
                 ));
             /**
              * Checks if there are more than one <lea:blurb> definitions.
              * - yes = use the first blurb found, continue with warning message
              */
-            if ($text->xpath->evaluate(expression: 'count(//lea:blurb) > 1'))
+            if ($text->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:blurb")->length > 1)
                 Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
                     domainObject: $text,
                     flaw: Flaw::Severe,
@@ -276,7 +422,7 @@ final class PaisleyPark
                     . "Continuing with the first blurb found." . PHP_EOL
                     . "Blurb I will be using: '$text->blurb'.",
                     suggestion: "Edit the text file, checking all <lea:blurb> tags." . PHP_EOL
-                    . "Text file name: '$text->fileName'.",
+                    . "Text file name given: '" . Girlfriend::$pathText . "$text->fileName'.",
                 ));
         }
     }

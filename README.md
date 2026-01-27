@@ -35,6 +35,21 @@ PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones:
 
+0.0.16: "Come to the park and play with us. There are many rules in Paisley Park."
+
+* Changed PaisleyPark constructor in preparation for batch processing. Not sure whether it will ever happen though.
+* Added DOMDocument properties to classes in preparation for serialization and conversion during theOpera.
+* Added Date class and date extraction.
+* Added extraction of description.
+* Added Publisher class and publisher extraction.
+* Added extraction of rights declaration.
+* Added extraction of language declaration.
+* Added extraction of cover file name.
+* Added extraction of image file names. Images will get a massive overhaul later, but works for now.
+* Added Collection class and collection extraction.
+* Made XPath queries more specific to account for node context.
+* Fixed ISBN property in Ebook class, which was not following pattern for properties
+
 0.0.15: "Tell me, how're we gonna put this back together? How're we gonna think with the same mind?"
 
 * Added contributors and subjects to Ebook class

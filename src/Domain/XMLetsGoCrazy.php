@@ -16,23 +16,37 @@ use DOMXPath;
 final class XMLetsGoCrazy
 {
     private(set) static string $leaNamespace = "https://logophilia.eu/lea/2026/xhtml";
+    private(set) static string $rootElement = "xmletsgocrazy";
 
     /**
-     * Takes a file of XML fragments, including lea namespace directives,
+     * Takes a DOMDocument wrapped in the lea namespace,
      * and returns a DOMXPath object to inquire against
      *
-     * @param string $fragments
+     * @param DOMDocument $dom
      * @return DOMXPath
      */
     #[NoDiscard]
-    public static function buildXPath(string $fragments): DOMXPath
+    public static function createXPath(DOMDocument $dom): DOMXPath
+    {
+        $xpath = new DOMXPath($dom);
+        $xpath->registerNamespace(prefix: 'lea', namespace: self::$leaNamespace);
+        return $xpath;
+    }
+
+    /**
+     * Takes a file of XML fragments, including lea namespace directives,
+     * and returns a DOMDocument object
+     *
+     * @param string $fragments
+     * @return DOMDocument
+     */
+    #[NoDiscard]
+    public static function createDOM(string $fragments): DOMDocument
     {
         $wrapped = "<xmletsgocrazy xmlns:lea='" . self::$leaNamespace . "'>$fragments</xmletsgocrazy>";
-        $dom = new DOMDocument('1.0', 'UTF-8');
-        $dom->loadXML($wrapped, LIBXML_NONET);
-        $xpath = new DOMXPath($dom);
-        $xpath->registerNamespace('lea', self::$leaNamespace);
-        return $xpath;
+        $dom = new DOMDocument(version: '1.0', encoding: 'UTF-8');
+        $dom->loadXML($wrapped, options: LIBXML_NONET);
+        return $dom;
     }
 
     /**
@@ -61,7 +75,21 @@ final class XMLetsGoCrazy
     #[NoDiscard]
     public static function extractTitle(DOMXPath $xpath): string
     {
-        return trim($xpath->evaluate(expression: 'string(//lea:title)'));
+        return trim($xpath->evaluate(expression: "string(/" . self::$rootElement . "/lea:title)"));
+    }
+
+    /**
+     * Extract the description from an XPath object
+     * - <lea:description>The Pitch Science Fiction is a quarterly publication of science-fiction stories
+     *                    by various authors, covering diverse themes.</lea:description>
+     *
+     * @param DOMXPath $xpath
+     * @return string
+     */
+    #[NoDiscard]
+    public static function extractDescription(DOMXPath $xpath): string
+    {
+        return trim($xpath->evaluate(expression: "string(/" . self::$rootElement . "/lea:description)"));
     }
 
     /**
@@ -72,7 +100,7 @@ final class XMLetsGoCrazy
      */
     public static function validateAuthors(DOMXPath $xpath): bool
     {
-        $nodes = $xpath->query(expression: "//lea:author");
+        $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:author");
         if ($nodes->length === 0) return false; // at least one author required
         foreach ($nodes as $node) {
             $name = trim($xpath->evaluate(expression: "string(lea:name)", contextNode: $node));
@@ -94,7 +122,7 @@ final class XMLetsGoCrazy
     #[NoDiscard]
     public static function extractAuthors(DOMXPath $xpath): array
     {
-        $nodes = $xpath->query(expression: "//lea:author");
+        $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:author");
         $authors = [];
         foreach ($nodes as $node) {
             $name = trim($xpath->evaluate(expression: "string(lea:name)", contextNode: $node));
@@ -106,6 +134,84 @@ final class XMLetsGoCrazy
     }
 
     /**
+     * Extract the rights from an XPath object
+     * - <lea:rights>English translation of M2 (C) 2025 by Eduard Pech.
+     *               Published by permission of Daria Skrinitsa.
+     *               All other stories are in the public domain in the USA.
+     *               All content not marked public domain (C) 2025 by Eduard Pech.
+     *               Complete edition (C) 2025 by Logophilia.
+     *               Logophilia is an imprint of Logophilia OÜ.</lea:rights>
+     *
+     * @param DOMXPath $xpath
+     * @return string
+     */
+    #[NoDiscard]
+    public static function extractRights(DOMXPath $xpath): string
+    {
+        return trim($xpath->evaluate(expression: "string(/" . self::$rootElement . "/lea:rights)"));
+    }
+
+    /**
+     * Extract the language from an XPath object
+     * - <lea:language>en</lea:language>
+     *
+     * @param DOMXPath $xpath
+     * @return string
+     */
+    #[NoDiscard]
+    public static function extractLanguage(DOMXPath $xpath): string
+    {
+        return trim($xpath->evaluate(expression: "string(/" . self::$rootElement . "/lea:language)"));
+    }
+
+    /**
+     * Extract the dates from an XPath object
+     * - <lea:date>
+     *     <lea:created>The Unpronounceable Symbol</lea:created>
+     *     <lea:modified>Nelson, Prince Rogers [The Unpronounceable Symbol]</lea:modified>
+     *     <lea:issued>Nelson, Prince Rogers [The Unpronounceable Symbol]</lea:issued>
+     *   </lea:date>
+     *
+     * @param DOMXPath $xpath
+     * @return Date
+     */
+    #[NoDiscard]
+    public static function extractDate(DOMXPath $xpath): Date
+    {
+        $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:date");
+        if ($nodes === false || $nodes->length !== 1) return new Date ();
+        $created = trim($xpath->evaluate(expression: "string(lea:created)", contextNode: $nodes[0]));
+        $modified = trim($xpath->evaluate(expression: "string(lea:modified)", contextNode: $nodes[0]));
+        $issued = trim($xpath->evaluate(expression: "string(lea:issued)", contextNode: $nodes[0]));
+        return new Date (created: $created, modified: $modified, issued: $issued);
+    }
+
+    /**
+     * Extract the publisher from an XPath object
+     * - <lea:publisher>
+     *     <lea:imprint>Logophilia</lea:imprint>
+     *     <lea:contact>origins@logophilia.eu</lea:contact>
+     *   </lea:publisher>
+     * This information is not mandatory according to specifications,
+     * but I choose to print annoying messages until the tags are present.
+     * All data is free-form text and not checked for formatting.
+     * For example, contact could be a telephone number,
+     * or just the string, "go fuck yourself, Lea."
+     *
+     * @param DOMXPath $xpath
+     * @return Publisher
+     */
+    #[NoDiscard]
+    public static function extractPublisher(DOMXPath $xpath): Publisher
+    {
+        $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:publisher");
+        if ($nodes === false || $nodes->length !== 1) return new Publisher();
+        $imprint = trim($xpath->evaluate(expression: "string(lea:imprint)", contextNode: $nodes[0]));
+        $contact = trim($xpath->evaluate(expression: "string(lea:contact)", contextNode: $nodes[0]));
+        return new Publisher(imprint: $imprint, contact: $contact);
+    }
+
+    /**
      * Validates all existing <contributor> tags in passed XPath object
      *
      * @param DOMXPath $xpath
@@ -114,7 +220,7 @@ final class XMLetsGoCrazy
      */
     public static function validateContributors(DOMXPath $xpath, array $reference): bool
     {
-        $nodes = $xpath->query(expression: "//lea:contributor");
+        $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:contributor");
         $ptr = 0;
         foreach ($nodes as $node) {
             $name = trim($xpath->evaluate(expression: "string(lea:name)", contextNode: $node));
@@ -142,7 +248,7 @@ final class XMLetsGoCrazy
     #[NoDiscard]
     public static function extractContributors(DOMXPath $xpath): array
     {
-        $nodes = $xpath->query(expression: "//lea:contributor");
+        $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:contributor");
         $contributors = [];
         foreach ($nodes as $node) {
             $name = trim($xpath->evaluate(expression: "string(lea:name)", contextNode: $node));
@@ -170,7 +276,38 @@ final class XMLetsGoCrazy
     #[NoDiscard]
     public static function extractBlurb(DOMXPath $xpath): string
     {
-        return trim($xpath->evaluate(expression: 'string(//lea:blurb)'));
+        return trim($xpath->evaluate(expression: "string(/" . self::$rootElement . "/lea:blurb)"));
+    }
+
+    /**
+     * Extract the cover from an XPath object
+     * - <lea:cover>2025Q4-cover-inside.jpg</lea:cover>
+     *
+     * @param DOMXPath $xpath
+     * @return string
+     */
+    #[NoDiscard]
+    public static function extractCover(DOMXPath $xpath): string
+    {
+        return trim($xpath->evaluate(expression: "string(/" . self::$rootElement . "/lea:cover)"));
+    }
+
+    /**
+     * Extract the image file names from an XPath object
+     * - <lea:image>Harry-Harrison-FM-Logophilia-512.jpg</lea:image>
+     * - <lea:image>Hubris-cover-512-qr.jpg</lea:image>
+     *
+     * @param DOMXPath $xpath
+     * @return array
+     */
+    #[NoDiscard]
+    public static function extractImages(DOMXPath $xpath): array
+    {
+        $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:image");
+        $images = [];
+        foreach ($nodes as $node)
+            $images[] = trim($node->textContent);
+        return $images;
     }
 
     /**
@@ -184,7 +321,7 @@ final class XMLetsGoCrazy
     #[NoDiscard]
     public static function extractSubjects(DOMXPath $xpath): array
     {
-        $nodes = $xpath->query(expression: "//lea:subject");
+        $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:subject");
         $subjects = [];
         foreach ($nodes as $node)
             $subjects[] = trim($node->textContent);
@@ -197,12 +334,39 @@ final class XMLetsGoCrazy
      * - <lea:isbn>987-1234567890</lea:isbn>
      *
      * @param DOMXPath $xpath
-     * @return string
+     * @return ISBN
      */
     #[NoDiscard]
-    public static function extractISBN(DOMXPath $xpath): string
+    public static function extractISBN(DOMXPath $xpath): ISBN
     {
-        return trim($xpath->evaluate(expression: 'string(//lea:isbn)'));
+        return new ISBN(trim($xpath->evaluate(expression: "string(/" . self::$rootElement . "/lea:isbn)")));
+    }
+
+    /**
+     * Extract the optional collection data from an XPath object
+     * - <lea:collection>
+     *     <lea:title>Logophilia</lea:title>
+     *     <lea:type>origins@logophilia.eu</lea:type>
+     *     <lea:position>origins@logophilia.eu</lea:position>
+     *     <lea:issn>origins@logophilia.eu</lea:issn>
+     *   </lea:collection>
+     * This information is not mandatory, as not every book is part of a collection.
+     * At the time of writing, only the collection type "series" is supported.
+     * A "series" requires an ISSN.
+     *
+     * @param DOMXPath $xpath
+     * @return Collection
+     */
+    #[NoDiscard]
+    public static function extractCollection(DOMXPath $xpath): Collection
+    {
+        $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:collection");
+        if ($nodes === false || $nodes->length !== 1) return new Collection();
+        $title = trim($xpath->evaluate(expression: "string(lea:title)", contextNode: $nodes[0]));
+        $type = trim($xpath->evaluate(expression: "string(lea:type)", contextNode: $nodes[0]));
+        $position = trim($xpath->evaluate(expression: "string(lea:position)", contextNode: $nodes[0]));
+        $issn = trim($xpath->evaluate(expression: "string(lea:issn)", contextNode: $nodes[0]));
+        return new Collection(title: $title, type: $type, position: $position, issn: $issn);
     }
 
     /**
@@ -217,7 +381,7 @@ final class XMLetsGoCrazy
     #[NoDiscard]
     public static function extractTexts(DOMXPath $xpath): array
     {
-        $nodes = $xpath->query(expression: "//lea:text");
+        $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:text");
         $texts = [];
         foreach ($nodes as $node)
             $texts[] = new Text(trim($node->textContent));

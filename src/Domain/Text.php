@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lea\Domain;
 
+use DOMDocument;
 use DOMXPath;
 use Lea\Adore\Girlfriend;
 
@@ -15,8 +16,11 @@ final class Text
     private(set) string $xhtml {
         get => $this->xhtml ??= Girlfriend::comeToMe()->readFile(fileName: Girlfriend::$pathText . $this->fileName);
     }
+    private(set) DOMDocument $dom {
+        get => $this->dom ??= XMLetsGoCrazy::createDOM($this->xhtml);
+    }
     private(set) DOMXPath $xpath {
-        get => $this->xpath ??= XMLetsGoCrazy::buildXPath($this->xhtml);
+        get => $this->xpath ??= XMLetsGoCrazy::createXPath($this->dom);
     }
     private(set) string $title {
         get => $this->title ??= XMLetsGoCrazy::extractTitle($this->xpath);

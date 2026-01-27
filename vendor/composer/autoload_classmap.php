@@ -12,6 +12,7 @@ return array(
     'Lea\\Adore\\Flaw' => $baseDir . '/src/Adore/Flaw.php',
     'Lea\\Adore\\Girlfriend' => $baseDir . '/src/Adore/Girlfriend.php',
     'Lea\\Domain\\Author' => $baseDir . '/src/Domain/Author.php',
+    'Lea\\Domain\\Contributor' => $baseDir . '/src/Domain/Contributor.php',
     'Lea\\Domain\\Ebook' => $baseDir . '/src/Domain/Ebook.php',
     'Lea\\Domain\\ISBN' => $baseDir . '/src/Domain/ISBN.php',
     'Lea\\Domain\\Text' => $baseDir . '/src/Domain/Text.php',

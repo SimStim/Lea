@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Lea;
 
-use Lea\Adore\Fancy;
-use Lea\Adore\Flaw;
 use Lea\Adore\Girlfriend;
 
 define(constant_name: 'ROOT', value: dirname(path: __DIR__) . "/Lea");
@@ -18,3 +16,4 @@ Girlfriend::comeToMe()->myNameIsLea();
 $work = new PaisleyPark(fileName: "tpsf-8.xml");
 $work->segue();
 if (!$work->inThisBedEyeScream()) exit;
+//var_dump($work->ebook->collection);

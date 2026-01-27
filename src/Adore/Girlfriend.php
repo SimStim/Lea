@@ -14,7 +14,7 @@ use SebastianBergmann\Version;
 final class Girlfriend
 {
     private static ?self $instance = null;
-    private static string $minVersion = "0.0.14";
+    private static string $minVersion = "0.0.16";
     private(set) static string $pathEbooks = REPO . "/configs/ebooks/";
     private(set) static string $pathImprints = REPO . "/configs/imprints/";
     private(set) static string $pathScripts = REPO . "/configs/scripts/";
