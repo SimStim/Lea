@@ -13,7 +13,8 @@
     "php": "^8.5",
     "ext-mbstring": "*",
     "ext-libxml": "*",
-    "ext-dom": "*"
+    "ext-dom": "*",
+    "ext-zip": "*"
   },
   "require-dev": {
     "sebastian/version": "^6.0"

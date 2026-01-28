@@ -41,8 +41,7 @@ class Date
         $dateTime = DateTime::createFromFormat(format: "!" . $format, datetime: $value, timezone: $tz);
         if ($dateTime === false) return null;
         $errors = DateTime::getLastErrors();
-        if ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0))
-            return null;
+        if ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0)) return null;
         return $dateTime;
     }
 

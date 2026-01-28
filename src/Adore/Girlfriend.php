@@ -15,15 +15,22 @@ final class Girlfriend
 {
     private static ?self $instance = null;
     private static string $minVersion = "0.0.16";
-    private(set) static string $pathEbooks = REPO . "/configs/ebooks/";
-    private(set) static string $pathImprints = REPO . "/configs/imprints/";
-    private(set) static string $pathScripts = REPO . "/configs/scripts/";
-    private(set) static string $pathFonts = REPO . "/fonts/";
-    private(set) static string $pathImages = REPO . "/images/";
-    private(set) static string $pathStyles = REPO . "/styles/";
-    private(set) static string $pathText = REPO . "/text/";
+    private(set) static string $pathEbooks = REPO . "configs/ebooks/";
+    private(set) static string $pathImprints = REPO . "configs/imprints/";
+    private(set) static string $pathScripts = REPO . "configs/scripts/";
+    private(set) static string $pathFonts = REPO . "fonts/";
+    private(set) static string $pathImages = REPO . "images/";
+    private(set) static string $pathStyles = REPO . "styles/";
+    private(set) static string $pathText = REPO . "text/";
+    private(set) static string $pathEpubs = REPO . "epubs/";
+    private(set) static string $pathPurpleRain = REPO . "PurpleRain//";
+    private static array $characterNonGrata = [
+        ' ', '.', '\'', '"', ',', ':', ';', '!', '?', '(',
+        ')', '[', ']', '{', '}', '&', '/', '\\'
+    ];
+
     private(set) string $leaVersion {
-        get => $this->leaVersion ??= $this->computeLeaVersion(minVersion: self::$minVersion);
+        get => $this->leaVersion ??= self::comeToMe()->computeLeaVersion(minVersion: self::$minVersion);
     }
     private(set) string $leaName {
         get => $this->leaName ??= Fancy::BOLD . "Lea ePub anvil" . Fancy::UNBOLD . " " . self::comeToMe()->leaVersion;
@@ -72,7 +79,7 @@ final class Girlfriend
      *
      * @return void
      */
-    public static function emotionalPump(): void
+    public function emotionalPump(): void
     {
         libxml_use_internal_errors(use_errors: true); // suppress all libxml warnings/errors
         libxml_clear_errors(); // clear any previous
@@ -84,7 +91,7 @@ final class Girlfriend
      * @param string $minVersion
      * @return string
      */
-    private static function computeLeaVersion(string $minVersion): string
+    private function computeLeaVersion(string $minVersion): string
     {
         $version = new Version(release: $minVersion, path: ROOT)->asString();
         return str_contains(haystack: $version, needle: "-g")
@@ -134,5 +141,60 @@ final class Girlfriend
     {
         $content = @file_get_contents($fileName);
         return $content ?: "";
+    }
+
+    /**
+     * Normalizes a title string for use in OEBPS/Text.
+     * "The World That Couldn't Be by Clifford D. Simak"
+     * => "TheWorldThatCouldntBeByCliffordDSimak.xhtml"
+     *
+     * @param string $title
+     * @return string
+     */
+    public function strToEpubTextFileName(string $title): string
+    {
+        return str_replace(
+                search: self::$characterNonGrata,
+                replace: "",
+                subject: ucwords($title)
+            ) . ".xhtml";
+    }
+
+    /**
+     * Normalizes a filename path string for use in OEBPS/Images.
+     * "tpsf-8/2025Q3-cover-512-QR.jpg"
+     * => "tpsf-8-2025q3-cover-512-qr.jpg"
+     *
+     * @param string $fileName
+     * @return string
+     */
+    public function strToEpubImageFileName(string $fileName): string
+    {
+        $parts = pathinfo($fileName);
+        return strtolower(
+            string: str_replace(
+                search: self::$characterNonGrata,
+                replace: "-",
+                subject: $parts['dirname'] . "/" . $parts['filename']
+            ) . "." . $parts['extension']
+        );
+    }
+
+    /**
+     * Normalizes any string for use as identifiers.
+     * "The World That Couldn't Be by Clifford D. Simak.xhtml"
+     * => "the-world-that-couldn-t-be-by-clifford-d--simak-xhtml
+     * "
+     *
+     * @param string $string
+     * @return string
+     */
+    public function strToEpubIdentifier(string $string): string
+    {
+        return str_replace(
+            search: self::$characterNonGrata,
+            replace: '-',
+            subject: strtolower($string)
+        );
     }
 }

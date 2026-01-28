@@ -13,7 +13,7 @@ namespace Lea\Adore;
 final readonly class DoveCry
 {
     /**
-     * Store a message about the state of current object
+     * Store a message.
      *
      * One Class to rule them all, one Class to find them,
      * One Class to bring them all, you get the idea.

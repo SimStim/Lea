@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package version="3.0" unique-identifier="isbn" xmlns="http://www.idpf.org/2007/opf">
+  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+    <dc:format>application/epub+zip</dc:format>
+    <dc:type>Text</dc:type>
+    <meta property="dcterms:created">2025-08-01</meta>
+    <meta property="dcterms:modified">2025-12-09T12:51:40Z</meta>
+    <meta property="dcterms:issued">2025-11-11</meta>
+    <dc:date>2025-11-11</dc:date>
+    <dc:title>The Pitch Science Fiction 4Q2025</dc:title>
+    <dc:description>The Pitch Science Fiction is a quarterly publication of science fiction stories by various authors, covering diverse themes.</dc:description>
+    <meta property="dcterms:isPartOf">urn:issn:2806-4240</meta>
+    <meta property="belongs-to-collection" id="tpsf">The Pitch Science Fiction</meta>
+    <meta refines="#tpsf" property="collection-type">series</meta>
+    <meta refines="#tpsf" property="group-position">8</meta>
+    <dc:identifier id="isbn">978-9908-9726-1-9</dc:identifier>
+    <meta refines="#isbn" property="identifier-type">ISBN</meta>
+    <dc:identifier id="issn">urn:issn:2806-4240</dc:identifier>
+    <meta refines="#issn" property="identifier-type">ISSN</meta>
+    <dc:identifier id="shopurl">https://lphi.top/p-tpsf-8</dc:identifier>
+    <meta refines="#shopurl" property="identifier-type">URI</meta>
+    <dc:publisher>Logophilia</dc:publisher>
+    <meta property="dcterms:contact">originals@logophilia.eu</meta>
+    <meta property="dcterms:identifier" id="imprint">Logophilia</meta>
+    <dc:rights>English translation of M2 (C) 2025 by Eduard Pech. Published by permission of Daria Skrinitsa. All other stories are in the public domain in the USA. All content not marked public domain (C) 2025 by Eduard Pech. Complete edition (C) 2025 by Logophilia. Logophilia is an imprint of Logophilia OÜ.</dc:rights>
+    <dc:language>en</dc:language>
+    <dc:creator id="poul-anderson">Poul Anderson</dc:creator>
+    <dc:creator id="jesse-f-bone">Jesse F. Bone</dc:creator>
+    <dc:creator id="john-w-campbell-jr">John W. Campbell, Jr.</dc:creator>
+    <dc:creator id="lester-del-rey">Lester del Rey</dc:creator>
+    <dc:creator id="harry-harrison">Harry Harrison</dc:creator>
+    <dc:creator id="raymond-f-jones">Raymond F. Jones</dc:creator>
+    <dc:creator id="keith-laumer">Keith Laumer</dc:creator>
+    <dc:creator id="robert-sheckley">Robert Sheckley</dc:creator>
+    <dc:creator id="clifford-d-simak">Clifford D. Simak</dc:creator>
+    <dc:creator id="daria-skrinitsa">Daria Skrinitsa</dc:creator>
+    <meta refines="#poul-anderson" property="role" scheme="marc:relators">aut</meta>
+    <meta refines="#jesse-f-bone" property="role" scheme="marc:relators">aut</meta>
+    <meta refines="#john-w-campbell-jr" property="role" scheme="marc:relators">aut</meta>
+    <meta refines="#lester-del-rey" property="role" scheme="marc:relators">aut</meta>
+    <meta refines="#harry-harrison" property="role" scheme="marc:relators">aut</meta>
+    <meta refines="#raymond-f-jones" property="role" scheme="marc:relators">aut</meta>
+    <meta refines="#keith-laumer" property="role" scheme="marc:relators">aut</meta>
+    <meta refines="#robert-sheckley" property="role" scheme="marc:relators">aut</meta>
+    <meta refines="#clifford-d-simak" property="role" scheme="marc:relators">aut</meta>
+    <meta refines="#daria-skrinitsa" property="role" scheme="marc:relators">aut</meta>
+    <meta refines="#poul-anderson" property="display-seq">1</meta>
+    <meta refines="#jesse-f-bone" property="display-seq">2</meta>
+    <meta refines="#john-w-campbell-jr" property="display-seq">3</meta>
+    <meta refines="#lester-del-rey" property="display-seq">4</meta>
+    <meta refines="#harry-harrison" property="display-seq">5</meta>
+    <meta refines="#raymond-f-jones" property="display-seq">6</meta>
+    <meta refines="#keith-laumer" property="display-seq">7</meta>
+    <meta refines="#robert-sheckley" property="display-seq">8</meta>
+    <meta refines="#clifford-d-simak" property="display-seq">9</meta>
+    <meta refines="#daria-skrinitsa" property="display-seq">10</meta>
+    <dc:contributor id="eduard-pech-con">Eduard Pech</dc:contributor>
+    <meta refines="#eduard-pech-con" property="role" scheme="marc:relators">edt</meta>
+    <meta refines="#eduard-pech-con" property="role" scheme="marc:relators">trl</meta>
+    <meta refines="#eduard-pech-con" property="role" scheme="marc:relators">bkp</meta>
+    <meta refines="#eduard-pech-con" property="role" scheme="marc:relators">bkd</meta>
+    <meta refines="#eduard-pech-con" property="role" scheme="marc:relators">tyg</meta>
+    <meta refines="#eduard-pech-con" property="role" scheme="marc:relators">mrk</meta>
+    <meta refines="#eduard-pech-con" property="role" scheme="marc:relators">pfr</meta>
+    <meta refines="#eduard-pech-con" property="role" scheme="marc:relators">cov</meta>
+    <meta refines="#eduard-pech-con" property="role" scheme="marc:relators">ill</meta>
+    <meta refines="#eduard-pech-con" property="role" scheme="marc:relators">art</meta>
+    <meta refines="#eduard-pech-con" property="role" scheme="marc:relators">blw</meta>
+    <meta refines="#TheStatusCivilizationByRobertSheckley_xhtml" property="dcterms:creator">Robert Sheckley</meta>
+    <meta refines="#GamblersWorldByKeithLaumer_xhtml" property="dcterms:creator">Keith Laumer</meta>
+    <meta refines="#ArmOfTheLawByHarryHarrison_xhtml" property="dcterms:creator">Harry Harrison</meta>
+    <meta refines="#TheWorldThatCouldntBeByCliffordDSimak_xhtml" property="dcterms:creator">Clifford D. Simak</meta>
+    <meta refines="#M2ByDariaSkrinitsa_xhtml" property="dcterms:creator">Daria Skrinitsa</meta>
+    <meta refines="#M2ByDariaSkrinitsa_xhtml" property="marc:trl">Eduard Pech</meta>
+    <meta refines="#IslandsOfSpaceByJohnWCampbellJr_xhtml" property="dcterms:creator">John W. Campbell, Jr.</meta>
+    <meta refines="#AQuestionOfCourageByJesseFBone_xhtml" property="dcterms:creator">Jesse F. Bone</meta>
+    <meta refines="#TheSensitiveManByPoulAnderson_xhtml" property="dcterms:creator">Poul Anderson</meta>
+    <meta refines="#TheMemoryOfMarsByRaymondFJones_xhtml" property="dcterms:creator">Raymond F. Jones</meta>
+    <meta refines="#LetEmBreatheSpaceByLesterDelRey_xhtml" property="dcterms:creator">Lester del Rey</meta>
+    <dc:subject>Diplomats -- Fiction</dc:subject>
+    <dc:subject>Extraterrestrial beings -- Fiction</dc:subject>
+    <dc:subject>Farmers -- Fiction</dc:subject>
+    <dc:subject>Human-alien encounters -- Fiction</dc:subject>
+    <dc:subject>Hunting stories</dc:subject>
+    <dc:subject>Life on other planets -- Fiction</dc:subject>
+    <dc:subject>Manned space flight -- Fiction</dc:subject>
+    <dc:subject>Mars (Planet) -- Fiction</dc:subject>
+    <dc:subject>Psychological fiction</dc:subject>
+    <dc:subject>Science fiction</dc:subject>
+    <dc:subject>Science fiction, American</dc:subject>
+    <dc:subject>Short stories</dc:subject>
+    <dc:subject>Retief (Fictitious character) -- Fiction</dc:subject>
+    <dc:subject>Robots -- Fiction</dc:subject>
+    <dc:subject>War stories</dc:subject>
+    <meta name="cover" content="x2025Q4-cover-inside.jpg"/>
+    <meta name="Sigil version" content="2.6.2"/>
+  </metadata>
+  <guide>
+    <reference type="cover" title="Cover" href="Text/cover.xhtml"/>
+    <reference type="toc" title="Table of Contents" href="Text/AboutTheContent.xhtml"/>
+    <reference type="acknowledgements" title="Acknowledgements" href="Text/AboutTheAuthors.xhtml"/>
+    <reference type="colophon" title="Colophon" href="Text/AboutThisPublication.xhtml"/>
+    <reference type="other.backmatter" title="Back Matter" href="Text/AboutThePublisher.xhtml"/>
+    <reference type="text" title="Text" href="Text/AQuestionOfCourageByJesseFBone.xhtml"/>
+  </guide>

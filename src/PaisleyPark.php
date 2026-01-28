@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lea;
 
 use NoDiscard;
+use ZipArchive;
 use Lea\Adore\DoveCry;
 use Lea\Adore\Fancy;
 use Lea\Adore\Flaw;
@@ -462,6 +463,33 @@ final class PaisleyPark
     }
 
     /**
+     * The Overture:
+     * - happens before the opera
+     * - sets the themes
+     * - establishes consequences
+     * - tells the audience how to listen
+     *
+     * @return void (also known as Caesura)
+     */
+    private function theOverture(): void
+    {
+        $hashes = [
+            'PurpleRain.txt' => '247e5c56d2619ee9d29c4c56d69cacf917b49a572696ea60ba742d365b983112',
+            'mimetype' => 'e468e350d1143eb648f60c7b0bd6031101ec0544a361ca74ecef256ac901f48b',
+            'container.xml' => 'c54cb884813a53ce2fc9b3102ca8ee5c03b0397a2cb984500830e86c65ec092f',
+        ];
+        foreach ($hashes as $fileName => $hash) {
+            $content = Girlfriend::comeToMe()->readFile(fileName: Girlfriend::$pathPurpleRain . $fileName);
+            if (hash(algo: "sha256", data: $content) !== $hash) {
+                echo($fileName === array_key_first($hashes)
+                    ? "Die weißen Tauben sind müde." . PHP_EOL
+                    : Girlfriend::comeToMe()->readFile(fileName: Girlfriend::$pathPurpleRain . array_key_first($hashes)));
+                exit;
+            }
+        }
+    }
+
+    /**
      * Ah, the opera.
      *
      * @return bool
@@ -469,6 +497,51 @@ final class PaisleyPark
     #[NoDiscard]
     public function theOpera(): bool
     {
+        $this->theOverture(); // ascertain we're laughing in the purple rain
+        $ebook = $this->ebook;
+        $zip = new ZipArchive();
+        $zip->open(
+            filename: Girlfriend::$pathEpubs . $ebook->title . " - " . $ebook->publisher->imprint . ".epub",
+            flags: ZipArchive::CREATE | ZipArchive::OVERWRITE
+        );
+        $zip->addFile(filepath: Girlfriend::$pathPurpleRain . "mimetype", entryname: "mimetype");
+        $zip->setCompressionName(name: 'mimetype', method: ZipArchive::CM_STORE);
+        $zip->addFile(filepath: Girlfriend::$pathPurpleRain . "container.xml", entryname: "META-INF/container.xml");
+        $opf = Girlfriend::comeToMe()->readFile(REPO . "content.opf");
+        $manifest = $spine = "";
+        foreach ($ebook->texts as $text) {
+            $title = $text->title . " by " . $text->authors[0]->name;
+            $manifest .= sprintf(
+                "<item id='lea-txt-%s' href='Text/%s' media-type='application/xhtml+xml'/>%s",
+                Girlfriend::comeToMe()->strToEpubIdentifier(string: $title),
+                Girlfriend::comeToMe()->strToEpubTextFileName(title: $title),
+                PHP_EOL
+            );
+            $spine .= sprintf("<itemref idref='lea-txt-%s'/>%s",
+                Girlfriend::comeToMe()->strToEpubIdentifier($title),
+                PHP_EOL);
+        }
+        foreach ($ebook->images as $image) {
+            $manifest .= sprintf("<item id='lea-img-%s' href='Images/%s' media-type='image/jpeg'/>%s",
+                Girlfriend::comeToMe()->strToEpubIdentifier($image),
+                Girlfriend::comeToMe()->strToEpubImageFileName($image),
+                PHP_EOL);
+        }
+        $opf .= sprintf("<manifest>%s</manifest><spine>%s</spine></package>%s",
+            $manifest, $spine, PHP_EOL);
+        $zip->addFromString("OEBPS/content.opf", $opf);
+        foreach ($ebook->texts as $text)
+            $zip->addFile(
+                filepath: Girlfriend::$pathText . $text->fileName,
+                entryname: "OEBPS/Text/" . Girlfriend::comeToMe()->strToEpubTextFileName(
+                    title: $text->title . " by " . $text->authors[0]->name
+                )
+            );
+        foreach ($ebook->images as $image)
+            $zip->addFile(
+                filepath: Girlfriend::$pathImages . $image,
+                entryname: "OEBPS/Images/" . Girlfriend::comeToMe()->strToEpubImageFileName($image));
+        $zip->close();
         return true;
     }
 }

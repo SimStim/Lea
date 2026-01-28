@@ -35,6 +35,12 @@ PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones:
 
+0.0.17: "The ride up front is better When you've been in the back."
+
+* Added three string normalization methods to Girlfriend.
+* Started with theOpera, which implies adding ZipArchive dependency to composer.json.
+* Lea can produce a complete ePub now, minus table of contents and DOM headers. Getting there!
+
 0.0.16: "Come to the park and play with us. There are many rules in Paisley Park."
 
 * Changed PaisleyPark constructor in preparation for batch processing. Not sure whether it will ever happen though.
@@ -48,7 +54,7 @@ PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 * Added extraction of image file names. Images will get a massive overhaul later, but works for now.
 * Added Collection class and collection extraction.
 * Made XPath queries more specific to account for node context.
-* Fixed ISBN property in Ebook class, which was not following pattern for properties
+* Fixed ISBN property in Ebook class, which was not following pattern for properties.
 
 0.0.15: "Tell me, how're we gonna put this back together? How're we gonna think with the same mind?"
 
