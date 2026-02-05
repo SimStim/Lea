@@ -35,6 +35,19 @@ PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones:
 
+0.0.18 "Why did I ever let you in this morning? Why I did let you come inside my door?"
+
+* Extract theOpera into its own class.
+* Added function into Girlfriend to extract a subset of array elements with keys matching a pattern.
+* Now building normalized identifiers once, shaving off milliseconds versus repeated object access.
+* Methods to build metadata, manifest, spine, and guide blocks for content.opf. Incomplete as yet.
+
+The following will be done ASAP. Not available at the time of writing.
+
+x.y.z: "Rearrange your brain, got to free your mind!"
+
+* Moved repo to sha-256 in preparation for Git 3.0
+
 0.0.17: "The ride up front is better When you've been in the back."
 
 * Added three string normalization methods to Girlfriend.

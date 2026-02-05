@@ -1,6 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
-<package version="3.0" unique-identifier="isbn" xmlns="http://www.idpf.org/2007/opf">
-  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
     <dc:format>application/epub+zip</dc:format>
     <dc:type>Text</dc:type>
     <meta property="dcterms:created">2025-08-01</meta>
@@ -94,12 +91,3 @@
     <dc:subject>War stories</dc:subject>
     <meta name="cover" content="x2025Q4-cover-inside.jpg"/>
     <meta name="Sigil version" content="2.6.2"/>
-  </metadata>
-  <guide>
-    <reference type="cover" title="Cover" href="Text/cover.xhtml"/>
-    <reference type="toc" title="Table of Contents" href="Text/AboutTheContent.xhtml"/>
-    <reference type="acknowledgements" title="Acknowledgements" href="Text/AboutTheAuthors.xhtml"/>
-    <reference type="colophon" title="Colophon" href="Text/AboutThisPublication.xhtml"/>
-    <reference type="other.backmatter" title="Back Matter" href="Text/AboutThePublisher.xhtml"/>
-    <reference type="text" title="Text" href="Text/AQuestionOfCourageByJesseFBone.xhtml"/>
-  </guide>

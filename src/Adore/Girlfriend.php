@@ -197,4 +197,24 @@ final class Girlfriend
             subject: strtolower($string)
         );
     }
+
+    /**
+     * Returns a subset of an array based on a preg match of array keys.
+     *
+     * @param string $pattern
+     * @param array $array
+     * @param int $flags
+     * @return array
+     */
+    function arrayPregKeys(string $pattern, array $array, int $flags = 0): array
+    {
+        return array_filter(
+            array: $array,
+            callback: function ($key) use ($pattern, $flags) {
+                return preg_match(pattern: $pattern, subject: $key);
+            },
+            mode: ARRAY_FILTER_USE_KEY
+        );
+    }
+
 }
