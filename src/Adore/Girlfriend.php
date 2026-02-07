@@ -7,6 +7,7 @@ namespace Lea\Adore;
 use NoDiscard;
 use BadMethodCallException;
 use SebastianBergmann\Version;
+use Throwable;
 
 /**
  * You can do it because I'm your friend.
@@ -32,8 +33,14 @@ final class Girlfriend
     private(set) string $leaVersion {
         get => $this->leaVersion ??= self::comeToMe()->computeLeaVersion(minVersion: self::$minVersion);
     }
+    private(set) string $leaNameShort {
+        get => $this->leaNameShort ??= "Lea";
+    }
+    private(set) string $leaNamePlain {
+        get => $this->leaNamePlain ??= self::comeToMe()->leaNameShort . " ePub anvil " . self::comeToMe()->leaVersion;
+    }
     private(set) string $leaName {
-        get => $this->leaName ??= Fancy::BOLD . "Lea ePub anvil" . Fancy::UNBOLD . " " . self::comeToMe()->leaVersion;
+        get => $this->leaName ??= Fancy::BOLD . self::comeToMe()->leaNameShort . " ePub anvil" . Fancy::UNBOLD . " " . self::comeToMe()->leaVersion;
     }
     private(set) array $doveCries = [];
 
@@ -72,7 +79,7 @@ final class Girlfriend
      * Concentrate on you is all I have to do.
      *
      * Purport:
-     * With proper emotional pump, you'll gain reliable internal focus.
+     * With a proper emotional pump, you'll gain reliable internal focus.
      * I'll do this with my one and only Girlfriend.
      *
      * Some initialization.
@@ -131,7 +138,7 @@ final class Girlfriend
 
     /**
      * Reads a file from storage into a string in memory
-     * - returns an empty string on read error
+     * - Returns an empty string on read error
      *
      * @param string $fileName
      * @return string
@@ -183,8 +190,7 @@ final class Girlfriend
     /**
      * Normalizes any string for use as identifiers.
      * "The World That Couldn't Be by Clifford D. Simak.xhtml"
-     * => "the-world-that-couldn-t-be-by-clifford-d--simak-xhtml
-     * "
+     * => "the-world-that-couldn-t-be-by-clifford-d--simak-xhtml"
      *
      * @param string $string
      * @return string
@@ -196,6 +202,29 @@ final class Girlfriend
             replace: '-',
             subject: strtolower($string)
         );
+    }
+
+    /**
+     * Extraordinary
+     * The way you make me feel
+     * I'm so very glad it's real
+     * And not a dream
+     *
+     * We're taking the red pill and are returning to the real world.
+     *
+     * @param Throwable $throwable
+     * @return never
+     */
+    public function extraordinary(Throwable $throwable): never
+    {
+        echo "Oh, I just had an oopsie..." . PHP_EOL
+            . "If you'd be so kind as to help a damsel in distress," . PHP_EOL
+            . "would you mind getting back to my creator and tell him:" . PHP_EOL
+            . "\"" . Fancy::PURPLE_RAIN_BOLD_INVERSE_WHITE . $throwable->getMessage()
+            . " in " . basename($throwable->getFile())
+            . " on line " . $throwable->getLine() . Fancy::RESET . "\"" . PHP_EOL
+            . "You know, I'm just a girl; I can't do simple things." . PHP_EOL;
+        exit;
     }
 
     /**
@@ -211,7 +240,7 @@ final class Girlfriend
         return array_filter(
             array: $array,
             callback: function ($key) use ($pattern, $flags) {
-                return preg_match(pattern: $pattern, subject: $key);
+                return preg_match(pattern: $pattern, subject: $key, flags: $flags);
             },
             mode: ARRAY_FILTER_USE_KEY
         );

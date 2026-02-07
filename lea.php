@@ -16,4 +16,4 @@ Girlfriend::comeToMe()->myNameIsLea();
 $work = new PaisleyPark(fileName: "tpsf-8.xml");
 $work->segue();
 if (!$work->inThisBedEyeScream()) exit;
-var_dump($work->theOpera());
+$work->theOpera();

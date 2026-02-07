@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Lea\Domain;
 
+use DOMException;
+use DOMImplementation;
+use Lea\Adore\Girlfriend;
 use NoDiscard;
 use DOMDocument;
 use DOMXPath;
@@ -19,7 +22,7 @@ final class XMLetsGoCrazy
     private(set) static string $rootElement = "xmletsgocrazy";
 
     /**
-     * Takes a DOMDocument wrapped in the lea namespace,
+     * Takes a DOMDocument wrapped in the lea namespace
      * and returns a DOMXPath object to inquire against
      *
      * @param DOMDocument $dom
@@ -43,18 +46,18 @@ final class XMLetsGoCrazy
     #[NoDiscard]
     public static function createDOM(string $fragments): DOMDocument
     {
-        $wrapped = "<xmletsgocrazy xmlns:lea='" . self::$leaNamespace . "'>$fragments</xmletsgocrazy>";
+        $wrapped = "<" . self::$rootElement . " xmlns:lea='" . self::$leaNamespace . "'>$fragments</" . self::$rootElement . ">";
         $dom = new DOMDocument(version: '1.0', encoding: 'UTF-8');
         $dom->loadXML($wrapped, options: LIBXML_NONET);
         return $dom;
     }
 
     /**
-     * Checks an DOMXPath object and returns FALSE when the DOMDocument is empty
+     * Checks a DOMXPath object and returns FALSE when the DOMDocument is empty
      * This would indicate:
      * - DOMDocument was not well-formed, or
-     * - there has been a read error on the file (or file not found), or
-     * - the XML fragments file did exist, but was actually devoid of any useful content
+     * - There has been a read error on the file (or file not found), or
+     * - The XML fragments file did exist but was actually devoid of any useful content
      *
      * @param DOMXPath $xpath
      * @return bool
@@ -93,7 +96,7 @@ final class XMLetsGoCrazy
     }
 
     /**
-     * Validates all existing <author> tags in passed XPath object
+     * Validates all existing <author> tags in a passed XPath object
      *
      * @param DOMXPath $xpath
      * @return bool
@@ -138,7 +141,7 @@ final class XMLetsGoCrazy
      * - <lea:rights>English translation of M2 (C) 2025 by Eduard Pech.
      *               Published by permission of Daria Skrinitsa.
      *               All other stories are in the public domain in the USA.
-     *               All content not marked public domain (C) 2025 by Eduard Pech.
+     *               All content not marked as public domain (C) 2025 by Eduard Pech.
      *               Complete edition (C) 2025 by Logophilia.
      *               Logophilia is an imprint of Logophilia OÜ.</lea:rights>
      *
@@ -192,7 +195,7 @@ final class XMLetsGoCrazy
      *     <lea:imprint>Logophilia</lea:imprint>
      *     <lea:contact>origins@logophilia.eu</lea:contact>
      *   </lea:publisher>
-     * This information is not mandatory according to specifications,
+     * This information is not mandatory, according to specifications,
      * but I choose to print annoying messages until the tags are present.
      * All data is free-form text and not checked for formatting.
      * For example, contact could be a telephone number,
@@ -212,7 +215,7 @@ final class XMLetsGoCrazy
     }
 
     /**
-     * Validates all existing <contributor> tags in passed XPath object
+     * Validates all existing <contributor> tags in a passed XPath object
      *
      * @param DOMXPath $xpath
      * @param array $reference
@@ -371,8 +374,8 @@ final class XMLetsGoCrazy
 
     /**
      * Extract the texts from an XPath object
-     * - file names are always relative to REPO
-     * - sub folders are permitted
+     * - File names are always relative to REPO
+     * - Subfolders are permitted
      * - <lea:text>tpsf-8/AboutTheAuthors.xhtml</lea:text>
      *
      * @param DOMXPath $xpath
@@ -386,5 +389,63 @@ final class XMLetsGoCrazy
         foreach ($nodes as $node)
             $texts[] = new Text(trim($node->textContent));
         return $texts;
+    }
+
+    /**
+     * @throws DOMException
+     */
+    public static function stripLea(DOMDocument $wrappedFragments): DOMDocument
+    {
+        $impl = new DOMImplementation();
+        $doctype = $impl->createDocumentType(qualifiedName: 'html'); // <!DOCTYPE html>
+        $dom = $impl->createDocument(
+            namespace: 'http://www.w3.org/1999/xhtml',
+            qualifiedName: 'html',
+            doctype: $doctype
+        );
+        $dom->encoding = 'UTF-8';
+        $dom->formatOutput = false;
+        $html = $dom->documentElement;
+        $html->setAttributeNS(
+            namespace: 'http://www.w3.org/2000/xmlns/', // XMLNS namespace
+            qualifiedName: 'xmlns:epub',                     // qualified name of the attribute
+            value: 'http://www.idpf.org/2007/ops'    // value
+        );
+        $html->setAttribute(qualifiedName: 'lang', value: 'en-GB');
+        $html->setAttributeNS(
+            namespace: 'http://www.w3.org/XML/1998/namespace', // xml namespace
+            qualifiedName: 'xml:lang',
+            value: 'en-GB'
+        );
+        $dom->appendChild($html);
+        $head = $dom->createElement('head');
+        $html->appendChild($head);
+        $generator = $dom->createElement('meta');
+        $generator->setAttribute(qualifiedName: 'name', value: "generator");
+        $generator->setAttribute(qualifiedName: 'content', value: Girlfriend::comeToMe()->leaNameShort);
+        $head->appendChild($generator);
+        $title = $dom->createElement('title', "TITLE");
+        $head->appendChild($title);
+        $stylesheet = $dom->createElement('link');
+        $stylesheet->setAttribute(qualifiedName: 'rel', value: "stylesheet");
+        $stylesheet->setAttribute(qualifiedName: 'type', value: "text/css");
+        $stylesheet->setAttribute(qualifiedName: 'href', value: "../Styles/stylesheet.css");
+        $head->appendChild($stylesheet);
+        $html->appendChild($head);
+        $body = $dom->createElement('body');
+        $body->setAttributeNS(
+            namespace: 'http://www.idpf.org/2007/ops', // epub namespace
+            qualifiedName: 'epub:type',
+            value: 'bodymatter'
+        );
+        $html->appendChild($body);
+        $fragmentsRoot = $wrappedFragments->documentElement;
+        foreach ($fragmentsRoot->childNodes as $node) {
+            $body->appendChild($dom->importNode($node, deep: true));
+        }
+        $xpath = self::createXPath($dom);
+        $nodes = $xpath->query("//lea:*");
+        foreach ($nodes as $node) $node->parentNode->removeChild($node);
+        return $dom;
     }
 }

@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Lea;
 
 use NoDiscard;
+use DOMException;
 use ZipArchive;
 use Lea\Adore\Girlfriend;
 use Lea\Domain\Ebook;
+use Lea\Domain\XMLetsGoCrazy;
 
 final class TheOpera
 {
@@ -27,10 +29,10 @@ final class TheOpera
 
     /**
      * The Overture:
-     * - happens before the opera
-     * - sets the themes
-     * - establishes consequences
-     * - tells the audience how to listen
+     * - Happens before the opera
+     * - Sets the themes
+     * - Establishes consequences
+     * - Tells the audience how to listen
      *
      * @return void (also known as Caesura)
      */
@@ -171,6 +173,7 @@ final class TheOpera
      * Now I can feel
      *
      * @return bool
+     * @throws DOMException
      */
     #[NoDiscard]
     public function conductor(): bool
@@ -192,11 +195,11 @@ final class TheOpera
             . "<spine>" . $this->buildSpine() . "</spine>"
             . "<guide>" . $this->buildGuide() . "</guide>"
             . "</package>" . PHP_EOL;
-        $zip->addFromString("OEBPS/content.opf", $opf);
+        $zip->addFromString(name: "OEBPS/content.opf", content: $opf);
         foreach ($this->ebook->texts as $text)
-            $zip->addFile(
-                filepath: Girlfriend::$pathText . $text->fileName,
-                entryname: "OEBPS/Text/" . $this->identifiers[$this->idMarkers["text"] . $text->fileName]["epubTextFileName"]
+            $zip->addFromString(
+                "OEBPS/Text/" . $this->identifiers[$this->idMarkers["text"] . $text->fileName]["epubTextFileName"],
+                XMLetsGoCrazy::stripLea($text->dom)->saveXML()
             );
         foreach ($this->ebook->images as $image)
             $zip->addFile(

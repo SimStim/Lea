@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lea;
 
 use NoDiscard;
+use Throwable;
 use Lea\Adore\DoveCry;
 use Lea\Adore\Fancy;
 use Lea\Adore\Flaw;
@@ -469,6 +470,11 @@ final class PaisleyPark
     public function theOpera(): bool
     {
         $theOpera = new TheOpera($this->ebook);
-        return $theOpera->conductor();
+        try {
+            $return = $theOpera->conductor();
+        } catch (Throwable $e) {
+            Girlfriend::comeToMe()->extraordinary(throwable: $e);
+        }
+        return $return;
     }
 }

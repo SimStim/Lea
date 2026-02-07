@@ -35,6 +35,12 @@ PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones:
 
+0.0.19 "Strip your dress down"
+
+* Lea can be completely stripped now!
+* All DOMs of text files are also rewrapped into valid xhtml before output.
+* May sound funny, but we're closer to 1.0.0 than you think. Sigil already approves, with a few hacks in place.
+
 0.0.18 "Why did I ever let you in this morning? Why I did let you come inside my door?"
 
 * Extract theOpera into its own class.
