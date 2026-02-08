@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Lea\Domain;
 
-use DOMException;
-use DOMImplementation;
-use Lea\Adore\Girlfriend;
 use NoDiscard;
 use DOMDocument;
+use DOMException;
+use DOMImplementation;
 use DOMXPath;
+use Lea\Adore\Girlfriend;
 
 /**
  * XMLetsGoCrazy class for static domain helpers
@@ -270,7 +270,8 @@ final class XMLetsGoCrazy
     /**
      * Extract the optional blurb from an XPath object
      * - <lea:blurb>
-     *     According to the NPG operator, the most beautiful girl in the world said, "I hate u." Thus commenced operation P. Control.
+     *     According to the NPG operator, the most beautiful girl in the world said, "I hate u."
+     *     Thus commenced operation P. Control.
      *   </lea:blurb>
      *
      * @param DOMXPath $xpath
@@ -329,6 +330,42 @@ final class XMLetsGoCrazy
         foreach ($nodes as $node)
             $subjects[] = trim($node->textContent);
         return $subjects;
+    }
+
+    /**
+     * Extract the stylesheet file names from an XPath object
+     * - <lea:stylesheet>lphi-originals/stylesheet.css</lea:stylesheet>
+     * - <lea:stylesheet>lphi-originals/fonts.css</lea:stylesheet>
+     *
+     * @param DOMXPath $xpath
+     * @return array
+     */
+    #[NoDiscard]
+    public static function extractStylesheets(DOMXPath $xpath): array
+    {
+        $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:stylesheet");
+        $stylesheets = [];
+        foreach ($nodes as $node)
+            $stylesheets[] = trim($node->textContent);
+        return $stylesheets;
+    }
+
+    /**
+     * Extract the font file names from an XPath object
+     * - <lea:font>Comfortaa-Bold.ttf</lea:font>
+     * - <lea:font>TeXGyreHeros-Regular.otf</lea:font>
+     *
+     * @param DOMXPath $xpath
+     * @return array
+     */
+    #[NoDiscard]
+    public static function extractFonts(DOMXPath $xpath): array
+    {
+        $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:font");
+        $fonts = [];
+        foreach ($nodes as $node)
+            $fonts[] = trim($node->textContent);
+        return $fonts;
     }
 
     /**
@@ -392,32 +429,28 @@ final class XMLetsGoCrazy
     }
 
     /**
+     * Make-up
+     * Make-up
+     * Pink, blue
+     * Purple, I wanna make it good for you
+     *
+     * Rewraps a passed DOMDocument into a standard ePub DOM document.
+     *
+     * @param DOMDocument $wrappedFragments
+     * @return DOMDocument
      * @throws DOMException
      */
-    public static function stripLea(DOMDocument $wrappedFragments): DOMDocument
+    public static function reWrapDom(DOMDocument $wrappedFragments): DOMDocument
     {
         $impl = new DOMImplementation();
         $doctype = $impl->createDocumentType(qualifiedName: 'html'); // <!DOCTYPE html>
-        $dom = $impl->createDocument(
-            namespace: 'http://www.w3.org/1999/xhtml',
-            qualifiedName: 'html',
-            doctype: $doctype
-        );
+        $dom = $impl->createDocument(namespace: 'http://www.w3.org/1999/xhtml', qualifiedName: 'html', doctype: $doctype);
         $dom->encoding = 'UTF-8';
         $dom->formatOutput = false;
         $html = $dom->documentElement;
-        $html->setAttributeNS(
-            namespace: 'http://www.w3.org/2000/xmlns/', // XMLNS namespace
-            qualifiedName: 'xmlns:epub',                     // qualified name of the attribute
-            value: 'http://www.idpf.org/2007/ops'    // value
-        );
+        $html->setAttributeNS(namespace: 'http://www.w3.org/2000/xmlns/', qualifiedName: 'xmlns:epub', value: 'http://www.idpf.org/2007/ops');
         $html->setAttribute(qualifiedName: 'lang', value: 'en-GB');
-        $html->setAttributeNS(
-            namespace: 'http://www.w3.org/XML/1998/namespace', // xml namespace
-            qualifiedName: 'xml:lang',
-            value: 'en-GB'
-        );
-        $dom->appendChild($html);
+        $html->setAttributeNS(namespace: 'http://www.w3.org/XML/1998/namespace', qualifiedName: 'xml:lang', value: 'en-GB');
         $head = $dom->createElement('head');
         $html->appendChild($head);
         $generator = $dom->createElement('meta');
@@ -433,19 +466,31 @@ final class XMLetsGoCrazy
         $head->appendChild($stylesheet);
         $html->appendChild($head);
         $body = $dom->createElement('body');
-        $body->setAttributeNS(
-            namespace: 'http://www.idpf.org/2007/ops', // epub namespace
-            qualifiedName: 'epub:type',
-            value: 'bodymatter'
-        );
+        $body->setAttributeNS(namespace: 'http://www.idpf.org/2007/ops', qualifiedName: 'epub:type', value: 'bodymatter');
         $html->appendChild($body);
         $fragmentsRoot = $wrappedFragments->documentElement;
-        foreach ($fragmentsRoot->childNodes as $node) {
+        foreach ($fragmentsRoot->childNodes as $node)
             $body->appendChild($dom->importNode($node, deep: true));
-        }
-        $xpath = self::createXPath($dom);
-        $nodes = $xpath->query("//lea:*");
-        foreach ($nodes as $node) $node->parentNode->removeChild($node);
         return $dom;
+    }
+
+    /**
+     * Strip down, strip down
+     * Elephants and flowers
+     * Is everybody ready? Here we go
+     *
+     * Strips all Lea tags from a passed DOMDocument.
+     *
+     * @param DOMDocument $leaDom
+     * @return DOMDocument
+     * @throws DOMException
+     */
+    public static function stripLeaDom(DOMDocument $leaDom): DOMDocument
+    {
+        $xpath = self::createXPath($leaDom);
+        $nodes = $xpath->query(expression: "//lea:*");
+        foreach ($nodes as $node)
+            $node->parentNode->removeChild($node);
+        return $leaDom;
     }
 }

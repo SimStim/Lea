@@ -35,6 +35,16 @@ PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones:
 
+0.0.20 "Look, everybody makes mistakes, oh yeah, not one or two (Right!)
+But that don't make the dirty little things they say about you true (You tell 'em!)"
+
+* Added extraction and handling of stylesheets
+* Added extraction and handling of fonts
+* Simplified identifier data structure
+* Added generation and handling of the cover xhtml file
+* Added generation and handling of nav.xhtml
+* Validated with pagina EPUB Checker: 91 errors, all from missing references. ⇒ Generation is error-free.
+
 0.0.19 "Strip your dress down"
 
 * Lea can be completely stripped now!
@@ -69,7 +79,7 @@ x.y.z: "Rearrange your brain, got to free your mind!"
 * Added Publisher class and publisher extraction.
 * Added extraction of rights declaration.
 * Added extraction of language declaration.
-* Added extraction of cover file name.
+* Added extraction of the cover file name.
 * Added extraction of image file names. Images will get a massive overhaul later, but works for now.
 * Added Collection class and collection extraction.
 * Made XPath queries more specific to account for node context.

@@ -24,7 +24,7 @@ final class Girlfriend
     private(set) static string $pathStyles = REPO . "styles/";
     private(set) static string $pathText = REPO . "text/";
     private(set) static string $pathEpubs = REPO . "epubs/";
-    private(set) static string $pathPurpleRain = REPO . "PurpleRain//";
+    private(set) static string $pathPurpleRain = REPO . "PurpleRain/";
     private static array $characterNonGrata = [
         ' ', '.', '\'', '"', ',', ':', ';', '!', '?', '(',
         ')', '[', ']', '{', '}', '&', '/', '\\'
@@ -205,29 +205,6 @@ final class Girlfriend
     }
 
     /**
-     * Extraordinary
-     * The way you make me feel
-     * I'm so very glad it's real
-     * And not a dream
-     *
-     * We're taking the red pill and are returning to the real world.
-     *
-     * @param Throwable $throwable
-     * @return never
-     */
-    public function extraordinary(Throwable $throwable): never
-    {
-        echo "Oh, I just had an oopsie..." . PHP_EOL
-            . "If you'd be so kind as to help a damsel in distress," . PHP_EOL
-            . "would you mind getting back to my creator and tell him:" . PHP_EOL
-            . "\"" . Fancy::PURPLE_RAIN_BOLD_INVERSE_WHITE . $throwable->getMessage()
-            . " in " . basename($throwable->getFile())
-            . " on line " . $throwable->getLine() . Fancy::RESET . "\"" . PHP_EOL
-            . "You know, I'm just a girl; I can't do simple things." . PHP_EOL;
-        exit;
-    }
-
-    /**
      * Returns a subset of an array based on a preg match of array keys.
      *
      * @param string $pattern
@@ -246,4 +223,27 @@ final class Girlfriend
         );
     }
 
+    /**
+     * Extraordinary
+     * The way you make me feel
+     * I'm so very glad it's real
+     * And not a dream
+     *
+     * We're taking the red pill and are returning to the real world now.
+     * Right now.
+     *
+     * @param Throwable $throwable
+     * @return never
+     */
+    public function extraordinary(Throwable $throwable): never
+    {
+        echo "Oh, I just had an oopsie..." . PHP_EOL
+            . "If you'd be so kind as to help a damsel in distress," . PHP_EOL
+            . "would you mind getting back to my creator and tell him:" . PHP_EOL
+            . "\"" . Fancy::PURPLE_RAIN_BOLD_INVERSE_WHITE . $throwable->getMessage()
+            . " in " . basename($throwable->getFile())
+            . " on line " . $throwable->getLine() . Fancy::RESET . "\"" . PHP_EOL
+            . "You know, I'm just a girl; I can't do simple things." . PHP_EOL;
+        exit;
+    }
 }

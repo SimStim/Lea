@@ -65,6 +65,16 @@
 <lea:subject>Robots -- Fiction</lea:subject>
 <lea:subject>War stories</lea:subject>
 <lea:cover>tpsf-8/2025Q4-cover-inside.jpg</lea:cover>
+<lea:stylesheet>lphi-originals/stylesheet.css</lea:stylesheet>
+<lea:stylesheet>lphi-originals/fonts.css</lea:stylesheet>
+<lea:font>Comfortaa-Bold.ttf</lea:font>
+<lea:font>NotoSansRunic-Regular.ttf</lea:font>
+<lea:font>TeXGyreCursor-Italic.otf</lea:font>
+<lea:font>TeXGyreCursor-Regular.otf</lea:font>
+<lea:font>TeXGyreHeros-Bold.otf</lea:font>
+<lea:font>TeXGyreHeros-BoldItalic.otf</lea:font>
+<lea:font>TeXGyreHeros-Italic.otf</lea:font>
+<lea:font>TeXGyreHeros-Regular.otf</lea:font>
 <lea:image>tpsf-8/-1-cover-512-qr.jpg</lea:image>
 <lea:image>tpsf-8/2024-cover-512-qr.jpg</lea:image>
 <lea:image>tpsf-8/2025Q1-cover-512-qr.jpg</lea:image>

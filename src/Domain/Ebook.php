@@ -61,6 +61,12 @@ final class Ebook
     private(set) string $cover {
         get => $this->cover ??= XMLetsGoCrazy::extractCover($this->xpath);
     }
+    private(set) array $stylesheets {
+        get => $this->stylesheets ??= XMLetsGoCrazy::extractStylesheets($this->xpath);
+    }
+    private(set) array $fonts {
+        get => $this->fonts ??= XMLetsGoCrazy::extractFonts($this->xpath);
+    }
     private(set) array $images {
         get => $this->images ??= XMLetsGoCrazy::extractImages($this->xpath);
     }

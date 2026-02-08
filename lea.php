@@ -13,7 +13,7 @@ require_once ROOT . "/vendor/autoload.php";
 Girlfriend::comeToMe()->emotionalPump();
 Girlfriend::comeToMe()->myNameIsLea();
 
-$work = new PaisleyPark(fileName: "tpsf-8.xml");
+$work = new PaisleyPark(fileName: $argv[1] ?? "");
 $work->segue();
 if (!$work->inThisBedEyeScream()) exit;
 $work->theOpera();
