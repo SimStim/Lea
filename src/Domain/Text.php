@@ -13,19 +13,13 @@ use Lea\Adore\Girlfriend;
  */
 final class Text
 {
-    private(set) string $xhtml {
-        get => $this->xhtml ??= Girlfriend::comeToMe()->readFile(fileName: Girlfriend::$pathText . $this->fileName);
-    }
     private(set) DOMDocument $dom {
-        get => $this->dom ??= XMLetsGoCrazy::createDOM($this->xhtml);
+        get => $this->dom ??= XMLetsGoCrazy::createDOMFromFragments($this->xhtml);
     }
     private(set) DOMXPath $xpath {
         get => $this->xpath ??= XMLetsGoCrazy::createXPath($this->dom);
     }
-    private(set) string $title {
-        get => $this->title ??= XMLetsGoCrazy::extractTitle($this->xpath);
-    }
-    private(set) array $authors {
+    private(set) ?array $authors = null {
         get => $this->authors ??= XMLetsGoCrazy::extractAuthors($this->xpath);
     }
     private(set) string $blurb {
@@ -33,10 +27,31 @@ final class Text
     }
 
     public function __construct(
-        private(set) string $fileName {
+        private(set) string  $fileName {
             set => trim(string: $value);
+        },
+        private(set) ?string $xhtml = null {
+            get => $this->xhtml ??= Girlfriend::comeToMe()->readFile(fileName: Girlfriend::$pathText . Girlfriend::$memory["subfolder"] . $this->fileName);
+            set {
+                if ($value !== null) {
+                    $this->xhtml = $value;
+                    $this->dom = XMLetsGoCrazy::createDOM($value);
+                }
+            }
+        },
+        private(set) ?string $title = null {
+            get => $this->title ??= XMLetsGoCrazy::extractTitle($this->xpath);
+            set {
+                if ($value !== null)
+                    $this->title = $value;
+            }
         }
     )
     {
+    }
+
+    public function addAuthor(Author $author): void
+    {
+        $this->authors = array_merge($this->authors, [$author]);
     }
 }

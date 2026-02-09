@@ -16,4 +16,5 @@ Girlfriend::comeToMe()->myNameIsLea();
 $work = new PaisleyPark(fileName: $argv[1] ?? "");
 $work->segue();
 if (!$work->inThisBedEyeScream()) exit;
-$work->theOpera();
+$work->seguePartTwo();
+var_dump($work->theOpera());

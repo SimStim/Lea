@@ -37,6 +37,20 @@ final class XMLetsGoCrazy
     }
 
     /**
+     * Takes an xhtml string and returns a DOMDocument object
+     *
+     * @param string $xhtml
+     * @return DOMDocument
+     */
+    #[NoDiscard]
+    public static function createDOM(string $xhtml): DOMDocument
+    {
+        $dom = new DOMDocument(version: '1.0', encoding: 'UTF-8');
+        $dom->loadXML($xhtml, options: LIBXML_NONET);
+        return $dom;
+    }
+
+    /**
      * Takes a file of XML fragments, including lea namespace directives,
      * and returns a DOMDocument object
      *
@@ -44,12 +58,11 @@ final class XMLetsGoCrazy
      * @return DOMDocument
      */
     #[NoDiscard]
-    public static function createDOM(string $fragments): DOMDocument
+    public static function createDOMFromFragments(string $fragments): DOMDocument
     {
-        $wrapped = "<" . self::$rootElement . " xmlns:lea='" . self::$leaNamespace . "'>$fragments</" . self::$rootElement . ">";
-        $dom = new DOMDocument(version: '1.0', encoding: 'UTF-8');
-        $dom->loadXML($wrapped, options: LIBXML_NONET);
-        return $dom;
+        $wrapped = "<" . self::$rootElement .
+            " xmlns:lea='" . self::$leaNamespace . "'>$fragments</" . self::$rootElement . ">";
+        return self::createDOM($wrapped);
     }
 
     /**
@@ -301,16 +314,23 @@ final class XMLetsGoCrazy
      * - <lea:image>Harry-Harrison-FM-Logophilia-512.jpg</lea:image>
      * - <lea:image>Hubris-cover-512-qr.jpg</lea:image>
      *
+     * Returns false for missing or incomplete <lea:file> declarations.
+     *
      * @param DOMXPath $xpath
-     * @return array
+     * @return array|false
      */
     #[NoDiscard]
-    public static function extractImages(DOMXPath $xpath): array
+    public static function extractImages(DOMXPath $xpath): array|false
     {
-        $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:image");
+        $nodes = $xpath->query(expression: "//lea:image");
         $images = [];
-        foreach ($nodes as $node)
-            $images[] = trim($node->textContent);
+        foreach ($nodes as $node) {
+            $fileName = trim($xpath->evaluate(expression: "string(lea:file)", contextNode: $node));
+            if ($fileName === "") return false;
+            $caption = trim($xpath->evaluate(expression: "string(lea:caption)", contextNode: $node));
+            if ($caption === "default") $caption = Girlfriend::$memory["defaultcaption"];
+            $images[] = new Image($fileName, $caption);
+        }
         return $images;
     }
 
@@ -412,8 +432,8 @@ final class XMLetsGoCrazy
     /**
      * Extract the texts from an XPath object
      * - File names are always relative to REPO
-     * - Subfolders are permitted
-     * - <lea:text>tpsf-8/AboutTheAuthors.xhtml</lea:text>
+     * - Subfolder should be specified with the subfolder tag
+     * - <lea:text>AboutTheAuthors.xhtml</lea:text>
      *
      * @param DOMXPath $xpath
      * @return array
@@ -429,6 +449,56 @@ final class XMLetsGoCrazy
     }
 
     /**
+     * Extract the subfolder names from an XPath object.
+     * - <lea:subfolder>tpsf-8</lea:subfolder>
+     *
+     * @param DOMXPath $xpath
+     * @return string
+     */
+    #[NoDiscard]
+    public static function extractSubFolder(DOMXPath $xpath): string
+    {
+        return trim($xpath->evaluate(expression: "string(/" . self::$rootElement . "/lea:subfolder)"), "/ ");
+    }
+
+    /**
+     * Extract the default caption from an XPath object.
+     * - <lea:defaultcaption>illustration is in the public domain</lea:defaultcaption>
+     *
+     * @param DOMXPath $xpath
+     * @return string
+     */
+    #[NoDiscard]
+    public static function extractDefaultCaption(DOMXPath $xpath): string
+    {
+        return trim($xpath->evaluate(expression: "string(/" . self::$rootElement . "/lea:defaultcaption)"));
+    }
+
+    /**
+     * Replace <lea:image> tags with xhtml template.
+     *
+     * @param Text $text
+     * @param array $imageData
+     * @return void
+     */
+    public static function replaceLeaImageTags(Text $text, array $imageData): void
+    {
+        $nodes = $text->xpath->query(expression: "//lea:image");
+        foreach ($nodes as $node) {
+            $fileName = trim($text->xpath->evaluate(expression: "string(lea:file)", contextNode: $node));
+            $replacement = "<figure>"
+                . "<img src='../Images/" . $imageData[$fileName]["file"] . "'/>"
+                . "<figcaption>"
+                . $imageData[$fileName]["caption"]
+                . "</figcaption>"
+                . "</figure>";
+            $fragment = $text->dom->createDocumentFragment();
+            $fragment->appendXML($replacement);
+            $node->parentNode->replaceChild($fragment, $node);
+        }
+    }
+
+    /**
      * Make-up
      * Make-up
      * Pink, blue
@@ -436,12 +506,15 @@ final class XMLetsGoCrazy
      *
      * Rewraps a passed DOMDocument into a standard ePub DOM document.
      *
-     * @param DOMDocument $wrappedFragments
+     * @param DOMDocument $domDocument
+     * @param string $title
      * @return DOMDocument
      * @throws DOMException
      */
-    public static function reWrapDom(DOMDocument $wrappedFragments): DOMDocument
+    public static function reWrapDom(DOMDocument $domDocument, string $title = "TITLE"): DOMDocument
     {
+        if (!str_contains($domDocument->saveXML(), XMLetsGoCrazy::$leaNamespace))
+            return $domDocument;
         $impl = new DOMImplementation();
         $doctype = $impl->createDocumentType(qualifiedName: 'html'); // <!DOCTYPE html>
         $dom = $impl->createDocument(namespace: 'http://www.w3.org/1999/xhtml', qualifiedName: 'html', doctype: $doctype);
@@ -457,7 +530,7 @@ final class XMLetsGoCrazy
         $generator->setAttribute(qualifiedName: 'name', value: "generator");
         $generator->setAttribute(qualifiedName: 'content', value: Girlfriend::comeToMe()->leaNameShort);
         $head->appendChild($generator);
-        $title = $dom->createElement('title', "TITLE");
+        $title = $dom->createElement('title', $title);
         $head->appendChild($title);
         $stylesheet = $dom->createElement('link');
         $stylesheet->setAttribute(qualifiedName: 'rel', value: "stylesheet");
@@ -468,7 +541,7 @@ final class XMLetsGoCrazy
         $body = $dom->createElement('body');
         $body->setAttributeNS(namespace: 'http://www.idpf.org/2007/ops', qualifiedName: 'epub:type', value: 'bodymatter');
         $html->appendChild($body);
-        $fragmentsRoot = $wrappedFragments->documentElement;
+        $fragmentsRoot = $domDocument->documentElement;
         foreach ($fragmentsRoot->childNodes as $node)
             $body->appendChild($dom->importNode($node, deep: true));
         return $dom;

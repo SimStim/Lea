@@ -25,11 +25,11 @@ final class Girlfriend
     private(set) static string $pathText = REPO . "text/";
     private(set) static string $pathEpubs = REPO . "epubs/";
     private(set) static string $pathPurpleRain = REPO . "PurpleRain/";
+    private(set) static array $memory = [];
     private static array $characterNonGrata = [
         ' ', '.', '\'', '"', ',', ':', ';', '!', '?', '(',
-        ')', '[', ']', '{', '}', '&', '/', '\\'
+        ')', '[', ']', '{', '}', '&', '/', '\\', '’'
     ];
-
     private(set) string $leaVersion {
         get => $this->leaVersion ??= self::comeToMe()->computeLeaVersion(minVersion: self::$minVersion);
     }
@@ -123,6 +123,19 @@ final class Girlfriend
     }
 
     /**
+     * Our unique Girlfriend can remember things for us.
+     * Like the subfolder.
+     *
+     * @param string $name
+     * @param string $data
+     * @return void
+     */
+    public function remember(string $name, string $data): void
+    {
+        self::$memory["$name"] = $data;
+    }
+
+    /**
      * This is what it sounds like
      * When doves cry
      *
@@ -169,8 +182,8 @@ final class Girlfriend
 
     /**
      * Normalizes a filename path string for use in OEBPS/Images.
-     * "tpsf-8/2025Q3-cover-512-QR.jpg"
-     * => "tpsf-8-2025q3-cover-512-qr.jpg"
+     * "2025Q3-cover-512-QR.jpg"
+     * => "2025q3-cover-512-qr.jpg"
      *
      * @param string $fileName
      * @return string
@@ -182,7 +195,7 @@ final class Girlfriend
             string: str_replace(
                 search: self::$characterNonGrata,
                 replace: "-",
-                subject: $parts['dirname'] . "/" . $parts['filename']
+                subject: "lea-img-" . $parts['filename']
             ) . "." . $parts['extension']
         );
     }

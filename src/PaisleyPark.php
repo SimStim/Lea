@@ -10,7 +10,9 @@ use Lea\Adore\DoveCry;
 use Lea\Adore\Fancy;
 use Lea\Adore\Flaw;
 use Lea\Adore\Girlfriend;
+use Lea\Domain\Author;
 use Lea\Domain\Ebook;
+use Lea\Domain\Text;
 use Lea\Domain\XMLetsGoCrazy;
 
 /**
@@ -20,6 +22,9 @@ final class PaisleyPark
 {
     private(set) Ebook $ebook {
         get => $this->ebook ??= $this->cream($this->fileName);
+    }
+    private(set) TheOpera $theOpera {
+        get => $this->theOpera ??= new TheOpera($this->ebook);
     }
 
     public function __construct(
@@ -45,7 +50,7 @@ final class PaisleyPark
     }
 
     /**
-     * You know, if you don't give me the real story, I'll have to make one up of my own.
+     * I hope you don't mind I'm recording our conversati–
      *
      * The Segue checks whether it is safe to proceed.
      *
@@ -81,6 +86,10 @@ final class PaisleyPark
             ));
             return;
         }
+        $subFolder = XMLetsGoCrazy::extractSubFolder($this->ebook->xpath);
+        Girlfriend::comeToMe()->remember(name: "subfolder", data: $subFolder !== "" ? $subFolder . "/" : "");
+        $defaultCaption = XMLetsGoCrazy::extractDefaultCaption($this->ebook->xpath);
+        Girlfriend::comeToMe()->remember(name: "defaultcaption", data: $defaultCaption);
         /**
          * Checks if there is at least one title.
          * - no = fatal
@@ -286,12 +295,12 @@ final class PaisleyPark
          * - no = fatal
          */
         if (($this->ebook->cover !== "")
-            && !is_file(filename: Girlfriend::$pathImages . $this->ebook->cover))
+            && !is_file(filename: Girlfriend::$pathImages . Girlfriend::$memory["subfolder"] . $this->ebook->cover))
             Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
                 domainObject: $this->ebook,
                 flaw: Flaw::Fatal,
                 message: "The cover file name was defined, but the file cannot be found in the file system." . PHP_EOL
-                . "Cover file name: " . Girlfriend::$pathImages . $this->ebook->cover,
+                . "Cover file name: " . Girlfriend::$pathImages . Girlfriend::$memory["subfolder"] . $this->ebook->cover,
                 suggestion: "Edit the ebook's XML config file, ascertaining the correct cover file name." . PHP_EOL
                 . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
             ));
@@ -310,25 +319,6 @@ final class PaisleyPark
                 . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
             ));
         /**
-         * Checks if there are any <lea:image> tags defining file names not found in the file system.
-         * - yes = fatal
-         */
-        $missing = [];
-        foreach ($this->ebook->images as $fileName)
-            if (!is_file(Girlfriend::$pathImages . $fileName))
-                $missing[] = Girlfriend::$pathImages . $fileName;
-        if (count($missing) > 0)
-            Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
-                domainObject: $this->ebook,
-                flaw: Flaw::Fatal,
-                message: "Number of image tag(s) defined in ebook, but missing in file system: "
-                . count($missing) . "." . PHP_EOL
-                . "List of file name(s) declared but not found: " . PHP_EOL
-                . implode(separator: PHP_EOL, array: $missing),
-                suggestion: "Edit the ebook's XML config file, making sure to use only one <lea:cover> tag." . PHP_EOL
-                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
-            ));
-        /**
          * Time to direct our gaze at the text files
          */
         foreach ($this->ebook->texts as $text) {
@@ -342,7 +332,7 @@ final class PaisleyPark
                     flaw: Flaw::Fatal,
                     message: "The text file could not be read.",
                     suggestion: "Check for typos in the file name given in the ebook XML config file." . PHP_EOL
-                    . "Text file name given: '" . Girlfriend::$pathText . "$text->fileName'.",
+                    . "Text file name given: '" . Girlfriend::$pathText . Girlfriend::$memory["subfolder"] . "$text->fileName'.",
                 ));
                 continue;
             }
@@ -360,6 +350,20 @@ final class PaisleyPark
                 ));
                 continue;
             }
+            /**
+             * Extract images and if successful, add images to the ebook image list.
+             * - If unsuccessful: fatal
+             */
+            $images = XMLetsGoCrazy::extractImages($text->xpath);
+            if ($images === false)
+                Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
+                    domainObject: $text,
+                    flaw: Flaw::Fatal,
+                    message: "Missing or incomplete <lea:file> declaration within <lea:image>.",
+                    suggestion: "Edit the text file, correcting any incomplete <lea:title> tags." . PHP_EOL
+                    . "Text file name with error: '" . Girlfriend::$pathText . "$text->fileName'.",
+                ));
+            else $this->ebook->addImages(XMLetsGoCrazy::extractImages($text->xpath));
             /**
              * Checks if there is at least one title.
              * - no = fatal
@@ -426,6 +430,25 @@ final class PaisleyPark
                     . "Text file name given: '" . Girlfriend::$pathText . "$text->fileName'.",
                 ));
         }
+        /**
+         * Checks if there are any <lea:image> tags defining file names not found in the file system.
+         * - yes = fatal
+         */
+        $missing = [];
+        foreach ($this->ebook->images as $image)
+            if (!is_file(filename: Girlfriend::$pathImages . Girlfriend::$memory["subfolder"] . $image->fileName))
+                $missing[] = Girlfriend::$pathImages . Girlfriend::$memory["subfolder"] . $image->fileName;
+        if (count($missing) > 0)
+            Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
+                domainObject: $this->ebook,
+                flaw: Flaw::Fatal,
+                message: "Number of image tag(s) defined in ebook, but missing in file system: "
+                . count($missing) . "." . PHP_EOL
+                . "List of file name(s) declared but not found: " . PHP_EOL
+                . implode(separator: PHP_EOL, array: $missing),
+                suggestion: "Check the ebook's XML config file and all text files for missing or incorrect file names." . PHP_EOL
+                . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
+            ));
     }
 
     /**
@@ -463,15 +486,50 @@ final class PaisleyPark
     }
 
     /**
+     * You know, if you don't give me the real story, I'll have to make one up of my own.
+     *
+     * The Segue uses the established data clarity for a few final steps to put into place.
+     *
+     * @return void
+     */
+    public function seguePartTwo(): void
+    {
+        /**
+         * Replace all <lea:image> tags with xhtml.
+         */
+        $imageData = [];
+        foreach ($this->ebook->images as $image)
+            $imageData[$image->fileName] = [
+                "file" => Girlfriend::comeToMe()->strToEpubImageFileName($image->fileName),
+                "caption" => $image->caption
+            ];
+        foreach ($this->ebook->texts as $text)
+            XMLetsGoCrazy::replaceLeaImageTags($text, $imageData);
+        /**
+         * If a cover image was defined, create a text file for it and add it to the ePub.
+         */
+        if ($this->ebook->cover !== "") {
+            $text = new Text(fileName: "cover.xhtml", xhtml: $this->theOpera->generateCoverFile(), title: "Cover");
+            $text->addAuthor(new Author(Girlfriend::comeToMe()->leaNamePlain));
+            $this->ebook->addText(text: $text);
+        }
+        /**
+         * The nav.xhtml is mandatory ePub navigation, so we create and add it here.
+         */
+        $text = new Text(fileName: "nav.xhtml", xhtml: $this->theOpera->generateNavFile(), title: "ePub Navigation");
+        $text->addAuthor(new Author(Girlfriend::comeToMe()->leaNamePlain));
+        $this->ebook->addText(text: $text);
+    }
+
+    /**
      * Ah, the opera.
      *
      * @return bool
      */
     public function theOpera(): bool
     {
-        $theOpera = new TheOpera($this->ebook);
         try {
-            $return = $theOpera->conductor();
+            $return = $this->theOpera->conductor();
         } catch (Throwable $e) {
             Girlfriend::comeToMe()->extraordinary(throwable: $e);
         }

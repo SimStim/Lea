@@ -17,7 +17,7 @@ final class Ebook
         get => $this->xml ??= Girlfriend::comeToMe()->readFile(fileName: Girlfriend::$pathEbooks . $this->fileName);
     }
     private(set) DOMDocument $dom {
-        get => $this->dom ??= XMLetsGoCrazy::createDOM($this->xml);
+        get => $this->dom ??= XMLetsGoCrazy::createDOMFromFragments($this->xml);
     }
     private(set) DOMXPath $xpath {
         get => $this->xpath ??= XMLetsGoCrazy::createXPath($this->dom);
@@ -77,5 +77,27 @@ final class Ebook
         }
     )
     {
+    }
+
+    /**
+     * Adds a Text object to the collection of texts.
+     *
+     * @param Text $text The Text object to be added.
+     * @return void
+     */
+    public function addText(Text $text): void
+    {
+        $this->texts = array_merge($this->texts, [$text]);
+    }
+
+    /**
+     * Adds an Image object to the collection of images.
+     *
+     * @param array $images
+     * @return void
+     */
+    public function addImages(array $images): void
+    {
+        $this->images = array_merge($this->images, $images);
     }
 }

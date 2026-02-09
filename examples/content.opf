@@ -63,17 +63,17 @@
     <meta refines="#eduard-pech-con" property="role" scheme="marc:relators">ill</meta>
     <meta refines="#eduard-pech-con" property="role" scheme="marc:relators">art</meta>
     <meta refines="#eduard-pech-con" property="role" scheme="marc:relators">blw</meta>
-    <meta refines="#TheStatusCivilizationByRobertSheckley_xhtml" property="dcterms:creator">Robert Sheckley</meta>
-    <meta refines="#GamblersWorldByKeithLaumer_xhtml" property="dcterms:creator">Keith Laumer</meta>
-    <meta refines="#ArmOfTheLawByHarryHarrison_xhtml" property="dcterms:creator">Harry Harrison</meta>
-    <meta refines="#TheWorldThatCouldntBeByCliffordDSimak_xhtml" property="dcterms:creator">Clifford D. Simak</meta>
-    <meta refines="#M2ByDariaSkrinitsa_xhtml" property="dcterms:creator">Daria Skrinitsa</meta>
-    <meta refines="#M2ByDariaSkrinitsa_xhtml" property="marc:trl">Eduard Pech</meta>
-    <meta refines="#IslandsOfSpaceByJohnWCampbellJr_xhtml" property="dcterms:creator">John W. Campbell, Jr.</meta>
-    <meta refines="#AQuestionOfCourageByJesseFBone_xhtml" property="dcterms:creator">Jesse F. Bone</meta>
-    <meta refines="#TheSensitiveManByPoulAnderson_xhtml" property="dcterms:creator">Poul Anderson</meta>
-    <meta refines="#TheMemoryOfMarsByRaymondFJones_xhtml" property="dcterms:creator">Raymond F. Jones</meta>
-    <meta refines="#LetEmBreatheSpaceByLesterDelRey_xhtml" property="dcterms:creator">Lester del Rey</meta>
+    <meta refines="#lea-txt-the-status-civilization-by-robert-sheckley" property="dcterms:creator">Robert Sheckley</meta>
+    <meta refines="#lea-txt-gambler-s-world-by-keith-laumer" property="dcterms:creator">Keith Laumer</meta>
+    <meta refines="#lea-txt-arm-of-the-law-by-harry-harrison" property="dcterms:creator">Harry Harrison</meta>
+    <meta refines="#lea-txt-the-world-that-couldn-t-be-by-clifford-d--simak" property="dcterms:creator">Clifford D. Simak</meta>
+    <meta refines="#lea-txt-m2-by-daria-skrinitsa" property="dcterms:creator">Daria Skrinitsa</meta>
+    <meta refines="#lea-txt-m2-by-daria-skrinitsa" property="marc:trl">Eduard Pech</meta>
+    <meta refines="#lea-txt-islands-of-space-by-john-w--campbell--jr-" property="dcterms:creator">John W. Campbell, Jr.</meta>
+    <meta refines="#lea-txt-a-question-of-courage-by-jesse-f--bone" property="dcterms:creator">Jesse F. Bone</meta>
+    <meta refines="#lea-txt-the-sensitive-man-by-poul-anderson" property="dcterms:creator">Poul Anderson</meta>
+    <meta refines="#lea-txt-the-memory-of-mars-by-raymond-f--jones" property="dcterms:creator">Raymond F. Jones</meta>
+    <meta refines="#lea-txt-let--em-breathe-space-by-lester-del-rey" property="dcterms:creator">Lester del Rey</meta>
     <dc:subject>Diplomats -- Fiction</dc:subject>
     <dc:subject>Extraterrestrial beings -- Fiction</dc:subject>
     <dc:subject>Farmers -- Fiction</dc:subject>
@@ -89,5 +89,5 @@
     <dc:subject>Retief (Fictitious character) -- Fiction</dc:subject>
     <dc:subject>Robots -- Fiction</dc:subject>
     <dc:subject>War stories</dc:subject>
-    <meta name="cover" content="lea-img-tpsf-8-2025q4-cover-inside-jpg"/>
+    <meta name="cover" content="lea-img-2025q4-cover-inside-jpg"/>
     <meta name="Sigil version" content="2.6.2"/>

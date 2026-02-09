@@ -35,6 +35,16 @@ PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones:
 
+0.0.21 "No image at all?"
+
+* Mostly refactoring the handling of ePub cover and navigation files.
+* Added new Image class, and extraction and handling of images.
+* Added memory to Girlfriend.
+* Added new subfolder tag for global subfolder definition.
+* Added new defaultcaption tag for convenience.
+* Fixed the DOM reWrap method.
+* EPUB checker now at 0 errors. Next: meta data generation and global link targets.
+
 0.0.20 "Look, everybody makes mistakes, oh yeah, not one or two (Right!)
 But that don't make the dirty little things they say about you true (You tell 'em!)"
 

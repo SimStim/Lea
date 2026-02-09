@@ -245,7 +245,7 @@ p + p, div + p, figure + p, blockquote + p {
     height: 1.25em;
     margin: 0;
     border: none;
-    background: transparent url("../Images/tpsf-8-star-red.png") no-repeat center;
+    background: transparent url("../Images/lea-img-star-red.png") no-repeat center;
     background-size: 1.25em 1.25em;
     overflow: hidden;
 }
