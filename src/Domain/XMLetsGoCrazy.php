@@ -328,7 +328,7 @@ final class XMLetsGoCrazy
             $fileName = trim($xpath->evaluate(expression: "string(lea:file)", contextNode: $node));
             if ($fileName === "") return false;
             $caption = trim($xpath->evaluate(expression: "string(lea:caption)", contextNode: $node));
-            if ($caption === "default") $caption = Girlfriend::$memory["defaultcaption"];
+            if ($caption === "default") $caption = Girlfriend::comeToMe()->recall(name: "defaultcaption");
             $images[] = new Image($fileName, $caption);
         }
         return $images;

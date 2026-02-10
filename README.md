@@ -1,44 +1,75 @@
-# Lea ePub anvil
+# 🝄 Lea ePub anvil
 
-Produce ePubs conforming to latest standards.  
-Support for many advanced features like semantics.  
-Easy to use.
+Lea produces ePubs conforming to the latest standards, i.e., 3.3 at the time of writing. Lea is not trying to be a full
+ePub authoring environment, a semantic curator, or a replacement for Sigil's editorial layer. Lea is a compiler,
+validator, and normalizer. The output is intended to be opened in Sigil. Lea guarantees correctness, human editors can
+add meaning later.
 
-## Planned features:
+## Features
 
-* semantic tagging
-* proprietary XML tags
-* text blocks (simple templating, using those XML tags)
-* automated manifest (authors including: "file as," tagging of specific texts)
-* automated spine
-* automated table of contents (configurable via templating)
-* automated inclusion of font files (from CSS definitions)
+- filename and identifier consistency
+- dynamic local cross-file link targets
+- external link target validity check
+- generation of ePub manifest, including metadata and spine
+- error messages with focused suggestions for fixes
+- easy to learn and use if you know some XML or HTML
+- Lea is a bitch, the female dog variant; you can always rely on her
+
+### Existing
+
+* filename and identifier consistency
+* dynamic local cross-file link targets
+* generation of ePub OPF manifest
+* support for book series collections with ISSN
+* support for anthologies with per-text authors and rights
+* <lea:> tags anywhere in the source files, for example, for images with captions
+* support for advanced typesetting: embedded fonts and stylesheets
+* the example ebook of 7+ MB compiles into a 3.2 MB ePub in 0.236 seconds on my Zen-2 based slow-ass notebook
+
+### Planned
+
+* command-line arguments for run-time configuration
+* template system for images
+* text blocks
+* validation of external links
 * EPUB checker validation
-* dry run
-* independent of OS: developed on Fedora, but should run on Ubuntu without any problems
-* others I can't remember right now
+* automatic detection and content-based compression of image files
+* import of word processor documents into Lea definition files
+* simple but useful reports
+* many convenience features that will be triaged and implemented on a priority basis
 
-The output is supposed to be opened in Sigil. You should check the report cards and make sure everything is squeaky
-clean.  
-Don't forget to prettify, because Lea only works for paranoiacs!
+## 1.0.0 and ⊙
 
-## Launch timing of 1.0.0
+The glyph ⊙ expresses a structured combination where the structure matters more than the operands. It is not about
+symmetry but coherence. ⊙ marks the point around which a meaning is calibrated. Lea's process is information-preserving
+normalization, or a lossless canonicalization.
 
-Semantically defined as: Lea creates an ePub identical to one I have previously produced manually (except for the
-useless stuff that Sigil inserts sometimes, like the bookmarks file). This would include passing EPUB checker, and
-manual inspection of ZIP contents (including diffs where applicable).
+With the release of "⊙ 1.0.0," Lea will be able to dynamically create an ePub from config and content files only.
+
+Releases marked with ⊙ are recommended for most users. These releases will be stable, have long-term support, and will
+come with major new features.
 
 ## License
 
 Copyright Eduard Pech (https://logophilia.eu/the-director-without-a-service-weapon/). Licensed under
 PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
-## Kilometer stones:
+## Kilometer stones
+
+0.0.22 "Nuestra presentacion especial comenzara en breve"
+
+* As 1.0.0 is drawing near, today was the day to settle on a glyph for Lea: "⊙" (U+2299).
+* Updated this README in preparation for the 1.0.0 release.
+* Girlfriend can silence dove cries now.
+* Girlfriend can recall memories.
+* PaisleyPark is under the new leadership of pControl.
+* Added dynamic metadata generation, completing content.opf.
+* New killer feature coming next time!
 
 0.0.21 "No image at all?"
 
 * Mostly refactoring the handling of ePub cover and navigation files.
-* Added new Image class, and extraction and handling of images.
+* Added a new Image class, as well as extraction and handling of images.
 * Added memory to Girlfriend.
 * Added new subfolder tag for global subfolder definition.
 * Added new defaultcaption tag for convenience.
@@ -122,7 +153,7 @@ x.y.z: "Rearrange your brain, got to free your mind!"
 
 0.0.11: "I'm delirious; You, you, you get me delirious"
 
-* Have been fighting with XML, XSD and RELAX NG for the better part of the day, to no avail
+* Have been fighting with XML, XSD, and RELAX NG for the better part of the day, to no avail
 * Decided to bake the grammar into clean PHP code instead
 * Girlfriend is collecting soft errors now, might be useful at some point
 

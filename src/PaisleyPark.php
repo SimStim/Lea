@@ -295,12 +295,12 @@ final class PaisleyPark
          * - no = fatal
          */
         if (($this->ebook->cover !== "")
-            && !is_file(filename: Girlfriend::$pathImages . Girlfriend::$memory["subfolder"] . $this->ebook->cover))
+            && !is_file(filename: Girlfriend::$pathImages . Girlfriend::comeToMe()->recall(name: "subfolder") . $this->ebook->cover))
             Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
                 domainObject: $this->ebook,
                 flaw: Flaw::Fatal,
                 message: "The cover file name was defined, but the file cannot be found in the file system." . PHP_EOL
-                . "Cover file name: " . Girlfriend::$pathImages . Girlfriend::$memory["subfolder"] . $this->ebook->cover,
+                . "Cover file name: " . Girlfriend::$pathImages . Girlfriend::comeToMe()->recall(name: "subfolder") . $this->ebook->cover,
                 suggestion: "Edit the ebook's XML config file, ascertaining the correct cover file name." . PHP_EOL
                 . "Ebook XML config file name given: " . Girlfriend::$pathEbooks . "{$this->ebook->fileName}"
             ));
@@ -332,7 +332,8 @@ final class PaisleyPark
                     flaw: Flaw::Fatal,
                     message: "The text file could not be read.",
                     suggestion: "Check for typos in the file name given in the ebook XML config file." . PHP_EOL
-                    . "Text file name given: '" . Girlfriend::$pathText . Girlfriend::$memory["subfolder"] . "$text->fileName'.",
+                    . "Text file name given: '"
+                    . Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder") . "$text->fileName'.",
                 ));
                 continue;
             }
@@ -436,8 +437,10 @@ final class PaisleyPark
          */
         $missing = [];
         foreach ($this->ebook->images as $image)
-            if (!is_file(filename: Girlfriend::$pathImages . Girlfriend::$memory["subfolder"] . $image->fileName))
-                $missing[] = Girlfriend::$pathImages . Girlfriend::$memory["subfolder"] . $image->fileName;
+            if (!is_file(
+                filename: Girlfriend::$pathImages . Girlfriend::comeToMe()->recall(name: "subfolder") . $image->fileName)
+            )
+                $missing[] = Girlfriend::$pathImages . Girlfriend::comeToMe()->recall(name: "subfolder") . $image->fileName;
         if (count($missing) > 0)
             Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
                 domainObject: $this->ebook,
@@ -460,10 +463,11 @@ final class PaisleyPark
      * Returns values:
      * - true if no fatal errors detected
      *
+     * @param bool $keepCrying
      * @return bool
      */
     #[NoDiscard]
-    public function inThisBedEyeScream(): bool
+    public function inThisBedEyeScream(bool $keepCrying = false): bool
     {
         $fatal = false;
         foreach (Girlfriend::comeToMe()->doveCries as $msg) {
@@ -482,6 +486,8 @@ final class PaisleyPark
             echo Fancy::warning(msg: "[ WARNING ]") . " denotes missing optional data. The ePub should not be published." . PHP_EOL;
             echo Fancy::info(msg: "[ INFO ]") . " shows potential for improvement. The produced ePub may be less than ideal." . PHP_EOL;
         }
+        if (!$keepCrying)
+            Girlfriend::comeToMe()->silenceDoves();
         return !$fatal;
     }
 
@@ -519,20 +525,43 @@ final class PaisleyPark
         $text = new Text(fileName: "nav.xhtml", xhtml: $this->theOpera->generateNavFile(), title: "ePub Navigation");
         $text->addAuthor(new Author(Girlfriend::comeToMe()->leaNamePlain));
         $this->ebook->addText(text: $text);
+        /**
+         * Let's also quickly ass all authors of text content to the Ebook authors list.
+         * It'll be easier later, and any segue is supposed to provide smooth transitions.
+         * We'll do it with an array, so we auto-eliminate duplicates.
+         */
+        $authors = [];
+        foreach ($this->ebook->authors as $author)
+            $authors[$author->name] = $author->fileAs;
+        foreach ($this->ebook->texts as $text)
+            foreach ($text->authors as $author)
+                $authors[$author->name] = $author->fileAs;
+        $this->ebook->eraseAuthors();
+        foreach ($authors as $name => $fileAs)
+            if ($name !== Girlfriend::comeToMe()->leaNamePlain)
+                $this->ebook->addAuthor(new Author(name: $name, fileAs: $fileAs));
     }
 
     /**
-     * Ah, the opera.
+     * With one more verse to the story
+     * I need another piece of your ear
+     * I want to hip you all to the reason
+     * I'm known as the Player of the Year
      *
      * @return bool
      */
-    public function theOpera(): bool
+    public function pControl(): bool
     {
+        $this->segue();
+        if (!$this->inThisBedEyeScream()) exit;
+        $this->seguePartTwo();
+        if (!$this->inThisBedEyeScream()) exit;
         try {
             $return = $this->theOpera->conductor();
         } catch (Throwable $e) {
             Girlfriend::comeToMe()->extraordinary(throwable: $e);
         }
+        echo sprintf("0 OK, %s:8%s", Girlfriend::comeToMe()->whereAmI()["line"], PHP_EOL);
         return $return;
     }
 }

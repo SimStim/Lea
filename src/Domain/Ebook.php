@@ -91,6 +91,28 @@ final class Ebook
     }
 
     /**
+     * Adds an Author object to the list of authors.
+     *
+     * @param Author $author
+     * @return void
+     */
+    public function addAuthor(Author $author): void
+    {
+        $this->authors = array_merge($this->authors, [$author]);
+    }
+
+    /**
+     * Erases the list of authors in preparation for OPF metadata generation.
+     * This allows for an easy removal of duplicates.
+     *
+     * @return void
+     */
+    public function eraseAuthors(): void
+    {
+        $this->authors = [];
+    }
+
+    /**
      * Adds an Image object to the collection of images.
      *
      * @param array $images

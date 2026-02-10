@@ -31,7 +31,9 @@ final class Text
             set => trim(string: $value);
         },
         private(set) ?string $xhtml = null {
-            get => $this->xhtml ??= Girlfriend::comeToMe()->readFile(fileName: Girlfriend::$pathText . Girlfriend::$memory["subfolder"] . $this->fileName);
+            get => $this->xhtml ??= Girlfriend::comeToMe()->readFile(
+                fileName: Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder") . $this->fileName
+            );
             set {
                 if ($value !== null) {
                     $this->xhtml = $value;

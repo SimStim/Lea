@@ -17,7 +17,6 @@ final class Girlfriend
     private static ?self $instance = null;
     private static string $minVersion = "0.0.16";
     private(set) static string $pathEbooks = REPO . "configs/ebooks/";
-    private(set) static string $pathImprints = REPO . "configs/imprints/";
     private(set) static string $pathScripts = REPO . "configs/scripts/";
     private(set) static string $pathFonts = REPO . "fonts/";
     private(set) static string $pathImages = REPO . "images/";
@@ -123,6 +122,18 @@ final class Girlfriend
     }
 
     /**
+     * Hey I got trouble
+     * Somebody come check around me
+     *
+     * @return array
+     */
+    function whereAmI(): array
+    {
+        $trace = debug_backtrace(options: DEBUG_BACKTRACE_IGNORE_ARGS, limit: 1)[0];
+        return array("file" => $trace['file'], "line" => $trace['line']);
+    }
+
+    /**
      * Our unique Girlfriend can remember things for us.
      * Like the subfolder.
      *
@@ -133,6 +144,19 @@ final class Girlfriend
     public function remember(string $name, string $data): void
     {
         self::$memory["$name"] = $data;
+    }
+
+    /**
+     * Our unique Girlfriend can recall things for us.
+     * Like the default caption string for images.
+     * By allowing her to stay silent, there won't be a need to throw exceptional tantrums.
+     *
+     * @param string $name
+     * @return string
+     */
+    public function recall(string $name): string
+    {
+        return self::$memory["$name"] ?? "";
     }
 
     /**
@@ -147,6 +171,16 @@ final class Girlfriend
     public function makeDoveCry(DoveCry $doveCry): void
     {
         self::comeToMe()->doveCries[] = $doveCry;
+    }
+
+    /**
+     * Stop the doves from crying.
+     *
+     * @return void
+     */
+    public function silenceDoves(): void
+    {
+        self::comeToMe()->doveCries = [];
     }
 
     /**
