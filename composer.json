@@ -14,7 +14,8 @@
     "ext-mbstring": "*",
     "ext-libxml": "*",
     "ext-dom": "*",
-    "ext-zip": "*"
+    "ext-zip": "*",
+    "ext-curl": "*"
   },
   "require-dev": {
     "sebastian/version": "^6.0"

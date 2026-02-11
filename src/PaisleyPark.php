@@ -470,6 +470,7 @@ final class PaisleyPark
     public function inThisBedEyeScream(bool $keepCrying = false): bool
     {
         $fatal = false;
+        $infoOnly = true;
         foreach (Girlfriend::comeToMe()->doveCries as $msg) {
             echo match ($msg->flaw) {
                 Flaw::Info => Fancy::info(msg: "[ INFO ]") . PHP_EOL . $msg->message . PHP_EOL,
@@ -479,8 +480,9 @@ final class PaisleyPark
             };
             echo Fancy::suggestion(msg: "[ Suggestion ] ") . PHP_EOL . ($msg->suggestion ?: "[ none ]") . PHP_EOL . PHP_EOL;
             $fatal = $fatal || ($msg->flaw === Flaw::Fatal);
+            $infoOnly = $infoOnly && ($msg->flaw === Flaw::Info);
         }
-        if (count(Girlfriend::comeToMe()->doveCries) !== 0) {
+        if (!$infoOnly) {
             echo Fancy::fatal(msg: "[ FATAL ]") . " cannot be resolved. No ePub will be produced." . PHP_EOL;
             echo Fancy::severe(msg: "[ SEVERE ]") . " requires guessing. The ePub must not be published." . PHP_EOL;
             echo Fancy::warning(msg: "[ WARNING ]") . " denotes missing optional data. The ePub should not be published." . PHP_EOL;
@@ -526,21 +528,123 @@ final class PaisleyPark
         $text->addAuthor(new Author(Girlfriend::comeToMe()->leaNamePlain));
         $this->ebook->addText(text: $text);
         /**
-         * Let's also quickly ass all authors of text content to the Ebook authors list.
+         * Let's also quickly add all authors of text content to the Ebook authors list.
          * It'll be easier later, and any segue is supposed to provide smooth transitions.
          * We'll do it with an array, so we auto-eliminate duplicates.
          */
-        $authors = [];
+        $authorData = [];
         foreach ($this->ebook->authors as $author)
-            $authors[$author->name] = $author->fileAs;
+            $authorData[$author->name] = $author->fileAs;
         foreach ($this->ebook->texts as $text)
             foreach ($text->authors as $author)
-                $authors[$author->name] = $author->fileAs;
+                $authorData[$author->name] = $author->fileAs;
         $this->ebook->eraseAuthors();
-        foreach ($authors as $name => $fileAs)
+        foreach ($authorData as $name => $fileAs)
             if ($name !== Girlfriend::comeToMe()->leaNamePlain)
                 $this->ebook->addAuthor(new Author(name: $name, fileAs: $fileAs));
+        /**
+         * If the user requested to check external links, do it now.
+         */
+        if (Girlfriend::comeToMe()->recall(name: "check-links") === "yes") {
+            $animCtr = 0;
+            foreach ($this->ebook->texts as $text) {
+                $links = XMLetsGoCrazy::extractLinks($text->xpath);
+                $urls = [];
+                foreach ($links as $link)
+                    if (filter_var($link, filter: FILTER_VALIDATE_URL) !== false)
+                        $urls[] = $link;
+                if (count($urls) > 0) {
+                    $mh = curl_multi_init();
+                    $handles = [];
+                    foreach ($urls as $index => $href) {
+                        $ch = curl_init($href);
+                        curl_setopt_array($ch, [
+                            CURLOPT_RETURNTRANSFER => true,
+                            CURLOPT_HEADER => true,
+                            CURLOPT_NOBODY => false,            // GET request, because Elon Musk sucks (sometimes)
+                            CURLOPT_RANGE => '0-0',
+                            CURLOPT_TIMEOUT => 5,               // Total timeout: 5 seconds max for the whole request
+                            CURLOPT_CONNECTTIMEOUT => 3,        // Max 3 seconds to establish connection
+                            CURLOPT_FOLLOWLOCATION => true,
+                            CURLOPT_MAXREDIRS => 5,
+                            CURLOPT_USERAGENT => Girlfriend::comeToMe()->leaNamePlain,
+                        ]);
+                        curl_multi_add_handle($mh, $ch);
+                        $handles[$index] = $ch;                 // keep reference to the curl handle
+                    }
+                    $lastDisplay = microtime(true);
+                    do {
+                        $prevActive = count($handles);
+                        curl_multi_exec($mh, still_running: $active);
+                        curl_multi_select($mh);
+                        $now = microtime(true);
+                        if ($now - $lastDisplay > 0.3 || $active !== $prevActive) {
+                            $anim = "\r[ " . Fancy::PURPLE_RAIN
+                                . Fancy::ANIMATION[$animCtr++ % strlen(string: Fancy::ANIMATION)] . Fancy::RESET
+                                . " ] Resolving external links in '" . $text->title . " by " . $text->authors[0]->name
+                                . "':" . Fancy::CLR_EOL;
+                            $msg = $active > 0
+                                ? "[ " . Fancy::INVERSE . $active . " active" . Fancy::RESET . " ] - "
+                                . ($urls[array_rand($urls)] ?? '...')
+                                : Fancy::GREEN . "Finishing" . Fancy::RESET;
+                            echo "$anim $msg" . Fancy::CLR_EOL;
+                            $lastDisplay = $now;
+                        }
+                    } while ($active > 0);
+                    foreach ($handles as $index => $ch) {
+                        $href = $urls[$index];
+                        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                        $error = curl_error($ch);
+                        if ($httpCode >= 400) {
+                            Girlfriend::comeToMe()->makeDoveCry(
+                                new DoveCry(
+                                    $text,
+                                    Flaw::Severe,
+                                    "External link check failed for $href." . PHP_EOL,
+                                    "Verify manually or ignore if intentional or temporary."
+                                )
+                            );
+                        } elseif ($error) {
+                            Girlfriend::comeToMe()->makeDoveCry(
+                                new DoveCry(
+                                    $text,
+                                    Flaw::Warning,
+                                    "Failed to check $href: $error" . PHP_EOL,
+                                    "Connection issue or timeout; check again later."
+                                )
+                            );
+                        }
+                    }
+                    curl_multi_close($mh);
+                }
+                echo "\r" . Fancy::CLR_EOL;
+            }
+        } else
+            Girlfriend::comeToMe()->makeDoveCry(
+                new DoveCry(
+                    $this->ebook,
+                    Flaw::Info,
+                    "External links were not checked this time." . PHP_EOL,
+                    "To validate them, add 'check-links' to your command. "
+                    . "[ $ " . Fancy::INVERSE . Fancy::BOLD . "lea " . $this->ebook->fileName
+                    . " check-links" . Fancy::RESET . " ]"
+                )
+            );
+        /**
+         * At this point, we want to resolve any links in the text content.
+         */
+        $targetData = [];
+        foreach ($this->ebook->targets as $target)
+            $targetData[strtolower($target->name)] = [
+                "name" => $target->name,
+                "targetFileName" => $target->targetFileName
+            ];
+        foreach ($this->ebook->texts as $text) {
+            XMLetsGoCrazy::replaceLeaTargetTags($text);
+            XMLetsGoCrazy::replaceLeaLinkTags($text, $targetData);
+        }
     }
+
 
     /**
      * With one more verse to the story
@@ -552,11 +656,11 @@ final class PaisleyPark
      */
     public function pControl(): bool
     {
-        $this->segue();
-        if (!$this->inThisBedEyeScream()) exit;
-        $this->seguePartTwo();
-        if (!$this->inThisBedEyeScream()) exit;
         try {
+            $this->segue();
+            if (!$this->inThisBedEyeScream()) exit;
+            $this->seguePartTwo();
+            if (!$this->inThisBedEyeScream()) exit;
             $return = $this->theOpera->conductor();
         } catch (Throwable $e) {
             Girlfriend::comeToMe()->extraordinary(throwable: $e);

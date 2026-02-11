@@ -13,6 +13,12 @@ namespace Lea\Adore;
 final readonly class Fancy
 {
     /**
+     * Let's start climactically
+     */
+    public const string ANIMATION = "-\|/";
+    public const string CLR_EOL = "\033[K";
+
+    /**
      * Basic foreground colors
      */
     public const string BLACK = "\033[30m";

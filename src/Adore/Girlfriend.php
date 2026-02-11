@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Lea\Adore;
 
-use NoDiscard;
 use BadMethodCallException;
+use NoDiscard;
 use SebastianBergmann\Version;
 use Throwable;
 
@@ -75,6 +75,17 @@ final class Girlfriend
     }
 
     /**
+     * Only one option for now, let's keep this simple.
+     *
+     * @param array $argv
+     * @return void
+     */
+    public function parseArguments(array $argv): void
+    {
+        self::remember(name: "check-links", data: in_array(needle: "check-links", haystack: $argv) ? "yes" : "no");
+    }
+
+    /**
      * Concentrate on you is all I have to do.
      *
      * Purport:
@@ -130,7 +141,10 @@ final class Girlfriend
     function whereAmI(): array
     {
         $trace = debug_backtrace(options: DEBUG_BACKTRACE_IGNORE_ARGS, limit: 1)[0];
-        return array("file" => $trace['file'], "line" => $trace['line']);
+        return array(
+            "file" => $trace['file'],
+            "line" => $trace['line']
+        );
     }
 
     /**

@@ -70,6 +70,9 @@ final class Ebook
     private(set) array $images {
         get => $this->images ??= XMLetsGoCrazy::extractImages($this->xpath);
     }
+    private(set) array $targets {
+        get => $this->targets ??= $this->extractTargetsFromTexts();
+    }
 
     public function __construct(
         private(set) string $fileName {
@@ -77,6 +80,24 @@ final class Ebook
         }
     )
     {
+    }
+
+    /**
+     * Extract all link targets from all texts in the ebook.
+     *
+     * @return array
+     */
+    private function extractTargetsFromTexts(): array
+    {
+        $targets = [];
+        foreach ($this->texts as $text)
+            $targets = array_merge(
+                $targets,
+                XMLetsGoCrazy::extractTargets(
+                    $text->xpath,
+                    Girlfriend::comeToMe()->strToEpubTextFileName(title: $text->title . " by " . $text->authors[0]->name)
+                ));
+        return $targets;
     }
 
     /**

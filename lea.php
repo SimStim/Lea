@@ -10,6 +10,7 @@ define(constant_name: 'ROOT', value: dirname(path: __DIR__) . "/Lea");
 define(constant_name: 'REPO', value: ROOT . "/examples/");
 require_once ROOT . "/vendor/autoload.php";
 
+Girlfriend::comeToMe()->parseArguments($argv);
 Girlfriend::comeToMe()->emotionalPump();
 Girlfriend::comeToMe()->myNameIsLea();
 

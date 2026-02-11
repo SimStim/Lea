@@ -40,8 +40,11 @@ add meaning later.
 
 ## 1.0.0 and ⊙
 
-The glyph ⊙ expresses a structured combination where the structure matters more than the operands. It is not about
-symmetry but coherence. ⊙ marks the point around which a meaning is calibrated. Lea's process is information-preserving
+🝄 stands for Lea as a holistic entity. The glyph ⊙ was chosen as a marker for specific aspects at defined points in
+time. If 🝄 is the forge, then ⊙ is the moment when the hammer strikes and a new creation emerges.
+
+⊙ expresses a structured combination where the structure matters more than the operands. It is not about symmetry but
+coherence. ⊙ marks the point around which a meaning is calibrated. Lea's process is information-preserving
 normalization, or a lossless canonicalization.
 
 With the release of "⊙ 1.0.0," Lea will be able to dynamically create an ePub from config and content files only.
@@ -55,6 +58,14 @@ Copyright Eduard Pech (https://logophilia.eu/the-director-without-a-service-weap
 PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones
+
+⊙ 1.0.0 "Check it out, here's what you gotta do (Push) Gotta step in the room with the mood Never juicing yourself, just
+a confident attitude (Push) Believe me, you will get busy"
+
+* Modified README.md to clarify the glyphs.
+* New Target class for link targets.
+* New feature: global link targets; links don't need to know in which text file the targets were declared.
+* Added validation of external link targets; this required adding the curl dependency to composer.json.
 
 0.0.22 "Nuestra presentacion especial comenzara en breve"
 
@@ -98,12 +109,6 @@ But that don't make the dirty little things they say about you true (You tell 'e
 * Added function into Girlfriend to extract a subset of array elements with keys matching a pattern.
 * Now building normalized identifiers once, shaving off milliseconds versus repeated object access.
 * Methods to build metadata, manifest, spine, and guide blocks for content.opf. Incomplete as yet.
-
-The following will be done ASAP. Not available at the time of writing.
-
-x.y.z: "Rearrange your brain, got to free your mind!"
-
-* Moved repo to sha-256 in preparation for Git 3.0
 
 0.0.17: "The ride up front is better When you've been in the back."
 

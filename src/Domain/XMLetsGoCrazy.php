@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Lea\Domain;
 
-use NoDiscard;
 use DOMDocument;
 use DOMException;
 use DOMImplementation;
 use DOMXPath;
+use NoDiscard;
+use Lea\Adore\DoveCry;
+use Lea\Adore\Flaw;
 use Lea\Adore\Girlfriend;
 
 /**
@@ -244,7 +246,8 @@ final class XMLetsGoCrazy
             $roleNodes = $xpath->query(expression: "lea:role", contextNode: $node);
             if (count($roleNodes) !== $reference[$ptr++]) return false; // divergence of found versus expected roles
             foreach ($roleNodes as $roleNode)
-                if (!in_array(strtolower(trim($roleNode->textContent)), Contributor::$permittedRoles, true)) return false;
+                if (!in_array(strtolower(trim($roleNode->textContent)), Contributor::$permittedRoles, true))
+                    return false;
         }
         return true;
     }
@@ -449,6 +452,102 @@ final class XMLetsGoCrazy
     }
 
     /**
+     * Extract all target tags from a passed XPath object.
+     * - <lea:target>Clifford D. Simak</lea:target>
+     * - <lea:target>Table of Contents</lea:target>
+     * Targets are not case-sensitive.
+     *
+     * @param DOMXPath $xpath
+     * @param string $targetFileName
+     * @return array
+     */
+    #[NoDiscard]
+    public static function extractTargets(DOMXPath $xpath, string $targetFileName): array
+    {
+        $nodes = $xpath->query(expression: "//lea:target");
+        $targets = [];
+        foreach ($nodes as $node)
+            $targets[] = new Target(trim($node->textContent), $targetFileName);
+        return $targets;
+    }
+
+    /**
+     * Extract all link tags from a passed XPath object.
+     * - <lea:link>Clifford D. Simak</lea:link>
+     * - <lea:link>Table of Contents</lea:link>
+     * You might have guessed it: links are not case-sensitive.
+     *
+     * @param DOMXPath $xpath
+     * @return array
+     */
+    #[NoDiscard]
+    public static function extractLinks(DOMXPath $xpath): array
+    {
+        $nodes = $xpath->query(expression: "//lea:link");
+        $links = [];
+        foreach ($nodes as $node)
+            $links[] = strtolower(trim($node->textContent));
+        return $links;
+    }
+
+    /**
+     * Replace <lea:link> tags with html.
+     * - <lea:link>Clifford D. Simak</lea:link>
+     * - This will find the file the target was declared in and produce an html link to it.
+     *
+     * @param Text $text
+     * @param array $targetData
+     * @return void
+     */
+    public static function replaceLeaLinkTags(Text $text, array $targetData): void
+    {
+        $nodes = $text->xpath->query(expression: "//lea:link");
+        foreach ($nodes as $node) {
+            $linkTarget = strtolower(trim($node->textContent));
+            if ((!array_key_exists($linkTarget, $targetData))
+                && (filter_var($linkTarget, filter: FILTER_VALIDATE_URL) === false)) {
+                Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
+                    domainObject: $text,
+                    flaw: Flaw::Fatal,
+                    message: "Link to undefined link target.",
+                    suggestion: "Check the text content file, making sure the link target exists" . PHP_EOL
+                    . "Text file name: " . Girlfriend::$pathEbooks . $text->fileName . PHP_EOL
+                    . "Link name: '" . trim($node->textContent) . "'"
+                ));
+                continue;
+            }
+            $replacement = (filter_var($linkTarget, filter: FILTER_VALIDATE_URL) !== false)
+                ? "<a href='$linkTarget'>$linkTarget</a>"                   // this is an external link
+                : "<a href='" . $targetData[$linkTarget]["targetFileName"]  // this is a link to an internal target
+                . "#lea-tgt-" . Girlfriend::comeToMe()->strToEpubIdentifier(string: $linkTarget)
+                . "'>" . $targetData[$linkTarget]["name"] . "</a>";
+            $fragment = $text->dom->createDocumentFragment();
+            $fragment->appendXML($replacement);
+            $node->parentNode->replaceChild($fragment, $node);
+        }
+    }
+
+    /**
+     * Replace <lea:target> tags with html.
+     * - <lea:target>Clifford D. Simak</lea:target> => <a id="lea-tgt-clifford-d--simak"/>
+     * - <lea:target>John Campbell, Jr.</lea:target> => <a id="lea-tgt-john-w--campbell--jr-"/>
+     *
+     * @param Text $text
+     * @return void
+     */
+    public static function replaceLeaTargetTags(Text $text): void
+    {
+        $nodes = $text->xpath->query(expression: "//lea:target");
+        foreach ($nodes as $node) {
+            $replacement = "<a id='lea-tgt-"
+                . Girlfriend::comeToMe()->strToEpubIdentifier(trim($node->textContent)) . "'></a>";
+            $fragment = $text->dom->createDocumentFragment();
+            $fragment->appendXML($replacement);
+            $node->parentNode->replaceChild($fragment, $node);
+        }
+    }
+
+    /**
      * Extract the subfolder names from an XPath object.
      * - <lea:subfolder>tpsf-8</lea:subfolder>
      *
@@ -458,7 +557,7 @@ final class XMLetsGoCrazy
     #[NoDiscard]
     public static function extractSubFolder(DOMXPath $xpath): string
     {
-        return trim($xpath->evaluate(expression: "string(/" . self::$rootElement . "/lea:subfolder)"), "/ ");
+        return trim($xpath->evaluate(expression: "string(/" . self::$rootElement . "/lea:subfolder)"), characters: "/ ");
     }
 
     /**
