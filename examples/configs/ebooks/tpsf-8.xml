@@ -21,7 +21,7 @@
 <lea:rights>English translation of M2 (C) 2025 by Eduard Pech. Published by permission of Daria Skrinitsa. All other stories are in the public domain in the USA. All content not marked public domain (C) 2025 by Eduard Pech. Complete edition (C) 2025 by Logophilia. Logophilia is an imprint of Logophilia OÜ.</lea:rights>
 <lea:language>en</lea:language>
 <lea:subfolder>tpsf-8</lea:subfolder>
-<lea:defaultcaption>illustration is in the public domain</lea:defaultcaption>
+<lea:defaultcaption></lea:defaultcaption>
 <lea:text>AboutTheContent.xhtml</lea:text>
 <lea:text>TheStatusCivilizationByRobertSheckley.xhtml</lea:text>
 <lea:text>GamblersWorldByKeithLaumer.xhtml</lea:text>
@@ -74,7 +74,7 @@
 <lea:font>TeXGyreHeros-BoldItalic.otf</lea:font>
 <lea:font>TeXGyreHeros-Italic.otf</lea:font>
 <lea:font>TeXGyreHeros-Regular.otf</lea:font>
-<lea:image><lea:file>star-red.png</lea:file></lea:image>
+<lea:image>star-red.png</lea:image>
 <lea:stylesheet>lphi-originals/stylesheet.css</lea:stylesheet>
 <lea:stylesheet>lphi-originals/fonts.css</lea:stylesheet>
 <lea:cover>2025Q4-cover-inside.jpg</lea:cover>

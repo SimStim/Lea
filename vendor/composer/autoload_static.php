@@ -32,12 +32,18 @@ class ComposerStaticInit2d9f93da1f99057b888d840591476990
         'Lea\\Adore\\Flaw' => __DIR__ . '/../..' . '/src/Adore/Flaw.php',
         'Lea\\Adore\\Girlfriend' => __DIR__ . '/../..' . '/src/Adore/Girlfriend.php',
         'Lea\\Domain\\Author' => __DIR__ . '/../..' . '/src/Domain/Author.php',
+        'Lea\\Domain\\Collection' => __DIR__ . '/../..' . '/src/Domain/Collection.php',
         'Lea\\Domain\\Contributor' => __DIR__ . '/../..' . '/src/Domain/Contributor.php',
+        'Lea\\Domain\\Date' => __DIR__ . '/../..' . '/src/Domain/Date.php',
         'Lea\\Domain\\Ebook' => __DIR__ . '/../..' . '/src/Domain/Ebook.php',
         'Lea\\Domain\\ISBN' => __DIR__ . '/../..' . '/src/Domain/ISBN.php',
+        'Lea\\Domain\\Image' => __DIR__ . '/../..' . '/src/Domain/Image.php',
+        'Lea\\Domain\\Publisher' => __DIR__ . '/../..' . '/src/Domain/Publisher.php',
+        'Lea\\Domain\\Target' => __DIR__ . '/../..' . '/src/Domain/Target.php',
         'Lea\\Domain\\Text' => __DIR__ . '/../..' . '/src/Domain/Text.php',
         'Lea\\Domain\\XMLetsGoCrazy' => __DIR__ . '/../..' . '/src/Domain/XMLetsGoCrazy.php',
         'Lea\\PaisleyPark' => __DIR__ . '/../..' . '/src/PaisleyPark.php',
+        'Lea\\TheOpera' => __DIR__ . '/../..' . '/src/TheOpera.php',
         'SebastianBergmann\\Version' => __DIR__ . '/..' . '/sebastian/version/src/Version.php',
     );
 

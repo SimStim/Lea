@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lea\Domain;
 
 use DOMDocument;
+use DOMElement;
 use DOMException;
 use DOMImplementation;
 use DOMXPath;
@@ -315,23 +316,21 @@ final class XMLetsGoCrazy
     /**
      * Extract the image file names from an XPath object
      * - <lea:image>Harry-Harrison-FM-Logophilia-512.jpg</lea:image>
-     * - <lea:image>Hubris-cover-512-qr.jpg</lea:image>
-     *
-     * Returns false for missing or incomplete <lea:file> declarations.
+     * - <lea:image caption="Cover with QR code">Hubris-cover-512-qr.jpg</lea:image>
      *
      * @param DOMXPath $xpath
-     * @return array|false
+     * @return array
      */
     #[NoDiscard]
-    public static function extractImages(DOMXPath $xpath): array|false
+    public static function extractImages(DOMXPath $xpath): array
     {
         $nodes = $xpath->query(expression: "//lea:image");
         $images = [];
         foreach ($nodes as $node) {
-            $fileName = trim($xpath->evaluate(expression: "string(lea:file)", contextNode: $node));
-            if ($fileName === "") return false;
-            $caption = trim($xpath->evaluate(expression: "string(lea:caption)", contextNode: $node));
-            if ($caption === "default") $caption = Girlfriend::comeToMe()->recall(name: "defaultcaption");
+            $caption = $node->hasAttribute('caption')
+                ? $node->getAttribute('caption')
+                : Girlfriend::comeToMe()->recall(name: "defaultcaption");
+            $fileName = trim($node->textContent);
             $images[] = new Image($fileName, $caption);
         }
         return $images;
@@ -467,7 +466,11 @@ final class XMLetsGoCrazy
         $nodes = $xpath->query(expression: "//lea:target");
         $targets = [];
         foreach ($nodes as $node)
-            $targets[] = new Target(trim($node->textContent), $targetFileName);
+            $targets[] = new Target(
+                name: $node->textContent,
+                identifier: "lea-tgt-" . Girlfriend::comeToMe()->strToEpubIdentifier($node->textContent),
+                targetFileName: $targetFileName
+            );
         return $targets;
     }
 
@@ -498,32 +501,39 @@ final class XMLetsGoCrazy
      * @param Text $text
      * @param array $targetData
      * @return void
+     * @throws DOMException
      */
     public static function replaceLeaLinkTags(Text $text, array $targetData): void
     {
         $nodes = $text->xpath->query(expression: "//lea:link");
         foreach ($nodes as $node) {
-            $linkTarget = strtolower(trim($node->textContent));
-            if ((!array_key_exists($linkTarget, $targetData))
-                && (filter_var($linkTarget, filter: FILTER_VALIDATE_URL) === false)) {
-                Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
-                    domainObject: $text,
-                    flaw: Flaw::Fatal,
-                    message: "Link to undefined link target.",
-                    suggestion: "Check the text content file, making sure the link target exists" . PHP_EOL
-                    . "Text file name: " . Girlfriend::$pathEbooks . $text->fileName . PHP_EOL
-                    . "Link name: '" . trim($node->textContent) . "'"
-                ));
-                continue;
+            $linkTarget = $node->hasAttribute('to')
+                ? $node->getAttribute('to')
+                : $node->textContent;
+            if (filter_var($linkTarget, filter: FILTER_VALIDATE_URL) === false) {
+                $linkTarget = "lea-tgt-" . Girlfriend::comeToMe()->strToEpubIdentifier($linkTarget);
+                if (!isset($targetData[$linkTarget])) {
+                    Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
+                        domainObject: $text,
+                        flaw: Flaw::Fatal,
+                        message: "Link to undefined link target.",
+                        suggestion: "Check the text content file, making sure the link target exists" . PHP_EOL
+                        . "Text file name: " . Girlfriend::$pathEbooks . $text->fileName . PHP_EOL
+                        . "Link name: '" . trim($linkTarget) . "'"
+                    ));
+                    continue;
+                }
             }
-            $replacement = (filter_var($linkTarget, filter: FILTER_VALIDATE_URL) !== false)
-                ? "<a href='$linkTarget'>$linkTarget</a>"                   // this is an external link
-                : "<a href='" . $targetData[$linkTarget]["targetFileName"]  // this is a link to an internal target
-                . "#lea-tgt-" . Girlfriend::comeToMe()->strToEpubIdentifier(string: $linkTarget)
-                . "'>" . $targetData[$linkTarget]["name"] . "</a>";
+            $linkHref = (filter_var($linkTarget, filter: FILTER_VALIDATE_URL) !== false)
+                ? $linkTarget
+                : $targetData[$linkTarget]["targetFileName"] . "#" . $targetData[$linkTarget]["identifier"];
             $fragment = $text->dom->createDocumentFragment();
-            $fragment->appendXML($replacement);
-            $node->parentNode->replaceChild($fragment, $node);
+            foreach ($node->childNodes as $child)
+                $fragment->appendChild($child->cloneNode(true));
+            $aTag = $text->dom->createElement(localName: "a");
+            $aTag->setAttribute(qualifiedName: "href", value: $linkHref);
+            $aTag->appendChild($fragment);
+            $node->parentNode->replaceChild($aTag, $node);
         }
     }
 
@@ -539,8 +549,7 @@ final class XMLetsGoCrazy
     {
         $nodes = $text->xpath->query(expression: "//lea:target");
         foreach ($nodes as $node) {
-            $replacement = "<a id='lea-tgt-"
-                . Girlfriend::comeToMe()->strToEpubIdentifier(trim($node->textContent)) . "'></a>";
+            $replacement = "<a id='lea-tgt-" . Girlfriend::comeToMe()->strToEpubIdentifier($node->textContent) . "'></a>";
             $fragment = $text->dom->createDocumentFragment();
             $fragment->appendXML($replacement);
             $node->parentNode->replaceChild($fragment, $node);
@@ -584,13 +593,13 @@ final class XMLetsGoCrazy
     {
         $nodes = $text->xpath->query(expression: "//lea:image");
         foreach ($nodes as $node) {
-            $fileName = trim($text->xpath->evaluate(expression: "string(lea:file)", contextNode: $node));
+            $caption = $node->hasAttribute('caption')
+                ? $node->getAttribute('caption')
+                : Girlfriend::comeToMe()->recall(name: "defaultcaption");
+            $fileName = trim($node->textContent);
             $replacement = "<figure>"
-                . "<img src='../Images/" . $imageData[$fileName]["file"] . "'/>"
-                . "<figcaption>"
-                . $imageData[$fileName]["caption"]
-                . "</figcaption>"
-                . "</figure>";
+                . "<img src='../Images/" . Girlfriend::comeToMe()->strToEpubImageFileName($fileName) . "'/>"
+                . "<figcaption>$caption</figcaption></figure>";
             $fragment = $text->dom->createDocumentFragment();
             $fragment->appendXML($replacement);
             $node->parentNode->replaceChild($fragment, $node);

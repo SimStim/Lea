@@ -7,7 +7,9 @@ namespace Lea;
 use DOMException;
 use NoDiscard;
 use ZipArchive;
+use Lea\Adore\Fancy;
 use Lea\Adore\Girlfriend;
+use Lea\Domain\Date;
 use Lea\Domain\Ebook;
 use Lea\Domain\XMLetsGoCrazy;
 
@@ -41,7 +43,7 @@ final class TheOpera
      *
      * @return void (also known as Caesura)
      */
-    private function theOverture(): void
+    public function theOverture(): void
     {
         $hashes = [
             "PurpleRain.txt" => "247e5c56d2619ee9d29c4c56d69cacf917b49a572696ea60ba742d365b983112",
@@ -49,6 +51,7 @@ final class TheOpera
             "container.xml" => "c54cb884813a53ce2fc9b3102ca8ee5c03b0397a2cb984500830e86c65ec092f",
             "covertemplate.xhtml" => "2d3d15c1277cc6a1f429afb8ef8dcc8e04949ccc4f743c4039333245ca7f76ce",
             "navtemplate.xhtml" => "d11d6254bd0701633e39f92211d512af19fbb62d270bb0ab460be3f684456a38",
+            "lea-logo-ascii.txt" => "fa89b6f5ec8ba63ccc5b1f83dff81208e0cb7a272824caaeea464cc16ae67a0b",
         ];
         foreach ($hashes as $fileName => $hash) {
             $content = Girlfriend::comeToMe()->readFile(fileName: Girlfriend::$pathPurpleRain . $fileName);
@@ -311,21 +314,53 @@ final class TheOpera
     }
 
     /**
+     * Generates the production log for META-INF.
+     *
+     * @param array $errorLog
+     * @param string $timeStamp
+     * @param array $epubCheckCapture
+     * @return string
+     */
+    private function generateProductionLog(array $errorLog, string $timeStamp, array $epubCheckCapture): string
+    {
+        $productionLog = Girlfriend::comeToMe()->readFile(Girlfriend::$pathPurpleRain . "lea-logo-ascii.txt")
+            . Girlfriend::comeToMe()->leaNamePlain . " Production Log." . PHP_EOL
+            . "----------------------------------------------------------------" . PHP_EOL . PHP_EOL
+            . "Production Date: $timeStamp" . PHP_EOL . PHP_EOL . PHP_EOL;
+        foreach ($errorLog as $error)
+            $productionLog .= "Severity:        " . strtoupper($error->flaw->name) . PHP_EOL
+                . "Message:         "
+                . preg_replace(pattern: Fancy::STRIP_ANSI_REGEX, replacement: '', subject: $error->message) . PHP_EOL
+                . "Suggestion:      "
+                . preg_replace(pattern: Fancy::STRIP_ANSI_REGEX, replacement: '', subject: $error->suggestion)
+                . PHP_EOL . PHP_EOL . PHP_EOL;
+        $productionLog .= "EPUBCheck Log." . PHP_EOL
+            . "----------------------------------------------------------------" . PHP_EOL . PHP_EOL
+            . "[ STDOUT ]" . PHP_EOL . PHP_EOL
+            . ($epubCheckCapture["stdout"] ?? "NULL") . PHP_EOL . PHP_EOL
+            . "[ STDERR ]" . PHP_EOL . PHP_EOL
+            . ($epubCheckCapture["stderr"] ?? "NULL") . PHP_EOL . PHP_EOL
+            . "[ RETURN ]" . PHP_EOL . PHP_EOL
+            . ($epubCheckCapture["return"] ?? "NULL") . PHP_EOL . PHP_EOL . PHP_EOL;
+        $productionLog .= "----------------------------------------------------------------" . PHP_EOL
+            . "Excuse me, but is this really goodbye?" . PHP_EOL;
+        return $productionLog;
+    }
+
+    /**
      * Now I can touch
      * Now I can feel
      *
+     * @param array $errorLog
      * @return bool
      * @throws DOMException
      */
     #[NoDiscard]
-    public function conductor(): bool
+    public function conductor(array $errorLog): bool
     {
-        $this->theOverture(); // ascertain we're laughing in the purple rain
         $zip = new ZipArchive();
-        $zip->open(
-            filename: Girlfriend::$pathEpubs . $this->ebook->title . " - " . $this->ebook->publisher->imprint . ".epub",
-            flags: ZipArchive::CREATE | ZipArchive::OVERWRITE
-        );
+        $epubFileName = Girlfriend::$pathEpubs . $this->ebook->title . " - " . $this->ebook->publisher->imprint . ".epub";
+        $zip->open(filename: $epubFileName, flags: ZipArchive::CREATE | ZipArchive::OVERWRITE);
         $zip->addFile(filepath: Girlfriend::$pathPurpleRain . "mimetype", entryname: "mimetype");
         $zip->setCompressionName(name: 'mimetype', method: ZipArchive::CM_STORE);
         $zip->addFile(filepath: Girlfriend::$pathPurpleRain . "container.xml", entryname: "META-INF/container.xml");
@@ -371,6 +406,15 @@ final class TheOpera
             );
         }
         $zip->close();
+        $timeStamp = new Date(modified: "now")->modified;
+        if (Girlfriend::comeToMe()->recall(name: "check-epub") === "yes")
+            $result = Girlfriend::comeToMe()->checkEpub($epubFileName);
+        $zip->open($epubFileName);
+        $zip->addFromString(name: "META-INF/lea-log.txt", content: $this->generateProductionLog(
+            errorLog: $errorLog,
+            timeStamp: $timeStamp,
+            epubCheckCapture: $result ?? []
+        ));
         return true;
     }
 }

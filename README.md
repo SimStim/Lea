@@ -23,16 +23,16 @@ add meaning later.
 * support for book series collections with ISSN
 * support for anthologies with per-text authors and rights
 * <lea:> tags anywhere in the source files, for example, for images with captions
+* validation of external links
 * support for advanced typesetting: embedded fonts and stylesheets
+* EPUB checker validation
+* command-line arguments for run-time configuration
 * the example ebook of 7+ MB compiles into a 3.2 MB ePub in 0.236 seconds on my Zen-2 based slow-ass notebook
 
 ### Planned
 
-* command-line arguments for run-time configuration
 * template system for images
 * text blocks
-* validation of external links
-* EPUB checker validation
 * automatic detection and content-based compression of image files
 * import of word processor documents into Lea definition files
 * simple but useful reports
@@ -58,6 +58,19 @@ Copyright Eduard Pech (https://logophilia.eu/the-director-without-a-service-weap
 PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones
+
+1.0.1
+
+* Refactored validation of external link targets for a 10x speed gain.
+* Generating and adding production log to the META-INF folder.
+* The last - and only - TODO is gone, and we have a proper ISBN validation function now.
+* Refactored lea:image tag handling.
+* Refactored lea:link tag handling; links are now permitted to contain child nodes.
+* Added EPUBCheck validation option.
+* Moved PurpleRain out of the REPO root and into the resources' folder.
+* Updated the example files to use attributes for lea:image and lea:link.
+* Refactored ISBN class to cache ISBN validation results.
+* Extended Target class with a property for the normalized identifier.
 
 ⊙ 1.0.0 "Check it out, here's what you gotta do (Push) Gotta step in the room with the mood Never juicing yourself, just
 a confident attitude (Push) Believe me, you will get busy"

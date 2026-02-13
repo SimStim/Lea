@@ -13,6 +13,9 @@ final class Target
         private(set) string $name {
             set => trim(string: $value);
         },
+        private(set) string $identifier {
+            set => trim(string: $value);
+        },
         private(set) string $targetFileName {
             set => trim(string: $value);
         }

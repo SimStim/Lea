@@ -11,38 +11,33 @@ use NoDiscard;
  */
 final class ISBN
 {
+    private(set) bool $isValid {
+        get => $this->isValid ??= $this->calculateIsValid();
+    }
+
     public function __construct(
         private(set) string $isbn {
-            set => $this->trimISBN($value);
+            set => preg_replace(pattern: '/\D/', replacement: '', subject: $value);
         }
     )
     {
     }
 
     /**
-     * Trims a passed string with an ISBN-13:
-     * - removes all dashes
-     * - trims white space around string
-     *
-     * @param string $isbn
-     * @return string
-     */
-    #[NoDiscard]
-    private function trimISBN(string $isbn): string
-    {
-        return trim(string: str_replace(search: "-", replace: "", subject: $isbn));
-    }
-
-    /**
      * Checks a passed string for conformity with ISBN-13 specs
      *
      * @return bool
-     * TODO: actually do something useful, like check the checksum and stuff
      */
     #[NoDiscard]
-    public function isWellFormed(): bool
+    public function calculateIsValid(): bool
     {
-        return mb_strlen(string: $this->isbn) === 13
-            && is_numeric(value: $this->isbn);
+        if (!preg_match(pattern: '/^\d{13}$/', subject: $this->isbn))
+            return false;
+        $sum = 0;
+        for ($i = 0; $i < 12; $i++)
+            $sum += ($i % 2 === 0)
+                ? (int)$this->isbn[$i]
+                : (int)$this->isbn[$i] * 3;
+        return ((10 - ($sum % 10)) % 10 === (int)$this->isbn[12]);
     }
 }

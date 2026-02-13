@@ -15,7 +15,7 @@ use Throwable;
 final class Girlfriend
 {
     private static ?self $instance = null;
-    private static string $minVersion = "0.0.16";
+    private static string $minVersion = "⊙1.0.0";
     private(set) static string $pathEbooks = REPO . "configs/ebooks/";
     private(set) static string $pathScripts = REPO . "configs/scripts/";
     private(set) static string $pathFonts = REPO . "fonts/";
@@ -23,11 +23,13 @@ final class Girlfriend
     private(set) static string $pathStyles = REPO . "styles/";
     private(set) static string $pathText = REPO . "text/";
     private(set) static string $pathEpubs = REPO . "epubs/";
-    private(set) static string $pathPurpleRain = REPO . "PurpleRain/";
+    private(set) static string $pathEPUBCheck = ROOT . "/resources/EPUBCheck/";
+    private(set) static string $pathPurpleRain = ROOT . "/resources/PurpleRain/";
     private(set) static array $memory = [];
     private static array $characterNonGrata = [
         ' ', '.', '\'', '"', ',', ':', ';', '!', '?', '(',
-        ')', '[', ']', '{', '}', '&', '/', '\\', '’'
+        ')', '[', ']', '{', '}', '&', '/', '\\', '’', '⊙',
+        '🝄', '#', '<', '>', '='
     ];
     private(set) string $leaVersion {
         get => $this->leaVersion ??= self::comeToMe()->computeLeaVersion(minVersion: self::$minVersion);
@@ -83,6 +85,7 @@ final class Girlfriend
     public function parseArguments(array $argv): void
     {
         self::remember(name: "check-links", data: in_array(needle: "check-links", haystack: $argv) ? "yes" : "no");
+        self::remember(name: "check-epub", data: in_array(needle: "check-epub", haystack: $argv) ? "yes" : "no");
     }
 
     /**
@@ -261,7 +264,7 @@ final class Girlfriend
         return str_replace(
             search: self::$characterNonGrata,
             replace: '-',
-            subject: strtolower($string)
+            subject: strtolower(trim($string))
         );
     }
 
@@ -306,5 +309,37 @@ final class Girlfriend
             . " on line " . $throwable->getLine() . Fancy::RESET . "\"" . PHP_EOL
             . "You know, I'm just a girl; I can't do simple things." . PHP_EOL;
         exit;
+    }
+
+    /**
+     * Executes the final ePub validation process using epubcheck.jar and returns the result.
+     *
+     * @param string $fileName The path to the EPUB file to be checked.
+     * @return array An associative array containing the following keys:
+     *               - "stdout": Output captured from the standard output of the process.
+     *               - "stderr": Output captured from the standard error of the process.
+     *               - "return": The exit code returned by the process.
+     */
+    public function checkEpub(string $fileName): array
+    {
+        $cmd = "java -jar " . Girlfriend::$pathEPUBCheck . "epubcheck.jar '$fileName' --version";
+        $descriptors = [
+            1 => ['pipe', 'w'],     // stdout
+            2 => ['pipe', 'w'],     // stderr
+        ];
+        $process = proc_open($cmd, $descriptors, $pipes);
+        $stdout = $stderr = $returnCode = null;
+        if (is_resource($process)) {
+            $stdout = stream_get_contents($pipes[1]);
+            fclose($pipes[1]);
+            $stderr = stream_get_contents($pipes[2]);
+            fclose($pipes[2]);
+            $returnCode = proc_close($process);
+        }
+        return [
+            "stdout" => $stdout,
+            "stderr" => $stderr,
+            "return" => $returnCode
+        ];
     }
 }

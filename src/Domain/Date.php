@@ -28,7 +28,7 @@ class Date
      * Try parsing the given date string strictly.
      *
      * Return values:
-     * - null if parsing unsuccessful.
+     * - Null if parsing was unsuccessful.
      * - DateTime object otherwise
      *
      * @param string $value

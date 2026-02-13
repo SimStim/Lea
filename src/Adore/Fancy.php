@@ -12,10 +12,13 @@ namespace Lea\Adore;
  */
 final readonly class Fancy
 {
+    public const string STRIP_ANSI_REGEX = "/\\e[[][A-Za-z0-9];?[ 0-9]*m?/";
     /**
      * Let's start climactically
      */
     public const string ANIMATION = "-\|/";
+    public const string HIDE_CURSOR = "\033[?25l";
+    public const string UNHIDE_CURSOR = "\033[?25h";
     public const string CLR_EOL = "\033[K";
 
     /**

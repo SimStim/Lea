@@ -256,7 +256,7 @@ final class PaisleyPark
          * Checks if the ISBN is valid.
          * - no = fatal
          */
-        if (!$this->ebook->isbn->isWellFormed())
+        if (!$this->ebook->isbn->calculateIsValid())
             Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
                 domainObject: $this->ebook,
                 flaw: Flaw::Fatal,
@@ -352,22 +352,12 @@ final class PaisleyPark
                 continue;
             }
             /**
-             * Extract images and if successful, add images to the ebook image list.
-             * - If unsuccessful: fatal
+             * Extract images from text content files and add them to the ebook image list.
              */
-            $images = XMLetsGoCrazy::extractImages($text->xpath);
-            if ($images === false)
-                Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
-                    domainObject: $text,
-                    flaw: Flaw::Fatal,
-                    message: "Missing or incomplete <lea:file> declaration within <lea:image>.",
-                    suggestion: "Edit the text file, correcting any incomplete <lea:title> tags." . PHP_EOL
-                    . "Text file name with error: '" . Girlfriend::$pathText . "$text->fileName'.",
-                ));
-            else $this->ebook->addImages(XMLetsGoCrazy::extractImages($text->xpath));
+            $this->ebook->addImages(XMLetsGoCrazy::extractImages($text->xpath));
             /**
              * Checks if there is at least one title.
-             * - no = fatal
+             * - No = fatal
              */
             if ($text->title === "")
                 Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
@@ -463,11 +453,10 @@ final class PaisleyPark
      * Returns values:
      * - true if no fatal errors detected
      *
-     * @param bool $keepCrying
      * @return bool
      */
     #[NoDiscard]
-    public function inThisBedEyeScream(bool $keepCrying = false): bool
+    public function inThisBedEyeScream(): bool
     {
         $fatal = false;
         $infoOnly = true;
@@ -488,9 +477,77 @@ final class PaisleyPark
             echo Fancy::warning(msg: "[ WARNING ]") . " denotes missing optional data. The ePub should not be published." . PHP_EOL;
             echo Fancy::info(msg: "[ INFO ]") . " shows potential for improvement. The produced ePub may be less than ideal." . PHP_EOL;
         }
-        if (!$keepCrying)
-            Girlfriend::comeToMe()->silenceDoves();
         return !$fatal;
+    }
+
+    /**
+     * Validate external links in the text files.
+     *
+     * @return void
+     */
+    private function validateUrls(): void
+    {
+        $urls = [];
+        foreach ($this->ebook->texts as $text)
+            foreach (XMLetsGoCrazy::extractLinks($text->xpath) as $link)
+                if (filter_var($link, filter: FILTER_VALIDATE_URL) !== false)
+                    $urls[$link] = $link;
+        $animCtr = 0;
+        $handles = [];
+        $mh = curl_multi_init();
+        foreach ($urls as $url) {
+            $ch = curl_init($url);
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_HEADER => true,
+                CURLOPT_NOBODY => false,            // GET request, because Elon Musk sucks (sometimes)
+                CURLOPT_RANGE => '0-0',
+                CURLOPT_TIMEOUT => 5,               // Total timeout: 5 seconds max for the whole request
+                CURLOPT_CONNECTTIMEOUT => 3,        // Max 3 seconds to establish connection
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_MAXREDIRS => 5,
+                CURLOPT_USERAGENT => Girlfriend::comeToMe()->leaNamePlain,
+            ]);
+            curl_multi_add_handle($mh, $ch);
+            $handles[$url] = $ch;                   // keep reference to the curl handle
+        }
+        $prevActive = count($handles);
+        echo Fancy::HIDE_CURSOR;
+        do {
+            curl_multi_exec($mh, still_running: $active);
+            curl_multi_select($mh);
+            if ($active !== $prevActive)
+                echo "\r[ " . Fancy::PURPLE_RAIN
+                    . Fancy::ANIMATION[$animCtr++ % strlen(string: Fancy::ANIMATION)] . Fancy::RESET
+                    . " ] [ " . Fancy::INVERSE . $active . "/" . count($handles) . " active" . Fancy::RESET . " ]"
+                    . " Resolving external link '" . array_rand($urls) . "'" . Fancy::CLR_EOL;
+            $prevActive = $active;
+        } while ($active > 0);
+        echo Fancy::UNHIDE_CURSOR;
+        foreach ($handles as $key => $ch) {
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $error = curl_error($ch);
+            if ($httpCode >= 400)
+                Girlfriend::comeToMe()->makeDoveCry(
+                    new DoveCry(
+                        $this->ebook,
+                        Flaw::Severe,
+                        "External link check failed for $key." . PHP_EOL,
+                        "Verify manually or ignore if intentional or temporary."
+                    )
+                );
+            elseif ($error)
+                Girlfriend::comeToMe()->makeDoveCry(
+                    new DoveCry(
+                        $this->ebook,
+                        Flaw::Warning,
+                        "Failed to check $key: $error" . PHP_EOL,
+                        "Connection issue or timeout; check again later."
+                    )
+                );
+        }
+        curl_multi_close($mh);
+        echo "\r" . Fancy::CLR_EOL;
     }
 
     /**
@@ -499,6 +556,7 @@ final class PaisleyPark
      * The Segue uses the established data clarity for a few final steps to put into place.
      *
      * @return void
+     * @throws \DOMException
      */
     public function seguePartTwo(): void
     {
@@ -507,10 +565,7 @@ final class PaisleyPark
          */
         $imageData = [];
         foreach ($this->ebook->images as $image)
-            $imageData[$image->fileName] = [
-                "file" => Girlfriend::comeToMe()->strToEpubImageFileName($image->fileName),
-                "caption" => $image->caption
-            ];
+            $imageData[] = $image->fileName;
         foreach ($this->ebook->texts as $text)
             XMLetsGoCrazy::replaceLeaImageTags($text, $imageData);
         /**
@@ -545,86 +600,14 @@ final class PaisleyPark
         /**
          * If the user requested to check external links, do it now.
          */
-        if (Girlfriend::comeToMe()->recall(name: "check-links") === "yes") {
-            $animCtr = 0;
-            foreach ($this->ebook->texts as $text) {
-                $links = XMLetsGoCrazy::extractLinks($text->xpath);
-                $urls = [];
-                foreach ($links as $link)
-                    if (filter_var($link, filter: FILTER_VALIDATE_URL) !== false)
-                        $urls[] = $link;
-                if (count($urls) > 0) {
-                    $mh = curl_multi_init();
-                    $handles = [];
-                    foreach ($urls as $index => $href) {
-                        $ch = curl_init($href);
-                        curl_setopt_array($ch, [
-                            CURLOPT_RETURNTRANSFER => true,
-                            CURLOPT_HEADER => true,
-                            CURLOPT_NOBODY => false,            // GET request, because Elon Musk sucks (sometimes)
-                            CURLOPT_RANGE => '0-0',
-                            CURLOPT_TIMEOUT => 5,               // Total timeout: 5 seconds max for the whole request
-                            CURLOPT_CONNECTTIMEOUT => 3,        // Max 3 seconds to establish connection
-                            CURLOPT_FOLLOWLOCATION => true,
-                            CURLOPT_MAXREDIRS => 5,
-                            CURLOPT_USERAGENT => Girlfriend::comeToMe()->leaNamePlain,
-                        ]);
-                        curl_multi_add_handle($mh, $ch);
-                        $handles[$index] = $ch;                 // keep reference to the curl handle
-                    }
-                    $lastDisplay = microtime(true);
-                    do {
-                        $prevActive = count($handles);
-                        curl_multi_exec($mh, still_running: $active);
-                        curl_multi_select($mh);
-                        $now = microtime(true);
-                        if ($now - $lastDisplay > 0.3 || $active !== $prevActive) {
-                            $anim = "\r[ " . Fancy::PURPLE_RAIN
-                                . Fancy::ANIMATION[$animCtr++ % strlen(string: Fancy::ANIMATION)] . Fancy::RESET
-                                . " ] Resolving external links in '" . $text->title . " by " . $text->authors[0]->name
-                                . "':" . Fancy::CLR_EOL;
-                            $msg = $active > 0
-                                ? "[ " . Fancy::INVERSE . $active . " active" . Fancy::RESET . " ] - "
-                                . ($urls[array_rand($urls)] ?? '...')
-                                : Fancy::GREEN . "Finishing" . Fancy::RESET;
-                            echo "$anim $msg" . Fancy::CLR_EOL;
-                            $lastDisplay = $now;
-                        }
-                    } while ($active > 0);
-                    foreach ($handles as $index => $ch) {
-                        $href = $urls[$index];
-                        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                        $error = curl_error($ch);
-                        if ($httpCode >= 400) {
-                            Girlfriend::comeToMe()->makeDoveCry(
-                                new DoveCry(
-                                    $text,
-                                    Flaw::Severe,
-                                    "External link check failed for $href." . PHP_EOL,
-                                    "Verify manually or ignore if intentional or temporary."
-                                )
-                            );
-                        } elseif ($error) {
-                            Girlfriend::comeToMe()->makeDoveCry(
-                                new DoveCry(
-                                    $text,
-                                    Flaw::Warning,
-                                    "Failed to check $href: $error" . PHP_EOL,
-                                    "Connection issue or timeout; check again later."
-                                )
-                            );
-                        }
-                    }
-                    curl_multi_close($mh);
-                }
-                echo "\r" . Fancy::CLR_EOL;
-            }
-        } else
+        if (Girlfriend::comeToMe()->recall(name: "check-links") === "yes")
+            $this->validateUrls();
+        else
             Girlfriend::comeToMe()->makeDoveCry(
                 new DoveCry(
                     $this->ebook,
                     Flaw::Info,
-                    "External links were not checked this time." . PHP_EOL,
+                    "External links were not checked this time.",
                     "To validate them, add 'check-links' to your command. "
                     . "[ $ " . Fancy::INVERSE . Fancy::BOLD . "lea " . $this->ebook->fileName
                     . " check-links" . Fancy::RESET . " ]"
@@ -635,16 +618,31 @@ final class PaisleyPark
          */
         $targetData = [];
         foreach ($this->ebook->targets as $target)
-            $targetData[strtolower($target->name)] = [
+            $targetData[$target->identifier] = [
                 "name" => $target->name,
+                "identifier" => $target->identifier,
                 "targetFileName" => $target->targetFileName
             ];
         foreach ($this->ebook->texts as $text) {
             XMLetsGoCrazy::replaceLeaTargetTags($text);
             XMLetsGoCrazy::replaceLeaLinkTags($text, $targetData);
         }
-    }
+        /**
+         * Finally, throw an Info message to the user if EPUBCheck was not requested.
+         */
+        if (Girlfriend::comeToMe()->recall(name: "check-epub") === "no")
+            Girlfriend::comeToMe()->makeDoveCry(
+                new DoveCry(
+                    $this->ebook,
+                    Flaw::Info,
+                    "EPUBCheck was not requested this time.",
+                    "To run EPUBCheck after ePub generation, add 'check-epub' to your command. "
+                    . "[ $ " . Fancy::INVERSE . Fancy::BOLD . "lea " . $this->ebook->fileName
+                    . " check-epub" . Fancy::RESET . " ]"
+                )
+            );
 
+    }
 
     /**
      * With one more verse to the story
@@ -657,11 +655,16 @@ final class PaisleyPark
     public function pControl(): bool
     {
         try {
+            $this->theOpera->theOverture(); // ascertain we're laughing in the purple rain
             $this->segue();
             if (!$this->inThisBedEyeScream()) exit;
+            $errorLog = Girlfriend::comeToMe()->doveCries;
+            Girlfriend::comeToMe()->silenceDoves();;
             $this->seguePartTwo();
             if (!$this->inThisBedEyeScream()) exit;
-            $return = $this->theOpera->conductor();
+            $errorLog = array_merge($errorLog, Girlfriend::comeToMe()->doveCries);
+            Girlfriend::comeToMe()->silenceDoves();;
+            $return = $this->theOpera->conductor($errorLog);
         } catch (Throwable $e) {
             Girlfriend::comeToMe()->extraordinary(throwable: $e);
         }

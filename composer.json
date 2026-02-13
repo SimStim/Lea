@@ -11,11 +11,11 @@
   ],
   "require": {
     "php": "^8.5",
-    "ext-mbstring": "*",
-    "ext-libxml": "*",
+    "ext-curl": "*",
     "ext-dom": "*",
-    "ext-zip": "*",
-    "ext-curl": "*"
+    "ext-libxml": "*",
+    "ext-mbstring": "*",
+    "ext-zip": "*"
   },
   "require-dev": {
     "sebastian/version": "^6.0"
