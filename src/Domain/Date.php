@@ -74,7 +74,7 @@ class Date
      * Checks if dates have been extracted correctly
      *
      * Return values:
-     * - true on valid dates on file.
+     * - True on valid dates on file.
      *
      * @return bool
      */

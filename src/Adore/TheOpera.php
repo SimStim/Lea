@@ -2,13 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Lea;
+namespace Lea\Adore;
 
 use DOMException;
 use NoDiscard;
 use ZipArchive;
-use Lea\Adore\Fancy;
-use Lea\Adore\Girlfriend;
 use Lea\Domain\Date;
 use Lea\Domain\Ebook;
 use Lea\Domain\XMLetsGoCrazy;

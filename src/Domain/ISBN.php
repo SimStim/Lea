@@ -17,7 +17,7 @@ final class ISBN
 
     public function __construct(
         private(set) string $isbn {
-            set => preg_replace(pattern: '/\D/', replacement: '', subject: $value);
+            set => trim(str_replace(search: ["-", " "], replace: "", subject: $value));
         }
     )
     {

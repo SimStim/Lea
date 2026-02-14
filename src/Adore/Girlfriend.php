@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Lea\Adore;
 
 use BadMethodCallException;
+use Exception;
+use Lea\Domain\Ebook;
+use Lea\Domain\Text;
 use NoDiscard;
 use SebastianBergmann\Version;
 use Throwable;
@@ -16,8 +19,9 @@ final class Girlfriend
 {
     private static ?self $instance = null;
     private static string $minVersion = "⊙1.0.0";
-    private(set) static string $pathEbooks = REPO . "configs/ebooks/";
-    private(set) static string $pathScripts = REPO . "configs/scripts/";
+    private(set) static string $pathEbooks = REPO . "ebooks/";
+    private(set) static string $pathBlocks = REPO . "blocks/";
+    private(set) static string $pathScripts = REPO . "scripts/";
     private(set) static string $pathFonts = REPO . "fonts/";
     private(set) static string $pathImages = REPO . "images/";
     private(set) static string $pathStyles = REPO . "styles/";
@@ -44,12 +48,14 @@ final class Girlfriend
         get => $this->leaName ??= Fancy::BOLD . self::comeToMe()->leaNameShort . " ePub anvil" . Fancy::UNBOLD . " " . self::comeToMe()->leaVersion;
     }
     private(set) array $doveCries = [];
+    private static Affirmation $affirmation;
 
     /**
      * Private constructor: you don't create Girlfriends directly!
      */
     private function __construct()
     {
+        self::$affirmation = new Affirmation();
     }
 
     /**
@@ -182,12 +188,15 @@ final class Girlfriend
      *
      * When doves cry, something needs your attention.
      *
-     * @param DoveCry $doveCry
+     * @param Ebook|Text $object
+     * @param string $identifier
+     * @param mixed ...$params
      * @return void
+     * @throws Exception
      */
-    public function makeDoveCry(DoveCry $doveCry): void
+    public function makeDoveCry(Ebook|Text $object, string $identifier, ...$params): void
     {
-        self::comeToMe()->doveCries[] = $doveCry;
+        self::comeToMe()->doveCries[] = self::$affirmation->cry($object, $identifier, ...$params);
     }
 
     /**

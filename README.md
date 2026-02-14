@@ -59,6 +59,12 @@ PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones
 
+1.0.2
+
+* Refactored the message system using a new class called Affirmation.
+* Lea will now base the repo path relative to where she was invoked.
+* Also flattened and renamed the examples folder to arx.
+
 1.0.1
 
 * Refactored validation of external link targets for a 10x speed gain.

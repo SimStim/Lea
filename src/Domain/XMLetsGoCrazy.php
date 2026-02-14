@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace Lea\Domain;
 
 use DOMDocument;
-use DOMElement;
 use DOMException;
 use DOMImplementation;
 use DOMXPath;
+use Exception;
 use NoDiscard;
-use Lea\Adore\DoveCry;
-use Lea\Adore\Flaw;
 use Lea\Adore\Girlfriend;
 
 /**
@@ -401,7 +399,13 @@ final class XMLetsGoCrazy
     #[NoDiscard]
     public static function extractISBN(DOMXPath $xpath): ISBN
     {
-        return new ISBN(trim($xpath->evaluate(expression: "string(/" . self::$rootElement . "/lea:isbn)")));
+        $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:isbn");
+        $isbns = [];
+        foreach ($nodes as $node) {
+            $isbn = new ISBN($node->textContent);
+            if ($isbn->isValid) $isbns[] = $isbn;
+        }
+        return (!empty($isbns) ? $isbns[0] : new ISBN(isbn: "***INVALID***"));
     }
 
     /**
@@ -502,6 +506,7 @@ final class XMLetsGoCrazy
      * @param array $targetData
      * @return void
      * @throws DOMException
+     * @throws Exception
      */
     public static function replaceLeaLinkTags(Text $text, array $targetData): void
     {
@@ -513,14 +518,8 @@ final class XMLetsGoCrazy
             if (filter_var($linkTarget, filter: FILTER_VALIDATE_URL) === false) {
                 $linkTarget = "lea-tgt-" . Girlfriend::comeToMe()->strToEpubIdentifier($linkTarget);
                 if (!isset($targetData[$linkTarget])) {
-                    Girlfriend::comeToMe()->makeDoveCry(new DoveCry(
-                        domainObject: $text,
-                        flaw: Flaw::Fatal,
-                        message: "Link to undefined link target.",
-                        suggestion: "Check the text content file, making sure the link target exists" . PHP_EOL
-                        . "Text file name: " . Girlfriend::$pathEbooks . $text->fileName . PHP_EOL
-                        . "Link name: '" . trim($linkTarget) . "'"
-                    ));
+                    Girlfriend::comeToMe()->makeDoveCry($text, "linkTargetUndefined",
+                        [Girlfriend::$pathEbooks . $text->fileName, trim($linkTarget)]);
                     continue;
                 }
             }
@@ -597,9 +596,9 @@ final class XMLetsGoCrazy
                 ? $node->getAttribute('caption')
                 : Girlfriend::comeToMe()->recall(name: "defaultcaption");
             $fileName = trim($node->textContent);
-            $replacement = "<figure>"
-                . "<img src='../Images/" . Girlfriend::comeToMe()->strToEpubImageFileName($fileName) . "'/>"
-                . "<figcaption>$caption</figcaption></figure>";
+            $replacement = "<figure>" . "<img src='../Images/"
+                . Girlfriend::comeToMe()->strToEpubImageFileName($fileName) . "'"
+                . " alt='$caption'/>" . "<figcaption>$caption</figcaption></figure>";
             $fragment = $text->dom->createDocumentFragment();
             $fragment->appendXML($replacement);
             $node->parentNode->replaceChild($fragment, $node);
