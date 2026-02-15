@@ -24,6 +24,9 @@ final class PaisleyPark
     private(set) TheOpera $theOpera {
         get => $this->theOpera ??= new TheOpera($this->ebook);
     }
+    private(set) AlphabetSt $alphabetSt {
+        get => $this->alphabetSt ??= new AlphabetSt();
+    }
 
     public function __construct(
         private string $fileName {
@@ -388,13 +391,20 @@ final class PaisleyPark
     public function seguePartTwo(): void
     {
         /**
+         * Replace all <lea:block> tags with xhtml content.
+         */
+        foreach ($this->ebook->texts as $text)
+            XMLetsGoCrazy::replaceLeaBlockTags($text);
+        /**
+         * Execute all <lea:script> tags.
+         */
+        foreach ($this->ebook->texts as $text)
+            XMLetsGoCrazy::executeLeaScriptTags($text, $this->alphabetSt, $this->ebook);
+        /**
          * Replace all <lea:image> tags with xhtml.
          */
-        $imageData = [];
-        foreach ($this->ebook->images as $image)
-            $imageData[] = $image->fileName;
         foreach ($this->ebook->texts as $text)
-            XMLetsGoCrazy::replaceLeaImageTags($text, $imageData);
+            XMLetsGoCrazy::replaceLeaImageTags($text);
         /**
          * If a cover image was defined, create a text file for it and add it to the ePub.
          */
@@ -435,6 +445,17 @@ final class PaisleyPark
          * At this point, we want to resolve any links in the text content.
          */
         $targetData = [];
+        foreach ($this->ebook->texts as $text) {
+            $target = [
+                "name" => "",
+                "identifier" => "",
+                "targetFileName" => Girlfriend::comeToMe()->strToEpubTextFileName(
+                    title: $text->title . " by " . $text->authors[0]->name)
+            ];
+            $targetData["lea-tgt-" . Girlfriend::comeToMe()->strToEpubIdentifier($text->title)]
+                = $targetData["lea-tgt-" . Girlfriend::comeToMe()->strToEpubIdentifier(
+                string: $text->title . " by " . $text->authors[0]->name)] = $target;
+        }
         foreach ($this->ebook->targets as $target)
             $targetData[$target->identifier] = [
                 "name" => $target->name,

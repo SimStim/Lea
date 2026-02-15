@@ -268,7 +268,22 @@ final class Affirmation
                 "message" => "EPUBCheck was not requested this time.",
                 "suggestion" => "To run EPUBCheck after ePub generation, add 'check-epub' to your command. "
                     . "[ $ " . Fancy::INVERSE . Fancy::BOLD . "lea #1# check-epub" . Fancy::RESET . " ]"
-            ]
+            ],
+            "blockReadError" => [
+                "flaw" => Flaw::Fatal,
+                "message" => "The block content file could not be read.",
+                "suggestion" => "Check for typos in the file name, and make sure the file exists." . PHP_EOL
+                    . "Block file name declared: '#1#'." . PHP_EOL
+                    . "Text file name containing block declaration: '#2#'."
+            ],
+            "scriptUndefined" => [
+                "flaw" => Flaw::Severe,
+                "message" => "Requested script is not defined.",
+                "suggestion" => "Check the text content file and Lea documentation to validate the script name." . PHP_EOL
+                    . "Script name invoked: '#1#'" . PHP_EOL
+                    . "Text file name: #2#"
+            ],
+
         ];
     }
 }

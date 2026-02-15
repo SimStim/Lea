@@ -25,6 +25,9 @@ final class Text
     private(set) string $blurb {
         get => $this->blurb ??= XMLetsGoCrazy::extractBlurb($this->xpath);
     }
+    private(set) string $rights {
+        get => $this->rights ??= XMLetsGoCrazy::extractRights($this->xpath);
+    }
 
     public function __construct(
         private(set) string  $fileName {

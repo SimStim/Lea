@@ -22,6 +22,8 @@ add meaning later.
 * generation of ePub OPF manifest
 * support for book series collections with ISSN
 * support for anthologies with per-text authors and rights
+* support for text blocks
+* support for the execution of pre-made scripts
 * <lea:> tags anywhere in the source files, for example, for images with captions
 * validation of external links
 * support for advanced typesetting: embedded fonts and stylesheets
@@ -32,11 +34,9 @@ add meaning later.
 ### Planned
 
 * template system for images
-* text blocks
 * automatic detection and content-based compression of image files
 * import of word processor documents into Lea definition files
 * simple but useful reports
-* many convenience features that will be triaged and implemented on a priority basis
 
 ## 1.0.0 and ⊙
 
@@ -58,6 +58,14 @@ Copyright Eduard Pech (https://logophilia.eu/the-director-without-a-service-weap
 PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones
+
+1.0.3
+
+* Added handling of lea:block tags.
+* Added extraction of rights on a per-text basis.
+* Added the script class AlphabetSt and the execution of lea:script tags.
+* Added three scripts: table of contents, list of rights, list of blurbs.
+* Other things: fixed extraction of rights and blurbs, refactoring, new helper functions and messages.
 
 1.0.2
 

@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Lea\Domain;
 
 use DOMDocument;
+use DOMElement;
 use DOMException;
 use DOMImplementation;
 use DOMXPath;
 use Exception;
 use NoDiscard;
+use ReflectionException;
+use Lea\Adore\AlphabetSt;
 use Lea\Adore\Girlfriend;
 
 /**
@@ -21,6 +24,13 @@ final class XMLetsGoCrazy
 {
     private(set) static string $leaNamespace = "https://logophilia.eu/lea/2026/xhtml";
     private(set) static string $rootElement = "xmletsgocrazy";
+
+    public static function wrapInLeaNamespace($fragments): string
+    {
+        return "<" . self::$rootElement
+            . " xmlns:lea='" . self::$leaNamespace
+            . "'>$fragments</" . self::$rootElement . ">";
+    }
 
     /**
      * Takes a DOMDocument wrapped in the lea namespace
@@ -61,9 +71,7 @@ final class XMLetsGoCrazy
     #[NoDiscard]
     public static function createDOMFromFragments(string $fragments): DOMDocument
     {
-        $wrapped = "<" . self::$rootElement .
-            " xmlns:lea='" . self::$leaNamespace . "'>$fragments</" . self::$rootElement . ">";
-        return self::createDOM($wrapped);
+        return self::createDOM(self::wrapInLeaNamespace($fragments));
     }
 
     /**
@@ -165,7 +173,15 @@ final class XMLetsGoCrazy
     #[NoDiscard]
     public static function extractRights(DOMXPath $xpath): string
     {
-        return trim($xpath->evaluate(expression: "string(/" . self::$rootElement . "/lea:rights)"));
+        $nodes = $xpath->query("/" . self::$rootElement . "/lea:rights");
+        if ($nodes->length === 0)
+            return "";
+        $rightsNode = $nodes->item(0);
+        $dom = $rightsNode->ownerDocument;
+        $innerXml = '';
+        foreach ($rightsNode->childNodes as $child)
+            $innerXml .= $dom->saveXML($child);
+        return trim($innerXml);
     }
 
     /**
@@ -295,7 +311,16 @@ final class XMLetsGoCrazy
     #[NoDiscard]
     public static function extractBlurb(DOMXPath $xpath): string
     {
-        return trim($xpath->evaluate(expression: "string(/" . self::$rootElement . "/lea:blurb)"));
+//        return trim($xpath->evaluate(expression: "string(/" . self::$rootElement . "/lea:blurb)"));
+        $nodes = $xpath->query("/" . self::$rootElement . "/lea:blurb");
+        if ($nodes->length === 0)
+            return "";
+        $blurbNode = $nodes->item(0);
+        $dom = $blurbNode->ownerDocument;
+        $innerXml = '';
+        foreach ($blurbNode->childNodes as $child)
+            $innerXml .= $dom->saveXML($child);
+        return trim($innerXml);
     }
 
     /**
@@ -519,7 +544,7 @@ final class XMLetsGoCrazy
                 $linkTarget = "lea-tgt-" . Girlfriend::comeToMe()->strToEpubIdentifier($linkTarget);
                 if (!isset($targetData[$linkTarget])) {
                     Girlfriend::comeToMe()->makeDoveCry($text, "linkTargetUndefined",
-                        [Girlfriend::$pathEbooks . $text->fileName, trim($linkTarget)]);
+                        Girlfriend::$pathEbooks . $text->fileName, trim($linkTarget));
                     continue;
                 }
             }
@@ -556,6 +581,27 @@ final class XMLetsGoCrazy
     }
 
     /**
+     * Replace <lea:script> tags with xhtml content by executing the names script.
+     * - <lea:script>tableOfContents</lea:script>
+     * Check AlphabetSt or Lea documentation for the list of available scripts.
+     *
+     * @throws ReflectionException|Exception
+     */
+    public static function executeLeaScriptTags(Text $text, AlphabetSt $scripts, Ebook $ebook): void
+    {
+        $nodes = $text->xpath->query(expression: "//lea:script");
+        foreach ($nodes as $node) {
+            $scriptName = strtolower(trim($node->textContent));
+            if (!array_key_exists($scriptName, $scripts->lut)) {
+                Girlfriend::comeToMe()->makeDoveCry($text, "scriptUndefined", $scriptName,
+                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall("subfolder") . $text->fileName);
+                continue;
+            }
+            $scripts->{$scripts->lut[$scriptName]}($node, $ebook);
+        }
+    }
+
+    /**
      * Extract the subfolder names from an XPath object.
      * - <lea:subfolder>tpsf-8</lea:subfolder>
      *
@@ -585,10 +631,9 @@ final class XMLetsGoCrazy
      * Replace <lea:image> tags with xhtml template.
      *
      * @param Text $text
-     * @param array $imageData
      * @return void
      */
-    public static function replaceLeaImageTags(Text $text, array $imageData): void
+    public static function replaceLeaImageTags(Text $text): void
     {
         $nodes = $text->xpath->query(expression: "//lea:image");
         foreach ($nodes as $node) {
@@ -602,6 +647,33 @@ final class XMLetsGoCrazy
             $fragment = $text->dom->createDocumentFragment();
             $fragment->appendXML($replacement);
             $node->parentNode->replaceChild($fragment, $node);
+        }
+    }
+
+    /**
+     * Replace <lea:block> tags with xhtml content.
+     *
+     * @param Text $text
+     * @return void
+     * @throws Exception
+     */
+    public static function replaceLeaBlockTags(Text $text): void
+    {
+        $nodes = $text->xpath->query(expression: "//lea:block");
+        foreach ($nodes as $node) {
+            $blockFileName = Girlfriend::$pathBlocks . trim($node->textContent);
+            $replacement = Girlfriend::comeToMe()->readFile($blockFileName);
+            if ($replacement === "") {
+                Girlfriend::comeToMe()->makeDoveCry($text, "blockReadError", $blockFileName, $text->fileName);
+                continue;
+            }
+            $replacementDom = new DOMDocument(version: '1.0', encoding: 'UTF-8');
+            $replacementDom->loadXML(self::wrapInLeaNamespace($replacement), options: LIBXML_NONET);
+            foreach ($replacementDom->documentElement->childNodes as $child) {
+                $imported = $text->dom->importNode($child, deep: true);
+                $node->parentNode->insertBefore($imported, $node);
+            }
+            $node->parentNode->removeChild($node);
         }
     }
 
@@ -672,5 +744,24 @@ final class XMLetsGoCrazy
         foreach ($nodes as $node)
             $node->parentNode->removeChild($node);
         return $leaDom;
+    }
+
+    /**
+     * Replaces a DOMNode with the nodes generated from the provided string content.
+     *
+     * @param DOMElement $node The DOM node to be replaced.
+     * @param string $string The string content to generate replacement nodes.
+     * @return void
+     */
+    public static function replaceNodeWithStringContent(DOMElement $node, string $string): void
+    {
+        $newDom = new DOMDocument(version: '1.0', encoding: 'UTF-8');
+        $newDom->loadXML(XMLetsGoCrazy::wrapInLeaNamespace($string), options: LIBXML_NONET);
+        foreach ($newDom->documentElement->childNodes as $child) {
+            $nodeDom = $node->ownerDocument;
+            $imported = $nodeDom->importNode($child, deep: true);
+            $node->parentNode->insertBefore($imported, $node);
+        }
+        $node->parentNode->removeChild($node);
     }
 }
