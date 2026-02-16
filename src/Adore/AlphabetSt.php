@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Lea\Adore;
 
 use DOMElement;
+use Exception;
 use Lea\Domain\Ebook;
+use Lea\Domain\Image;
 use Lea\Domain\XMLetsGoCrazy;
 
 /**
@@ -28,6 +30,7 @@ class AlphabetSt
         "blurbs" => "listBlurbs",
         "list blurbs" => "listBlurbs",
         "text blurbs" => "listBlurbs",
+        "linked image" => "linkedImage",
     ];
 
     /**
@@ -47,7 +50,7 @@ class AlphabetSt
     }
 
     /**
-     * Iterates over the rights on a per-text-file basis and inserts them into the DOM structure.
+     * Iterates over all text files and inserts their rights into the DOM structure.
      *
      * @param DOMElement $node The DOM node where the colophon will be inserted. This node will be replaced.
      * @param Ebook $ebook The ebook object containing the texts with rights information for generating the colophon.
@@ -62,10 +65,17 @@ class AlphabetSt
         XMLetsGoCrazy::replaceNodeWithStringContent(node: $node, string: $rights);
     }
 
+    /**
+     * Iterates over all text files and inserts their blurbs into the DOM structure.
+     *
+     * @param DOMElement $node
+     * @param Ebook $ebook
+     * @return void
+     */
     public function listBlurbs(DOMElement $node, Ebook $ebook): void
     {
-        $class = $node->hasAttribute('heading-class')
-            ? $node->getAttribute('heading-class')
+        $class = $node->hasAttribute(qualifiedName: 'heading-class')
+            ? $node->getAttribute(qualifiedName: 'heading-class')
             : "";
         $blurbs = "";
         foreach ($ebook->texts as $text)
@@ -73,5 +83,38 @@ class AlphabetSt
                 $blurbs .= "<h4 class='$class'><lea:link>" . $text->title . " by " . $text->authors[0]->name
                     . "</lea:link></h4>" . $text->blurb . PHP_EOL;
         XMLetsGoCrazy::replaceNodeWithStringContent(node: $node, string: $blurbs);
+    }
+
+    /**
+     * Replaces a DOM node with a structured HTML representation of a linked image.
+     *
+     * @param DOMElement $node The DOM node to be replaced. The node must include attributes "to" and "image".
+     * @param Ebook $ebook The ebook object used for error handling and fetching default values if necessary.
+     * @return void
+     * @throws Exception
+     */
+    public function linkedImage(DOMElement $node, Ebook $ebook): void
+    {
+        if (!$node->hasAttribute(qualifiedName: "to")) {
+            Girlfriend::comeToMe()->makeDoveCry($ebook, "linkedImageMissingTo");
+            return;
+        }
+        $to = $node->getAttribute(qualifiedName: "to");
+        if (!$node->hasAttribute(qualifiedName: "image")) {
+            Girlfriend::comeToMe()->makeDoveCry($ebook, "linkedImageMissingImage");
+            return;
+        }
+        $image = Girlfriend::comeToMe()->strToEpubImageFileName($node->getAttribute(qualifiedName: "image"));
+        $caption = $node->hasAttribute(qualifiedName: "caption")
+            ? $node->getAttribute(qualifiedName: "caption")
+            : Girlfriend::comeToMe()->recall(name: "defaultcaption");
+        $replacement = "<figure>"
+            . "<lea:link to='$to'>"
+            . "<img src='../Images/$image' alt='$caption'/>"
+            . "</lea:link>"
+            . "<figcaption>$caption</figcaption>"
+            . "</figure>";
+        $ebook->addImages([new Image(trim($node->getAttribute(qualifiedName: "image")), $caption)]);
+        XMLetsGoCrazy::replaceNodeWithStringContent(node: $node, string: $replacement);
     }
 }

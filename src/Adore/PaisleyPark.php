@@ -60,15 +60,17 @@ final class PaisleyPark
      */
     public function segue(): void
     {
+        echo "SEARCHING" . PHP_EOL;
         /**
          * Checks if the ebook config file has been read successfully.
-         * - no = fatal
+         * - No = fatal
          */
         if ($this->ebook->xml === "") {
             Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookReadError",
                 Girlfriend::$pathEbooks . $this->ebook->fileName);
             return;
         }
+        echo "FOUND" . PHP_EOL;
         /**
          * Checks if the ebook config file is well-formed.
          * - No = fatal
@@ -78,8 +80,8 @@ final class PaisleyPark
                 Girlfriend::$pathEbooks . $this->ebook->fileName);
             return;
         }
-        $subFolder = XMLetsGoCrazy::extractSubFolder($this->ebook->xpath);
-        Girlfriend::comeToMe()->remember(name: "subfolder", data: $subFolder !== "" ? $subFolder . "/" : "");
+        echo "LOADING" . PHP_EOL;
+        XMLetsGoCrazy::extractSubFolder($this->ebook);
         $defaultCaption = XMLetsGoCrazy::extractDefaultCaption($this->ebook->xpath);
         Girlfriend::comeToMe()->remember(name: "defaultcaption", data: $defaultCaption);
         /**
@@ -115,7 +117,7 @@ final class PaisleyPark
          * - No = severe, continue
          */
         if (!$this->ebook->publisher->isValid())
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookPublisherRecommended",
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookPublisherMandatory",
                 Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * Checks if there is at least one <lea:rights> tag.
@@ -150,8 +152,8 @@ final class PaisleyPark
          * - yes = continue with all valid <author> definitions
          */
         if (!XMLetsGoCrazy::validateAuthors($this->ebook->xpath))
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookInvalidAuthors",
-                count($this->ebook->authors), Girlfriend::$pathEbooks . $this->ebook->fileName);
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookInvalidAuthor",
+                (string)count($this->ebook->authors), Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * Checks if the date has been extracted successfully
          * - No = fatal
@@ -163,14 +165,9 @@ final class PaisleyPark
          * Checks if there are invalid <contributor> definitions present in the ebook config.
          * - Yes = continue with all valid <contributor> definitions
          */
-        if (!empty($this->ebook->contributors)) {
-            $reference = [];
-            foreach ($this->ebook->contributors as $contributor)
-                $reference[] = count($contributor->roles);
-            if (!XMLetsGoCrazy::validateContributors(xpath: $this->ebook->xpath, reference: $reference))
-                Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookInvalidContributor",
-                    count($this->ebook->contributors), Girlfriend::$pathEbooks . $this->ebook->fileName);
-        }
+        if (!XMLetsGoCrazy::validateContributors($this->ebook))
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookInvalidContributor",
+                (string)count($this->ebook->contributors), Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * Checks if the ISBN is valid.
          * - No = fatal
@@ -196,7 +193,7 @@ final class PaisleyPark
          * If there is a <lea:cover> declaration, check if the file exists in the file system.
          * - No = fatal
          */
-        $coverFileName = Girlfriend::$pathImages . Girlfriend::comeToMe()->recall(name: "subfolder") . $this->ebook->cover;
+        $coverFileName = Girlfriend::$pathImages . Girlfriend::comeToMe()->recall(name: "subfolder-images") . $this->ebook->cover;
         if (($this->ebook->cover !== "") && !is_file(filename: $coverFileName))
             Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookInvalidCover",
                 $coverFileName, Girlfriend::$pathEbooks . $this->ebook->fileName);
@@ -217,7 +214,7 @@ final class PaisleyPark
              */
             if ($text->xhtml === "") {
                 Girlfriend::comeToMe()->makeDoveCry($text, "textReadError",
-                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder") . "$text->fileName");
+                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName");
                 continue;
             }
             /**
@@ -226,7 +223,7 @@ final class PaisleyPark
              */
             if (!XMLetsGoCrazy::isWellFormed($text->xpath)) {
                 Girlfriend::comeToMe()->makeDoveCry($text, "textNotWellFormed",
-                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder") . "$text->fileName");
+                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName");
                 continue;
             }
             /**
@@ -239,49 +236,49 @@ final class PaisleyPark
              */
             if ($text->title === "")
                 Girlfriend::comeToMe()->makeDoveCry($text, "textTitleRequired",
-                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder") . "$text->fileName");
+                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName");
             /**
              * Checks if there are more than one <title> definitions.
              * - Yes = use first, continue with a warning message
              */
             if ($text->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:title")->length > 1)
                 Girlfriend::comeToMe()->makeDoveCry($text, "textMultipleTitles", $text->title,
-                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder") . "$text->fileName");
+                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName");
             /**
              * Checks if there is at least one author.
              * - no = fatal
              */
             if (count($text->authors) === 0)
                 Girlfriend::comeToMe()->makeDoveCry($text, "textAuthorRequired",
-                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder") . "$text->fileName");
+                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName");
             /**
              * Checks if there are invalid <author> definitions present in the text file.
              * - Yes = continue with all valid <author> definitions
              */
             if (XMLetsGoCrazy::validateAuthors($text->xpath) === false)
-                Girlfriend::comeToMe()->makeDoveCry($text, "textInvalidAuthors", count($text->authors),
-                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder") . "$text->fileName");
+                Girlfriend::comeToMe()->makeDoveCry($text, "textInvalidAuthor", (string)count($text->authors),
+                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName");
             /**
              * Checks if there are more than one <lea:blurb> definitions.
              * - Yes = use the first blurb found, continue with a warning message
              */
             if ($text->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:blurb")->length > 1)
                 Girlfriend::comeToMe()->makeDoveCry($text, "textMultipleBlurbs", $text->blurb,
-                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder") . "$text->fileName");
+                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName");
         }
         /**
          * Checks if there are any <lea:image> tags defining file names not found in the file system.
-         * - yes = fatal
+         * - Yes = fatal
          */
         $missing = [];
         foreach ($this->ebook->images as $image)
             if (!is_file(
-                filename: Girlfriend::$pathImages . Girlfriend::comeToMe()->recall(name: "subfolder") . $image->fileName)
+                filename: Girlfriend::$pathImages . Girlfriend::comeToMe()->recall(name: "subfolder-images") . $image->fileName)
             )
-                $missing[] = Girlfriend::$pathImages . Girlfriend::comeToMe()->recall(name: "subfolder") . $image->fileName;
+                $missing[] = Girlfriend::$pathImages . Girlfriend::comeToMe()->recall(name: "subfolder-images") . $image->fileName;
         if (count($missing) > 0)
             Girlfriend::comeToMe()->makeDoveCry($this->ebook, "imageReadError",
-                count($missing), implode(separator: PHP_EOL, array: $missing),
+                (string)count($missing), implode(separator: PHP_EOL, array: $missing),
                 Girlfriend::$pathEbooks . $this->ebook->fileName);
     }
 
@@ -354,17 +351,15 @@ final class PaisleyPark
             curl_multi_add_handle($mh, $ch);
             $handles[$url] = $ch;                   // keep reference to the curl handle
         }
-        $prevActive = count($handles);
         echo Fancy::HIDE_CURSOR;
         do {
             curl_multi_exec($mh, still_running: $active);
             curl_multi_select($mh);
-            if ($active !== $prevActive)
-                echo "\r[ " . Fancy::PURPLE_RAIN
-                    . Fancy::ANIMATION[$animCtr++ % strlen(string: Fancy::ANIMATION)] . Fancy::RESET
-                    . " ] [ " . Fancy::INVERSE . $active . "/" . count($handles) . " active" . Fancy::RESET . " ]"
-                    . " Resolving external link '" . array_rand($urls) . "'" . Fancy::CLR_EOL;
-            $prevActive = $active;
+            echo "\r[ " . Fancy::PURPLE_RAIN_BOLD_INVERSE_WHITE
+                . Fancy::ANIMATION[$animCtr++ % strlen(string: Fancy::ANIMATION)] . Fancy::RESET
+                . " ] [ " . Fancy::INVERSE . $active . "/" . count($handles) . " active" . Fancy::RESET . " ]"
+                . " Resolving external link '" . array_rand($urls) . "'" . Fancy::CLR_EOL;
+            usleep(microseconds: 200000);
         } while ($active > 0);
         echo Fancy::UNHIDE_CURSOR;
         foreach ($handles as $key => $ch) {
@@ -494,10 +489,12 @@ final class PaisleyPark
             $errorLog = array_merge($errorLog, Girlfriend::comeToMe()->doveCries);
             Girlfriend::comeToMe()->silenceDoves();
             $return = $this->theOpera->conductor($errorLog);
+            if (!$this->inThisBedEyeScream()) exit; // error log already written into ePub, nothing to save here
         } catch (Throwable $e) {
             Girlfriend::comeToMe()->extraordinary(throwable: $e);
         }
-        echo sprintf("0 OK, %s:8%s", Girlfriend::comeToMe()->whereAmI()["line"], PHP_EOL);
+        echo "READY." . PHP_EOL . PHP_EOL
+            . sprintf("0 OK, %s:8%s", Girlfriend::comeToMe()->whereAmI()["line"], PHP_EOL);
         return $return;
     }
 }

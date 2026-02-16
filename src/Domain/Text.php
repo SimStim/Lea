@@ -35,7 +35,7 @@ final class Text
         },
         private(set) ?string $xhtml = null {
             get => $this->xhtml ??= Girlfriend::comeToMe()->readFile(
-                fileName: Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder") . $this->fileName
+                fileName: Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . $this->fileName
             );
             set {
                 if ($value !== null) {

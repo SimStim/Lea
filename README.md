@@ -59,6 +59,18 @@ PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones
 
+1.0.4
+
+* Grammar changes to simplify tags and their usage.
+* Fixed metadata error: multiple authors for a text produced a wrong identifier for any author beyond the first.
+* Added spinner animation to EPUBCheck validation.
+* Fixed an exception when checking external links with an empty list of URLs.
+* Checking external URLs doesn't hammer the CPU anymore, thanks to usleep.
+* The lea:subfolder tag can now discriminate between text and images via an added attribute.
+* Simplified grammar for collection, contributor, date, and publisher tags.
+* Added a few granular progress messages; you'll know when you see them.
+* Added a script for linked images.
+
 1.0.3
 
 * Added handling of lea:block tags.

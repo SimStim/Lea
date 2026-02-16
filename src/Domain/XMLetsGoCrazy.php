@@ -126,20 +126,13 @@ final class XMLetsGoCrazy
     public static function validateAuthors(DOMXPath $xpath): bool
     {
         $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:author");
-        if ($nodes->length === 0) return false; // at least one author required
-        foreach ($nodes as $node) {
-            $name = trim($xpath->evaluate(expression: "string(lea:name)", contextNode: $node));
-            if ($name === "") return false; // invalid author detected (missing name)
-        }
-        return true;
+        return (count($nodes) >= 1);
     }
 
     /**
      * Extract the author(s) from an XPath object
-     * - <lea:author>
-     *     <lea:name>The Unpronounceable Symbol</lea:name>
-     *     <lea:file-as>Nelson, Prince Rogers [The Unpronounceable Symbol]</lea:file-as>
-     *   </lea:author>
+     * - <lea:author>Robert Sheckley</lea:author>
+     * - <lea:author file-as="Nelson, Prince Rogers [The Unpronounceable Symbol]">The Unpronounceable Symbol</lea:author>
      *
      * @param DOMXPath $xpath
      * @return array
@@ -150,9 +143,10 @@ final class XMLetsGoCrazy
         $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:author");
         $authors = [];
         foreach ($nodes as $node) {
-            $name = trim($xpath->evaluate(expression: "string(lea:name)", contextNode: $node));
-            if ($name === "") continue;
-            $fileAs = trim($xpath->evaluate(expression: "string(lea:file-as)", contextNode: $node));
+            $fileAs = $node->hasAttribute('file-as')
+                ? $node->getAttribute('file-as')
+                : "";
+            $name = trim($node->textContent);
             $authors[] = new Author($name, $fileAs);
         }
         return $authors;
@@ -176,7 +170,7 @@ final class XMLetsGoCrazy
         $nodes = $xpath->query("/" . self::$rootElement . "/lea:rights");
         if ($nodes->length === 0)
             return "";
-        $rightsNode = $nodes->item(0);
+        $rightsNode = $nodes->item(index: 0);
         $dom = $rightsNode->ownerDocument;
         $innerXml = '';
         foreach ($rightsNode->childNodes as $child)
@@ -213,10 +207,15 @@ final class XMLetsGoCrazy
     {
         $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:date");
         if ($nodes === false || $nodes->length !== 1) return new Date ();
-        $created = trim($xpath->evaluate(expression: "string(lea:created)", contextNode: $nodes[0]));
-        $modified = trim($xpath->evaluate(expression: "string(lea:modified)", contextNode: $nodes[0]));
-        $issued = trim($xpath->evaluate(expression: "string(lea:issued)", contextNode: $nodes[0]));
-        return new Date (created: $created, modified: $modified, issued: $issued);
+        $node = $nodes->item(index: 0);
+        $issued = trim($node->textContent);
+        return new Date (
+            created: $node->hasAttribute(qualifiedName: 'created')
+                ? trim($node->getAttribute(qualifiedName: 'created'))
+                : $issued,
+            modified: "now",
+            issued: $issued
+        );
     }
 
     /**
@@ -238,43 +237,31 @@ final class XMLetsGoCrazy
     public static function extractPublisher(DOMXPath $xpath): Publisher
     {
         $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:publisher");
-        if ($nodes === false || $nodes->length !== 1) return new Publisher();
-        $imprint = trim($xpath->evaluate(expression: "string(lea:imprint)", contextNode: $nodes[0]));
-        $contact = trim($xpath->evaluate(expression: "string(lea:contact)", contextNode: $nodes[0]));
-        return new Publisher(imprint: $imprint, contact: $contact);
+        if ($nodes === false || $nodes->length !== 1)
+            return new Publisher();
+        $node = $nodes->item(index: 0);
+        if (!$node->hasAttribute(qualifiedName: "contact"))
+            return new Publisher();
+        return new Publisher(
+            imprint: trim($node->textContent),
+            contact: trim($node->getAttribute(qualifiedName: "contact"))
+        );
     }
 
     /**
      * Validates all existing <contributor> tags in a passed XPath object
      *
-     * @param DOMXPath $xpath
-     * @param array $reference
+     * @param Ebook $ebook
      * @return bool
      */
-    public static function validateContributors(DOMXPath $xpath, array $reference): bool
+    public static function validateContributors(Ebook $ebook): bool
     {
-        $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:contributor");
-        $ptr = 0;
-        foreach ($nodes as $node) {
-            $name = trim($xpath->evaluate(expression: "string(lea:name)", contextNode: $node));
-            if ($name === "") return false;
-            $roleNodes = $xpath->query(expression: "lea:role", contextNode: $node);
-            if (count($roleNodes) !== $reference[$ptr++]) return false; // divergence of found versus expected roles
-            foreach ($roleNodes as $roleNode)
-                if (!in_array(strtolower(trim($roleNode->textContent)), Contributor::$permittedRoles, true))
-                    return false;
-        }
-        return true;
+        return !empty($ebook->contributors);
     }
 
     /**
      * Extract the contributor(s) from an XPath object
-     * - <lea:contributor>
-     *     <lea:name>The Unpronounceable Symbol</lea:name>
-     *     <lea:role>edt</lea:role>
-     *     <lea:role>trl</lea:role>
-     *     <lea:role>bkp</lea:role>
-     *   </lea:contributor>
+     * - <lea:contributor roles="edt trl bkp bkd tyg mrk pfr cov ill art blw">Eduard Pech</lea:contributor>
      *
      * @param DOMXPath $xpath
      * @return array
@@ -283,17 +270,17 @@ final class XMLetsGoCrazy
     public static function extractContributors(DOMXPath $xpath): array
     {
         $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:contributor");
+        if ($nodes === false || $nodes->length !== 1) return [];
         $contributors = [];
         foreach ($nodes as $node) {
-            $name = trim($xpath->evaluate(expression: "string(lea:name)", contextNode: $node));
-            if ($name === "") continue;
-            $roleNodes = $xpath->query(expression: "lea:role", contextNode: $node);
-            $roles = [];
-            foreach ($roleNodes as $roleNode)
-                $roles[] = strtolower(trim($roleNode->textContent));
-            $roles = array_intersect($roles, Contributor::$permittedRoles); // use only permitted roles
-            if (empty($roles)) continue; // at least one role is required
-            $contributors[] = new Contributor($name, $roles);
+            $roles = array_intersect(
+                preg_split(
+                    pattern: "/\s+/",
+                    subject: $node->hasAttribute('roles') ? strtolower(trim($node->getAttribute('roles'))) : ""
+                ), Contributor::$permittedRoles // use only permitted roles
+            );
+            if (empty($roles)) continue;        // at least one role is required
+            $contributors[] = new Contributor(name: trim($node->textContent), roles: $roles);
         }
         return $contributors;
     }
@@ -311,11 +298,10 @@ final class XMLetsGoCrazy
     #[NoDiscard]
     public static function extractBlurb(DOMXPath $xpath): string
     {
-//        return trim($xpath->evaluate(expression: "string(/" . self::$rootElement . "/lea:blurb)"));
         $nodes = $xpath->query("/" . self::$rootElement . "/lea:blurb");
         if ($nodes->length === 0)
             return "";
-        $blurbNode = $nodes->item(0);
+        $blurbNode = $nodes->item(index: 0);
         $dom = $blurbNode->ownerDocument;
         $innerXml = '';
         foreach ($blurbNode->childNodes as $child)
@@ -452,12 +438,21 @@ final class XMLetsGoCrazy
     public static function extractCollection(DOMXPath $xpath): Collection
     {
         $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:collection");
-        if ($nodes === false || $nodes->length !== 1) return new Collection();
-        $title = trim($xpath->evaluate(expression: "string(lea:title)", contextNode: $nodes[0]));
-        $type = trim($xpath->evaluate(expression: "string(lea:type)", contextNode: $nodes[0]));
-        $position = trim($xpath->evaluate(expression: "string(lea:position)", contextNode: $nodes[0]));
-        $issn = trim($xpath->evaluate(expression: "string(lea:issn)", contextNode: $nodes[0]));
-        return new Collection(title: $title, type: $type, position: $position, issn: $issn);
+        if ($nodes === false || $nodes->length !== 1)
+            return new Collection();
+        $node = $nodes->item(index: 0);
+        if (!$node->hasAttribute(qualifiedName: "type")
+            || !$node->hasAttribute(qualifiedName: "position")
+            || !$node->hasAttribute(qualifiedName: "issn"))
+            return new Collection();
+        if ($node->getAttribute(qualifiedName: "type") !== "series")
+            return new Collection();
+        return new Collection(
+            title: trim($node->textContent),
+            type: $node->getAttribute("type"),
+            position: $node->getAttribute("position"),
+            issn: $node->getAttribute("issn")
+        );
     }
 
     /**
@@ -594,7 +589,7 @@ final class XMLetsGoCrazy
             $scriptName = strtolower(trim($node->textContent));
             if (!array_key_exists($scriptName, $scripts->lut)) {
                 Girlfriend::comeToMe()->makeDoveCry($text, "scriptUndefined", $scriptName,
-                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall("subfolder") . $text->fileName);
+                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall("subfolder-text") . $text->fileName);
                 continue;
             }
             $scripts->{$scripts->lut[$scriptName]}($node, $ebook);
@@ -605,13 +600,28 @@ final class XMLetsGoCrazy
      * Extract the subfolder names from an XPath object.
      * - <lea:subfolder>tpsf-8</lea:subfolder>
      *
-     * @param DOMXPath $xpath
-     * @return string
+     * @param Ebook $ebook
+     * @return void
+     * @throws Exception
      */
-    #[NoDiscard]
-    public static function extractSubFolder(DOMXPath $xpath): string
+    public static function extractSubFolder(Ebook $ebook): void
     {
-        return trim($xpath->evaluate(expression: "string(/" . self::$rootElement . "/lea:subfolder)"), characters: "/ ");
+        $nodes = $ebook->xpath->query(expression: "/" . self::$rootElement . "/lea:subfolder");
+        foreach ($nodes as $node) {
+            $subfolder = trim(string: $node->textContent, characters: "/ ") . "/";
+            if (!$node->hasAttribute('tag')) {
+                Girlfriend::comeToMe()->remember(name: "subfolder-text", data: $subfolder);
+                Girlfriend::comeToMe()->remember(name: "subfolder-images", data: $subfolder);
+                continue;
+            }
+            $attr = $node->getAttribute('tag');
+            if (!in_array($attr, ["text", "images"])) {
+                Girlfriend::comeToMe()->makeDoveCry($ebook, "subfolderTagUndefined", $attr,
+                    Girlfriend::$pathEbooks . $ebook->fileName);
+                continue;
+            }
+            Girlfriend::comeToMe()->remember(name: "subfolder-$attr", data: $subfolder);
+        }
     }
 
     /**

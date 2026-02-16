@@ -221,7 +221,7 @@ final class TheOpera
             foreach ($text->authors as $author)
                 if ($author->name !== Girlfriend::comeToMe()->leaNamePlain)
                     $metadata .= "<meta refines='#lea-txt-"
-                        . Girlfriend::comeToMe()->strToEpubIdentifier($text->title . " by " . $author->name)
+                        . Girlfriend::comeToMe()->strToEpubIdentifier($text->title . " by " . $text->authors[0]->name)
                         . "' property='dcterms:creator'>" . $author->name . "</meta>" . PHP_EOL;
         foreach ($this->ebook->subjects as $subject)
             $metadata .= "<dc:subject>$subject</dc:subject>" . PHP_EOL;
@@ -352,6 +352,7 @@ final class TheOpera
      * @param array $errorLog
      * @return bool
      * @throws DOMException
+     * @throws \Exception
      */
     #[NoDiscard]
     public function conductor(array $errorLog): bool
@@ -384,14 +385,14 @@ final class TheOpera
          */
         foreach ($this->ebook->images as $image)
             $zip->addFile(
-                filepath: Girlfriend::$pathImages . Girlfriend::comeToMe()->recall(name: "subfolder") . $image->fileName,
+                filepath: Girlfriend::$pathImages . Girlfriend::comeToMe()->recall(name: "subfolder-images") . $image->fileName,
                 entryname: "OEBPS/Images/" . $this->identifiers[$this->idMarkers["image"] . $image->fileName]["epubFileName"]
             );
         /**
          * Also add the cover image file.
          */
         $zip->addFile(
-            filepath: Girlfriend::$pathImages . Girlfriend::comeToMe()->recall(name: "subfolder") . $this->ebook->cover,
+            filepath: Girlfriend::$pathImages . Girlfriend::comeToMe()->recall(name: "subfolder-images") . $this->ebook->cover,
             entryname: "OEBPS/Images/" . $this->identifiers[$this->idMarkers["image"] . $this->ebook->cover]["epubFileName"]
         );
         /**
@@ -404,6 +405,7 @@ final class TheOpera
             );
         }
         $zip->close();
+        echo "Successfully produced the ePub file: $epubFileName" . PHP_EOL;
         $timeStamp = new Date(modified: "now")->modified;
         if (Girlfriend::comeToMe()->recall(name: "check-epub") === "yes")
             $result = Girlfriend::comeToMe()->checkEpub($epubFileName);

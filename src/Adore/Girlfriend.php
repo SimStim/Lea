@@ -6,11 +6,11 @@ namespace Lea\Adore;
 
 use BadMethodCallException;
 use Exception;
-use Lea\Domain\Ebook;
-use Lea\Domain\Text;
 use NoDiscard;
 use SebastianBergmann\Version;
 use Throwable;
+use Lea\Domain\Ebook;
+use Lea\Domain\Text;
 
 /**
  * You can do it because I'm your friend.
@@ -21,7 +21,6 @@ final class Girlfriend
     private static string $minVersion = "⊙1.0.0";
     private(set) static string $pathEbooks = REPO . "ebooks/";
     private(set) static string $pathBlocks = REPO . "blocks/";
-    private(set) static string $pathScripts = REPO . "scripts/";
     private(set) static string $pathFonts = REPO . "fonts/";
     private(set) static string $pathImages = REPO . "images/";
     private(set) static string $pathStyles = REPO . "styles/";
@@ -328,6 +327,7 @@ final class Girlfriend
      *               - "stdout": Output captured from the standard output of the process.
      *               - "stderr": Output captured from the standard error of the process.
      *               - "return": The exit code returned by the process.
+     * @throws Exception
      */
     public function checkEpub(string $fileName): array
     {
@@ -336,15 +336,28 @@ final class Girlfriend
             1 => ['pipe', 'w'],     // stdout
             2 => ['pipe', 'w'],     // stderr
         ];
+        $pipes = [];
         $process = proc_open($cmd, $descriptors, $pipes);
-        $stdout = $stderr = $returnCode = null;
-        if (is_resource($process)) {
-            $stdout = stream_get_contents($pipes[1]);
-            fclose($pipes[1]);
-            $stderr = stream_get_contents($pipes[2]);
-            fclose($pipes[2]);
-            $returnCode = proc_close($process);
+        if (!is_resource($process))
+            return ['error' => 'Failed to start process.'];
+        echo "Checking ePub with EPUBCheck, please be patient." . PHP_EOL . PHP_EOL;
+        $animCtr = 0;
+        echo Fancy::HIDE_CURSOR;
+        while (proc_get_status($process)["running"]) {
+            echo "\r[ " . Fancy::PURPLE_RAIN_BOLD_INVERSE_WHITE
+                . Fancy::ANIMATION[$animCtr++ % strlen(string: Fancy::ANIMATION)] . Fancy::RESET
+                . " ]" . Fancy::CLR_EOL;
+            flush();
+            usleep(microseconds: 200000);
         }
+        echo Fancy::UNHIDE_CURSOR . "\r" . Fancy::CLR_EOL;
+        $stdout = stream_get_contents(stream: $pipes[1] ?? null);
+        $stderr = stream_get_contents(stream: $pipes[2] ?? null);
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        $returnCode = proc_close($process);
+        if ($returnCode !== 0)
+            Girlfriend::comeToMe()->makeDoveCry(new Ebook(fileName: $fileName), "checkEpubFailure", $stdout, $stderr);
         return [
             "stdout" => $stdout,
             "stderr" => $stderr,

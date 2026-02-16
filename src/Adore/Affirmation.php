@@ -29,7 +29,7 @@ final class Affirmation
     {
         $message = $this->messages[$identifier] ?? [];
         if (empty($message))
-            throw new Exception(message: "Requested error message is undefined.");
+            throw new Exception(message: "Requested error message '$identifier' is undefined.");
         if (preg_match_all(pattern: "/#\d#/", subject: $message["message"] . $message["suggestion"]) !== count($params))
             throw new Exception(
                 message: "Parameter count does not match required number of placeholders for message '$identifier'"
@@ -105,12 +105,12 @@ final class Affirmation
                 "suggestion" => "Edit the ebook's XML config file, making sure to use only one <lea:description> tag." . PHP_EOL
                     . "Ebook XML config file name given: #2#"
             ],
-            "ebookPublisherRecommended" => [
-                "flaw" => Flaw::Severe,
-                "message" => "The publisher data is not mandatory, but highly recommended.",
-                "Edit the ebook's XML config file, adding a single <lea:publisher> tag." . PHP_EOL
-                . "All publisher child tags are also mandatory: <lea:imprint>, and <lea:contact>." . PHP_EOL
-                . "Ebook XML config file name given: #1#"
+            "ebookPublisherMandatory" => [
+                "flaw" => Flaw::Fatal,
+                "message" => "The publisher data is mandatory.",
+                "suggestion" => "Edit the ebook's XML config file, adding a single <lea:publisher> tag." . PHP_EOL
+                    . "The contact attribute is mandatory, as well." . PHP_EOL
+                    . "Ebook XML config file name given: #1#"
             ],
             "ebookRightsRecommended" => [
                 "flaw" => Flaw::Severe,
@@ -141,7 +141,7 @@ final class Affirmation
             "ebookInvalidAuthor" => [
                 "flaw" => Flaw::Fatal,
                 "message" => "Invalid author tag(s) detected in ebook." . PHP_EOL
-                    . "#1# valid author definitions in total.",
+                    . "#1# valid author definition(s) in total.",
                 "suggestion" => "Edit the ebook's XML config file, checking all <lea:author> tags." . PHP_EOL
                     . "Ebook XML config file name given: #2#"
             ],
@@ -184,7 +184,7 @@ final class Affirmation
             ],
             "ebookInvalidCover" => [
                 "flaw" => Flaw::Fatal,
-                "message" => "The cover file name was defined, but the file cannot be found in the file system."
+                "message" => "The cover file name was defined, but the file cannot be found in the file system." . PHP_EOL
                     . "Cover file name: #1#",
                 "suggestion" => "Edit the ebook's XML config file, ascertaining the correct cover file name." . PHP_EOL
                     . "Ebook XML config file name given: #2#"
@@ -232,7 +232,7 @@ final class Affirmation
             "textInvalidAuthor" => [
                 "flaw" => Flaw::Fatal,
                 "message" => "Invalid author tag(s) detected in text." . PHP_EOL
-                    . "#1# valid author definitions in total.",
+                    . "#1# valid author definition(s) in total.",
                 "suggestion" => "Edit the text file, checking all <lea:author> tags." . PHP_EOL
                     . "Text file name given: '#2#'.",
             ],
@@ -283,7 +283,30 @@ final class Affirmation
                     . "Script name invoked: '#1#'" . PHP_EOL
                     . "Text file name: #2#"
             ],
-
+            "subfolderTagUndefined" => [
+                "flaw" => Flaw::Severe,
+                "message" => "Requested tag '#1#' is not defined for subfolders.",
+                "suggestion" => "Check the ebook configuration file to validate the subfolder tag(s)." . PHP_EOL
+                    . "Ebook config file name: #2#"
+            ],
+            "checkEpubFailure" => [
+                "flaw" => Flaw::Severe,
+                "message" => "EPUBCheck returned an error code.",
+                "suggestion" => "EPUBCheck summary message: " . PHP_EOL
+                    . Fancy::SEVERE . "#1#" . Fancy::RESET . PHP_EOL
+                    . "EPUBCheck detailed error messages: " . PHP_EOL
+                    . Fancy::SEVERE . "#2#" . Fancy::RESET
+            ],
+            "linkedImageMissingTo" => [
+                "flaw" => Flaw::Fatal,
+                "message" => "Script 'linkedImage' is missing the missing the mandatory 'to' attribute.",
+                "suggestion" => "Add the attribute 'to'."
+            ],
+            "linkedImageMissingImage" => [
+                "flaw" => Flaw::Fatal,
+                "message" => "Script 'linkedImage' is missing the missing the mandatory 'image' attribute.",
+                "suggestion" => "Add the attribute 'image'."
+            ],
         ];
     }
 }
