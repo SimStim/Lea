@@ -84,6 +84,7 @@ final class PaisleyPark
         XMLetsGoCrazy::extractSubFolder($this->ebook);
         $defaultCaption = XMLetsGoCrazy::extractDefaultCaption($this->ebook->xpath);
         Girlfriend::comeToMe()->remember(name: "defaultcaption", data: $defaultCaption);
+        XMLetsGoCrazy::executeLeaScriptTags($this->ebook, $this->alphabetSt, ebook: $this->ebook);
         /**
          * Checks if there is at least one title.
          * - No = fatal
@@ -226,10 +227,6 @@ final class PaisleyPark
                     Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName");
                 continue;
             }
-            /**
-             * Extract images from text content files and add them to the ebook image list.
-             */
-            $this->ebook->addImages(XMLetsGoCrazy::extractImages($text->xpath));
             /**
              * Checks if there is at least one title.
              * - No = fatal
@@ -386,15 +383,30 @@ final class PaisleyPark
     public function seguePartTwo(): void
     {
         /**
-         * Replace all <lea:block> tags with xhtml content.
+         * Before doing anything else, let's trigger sanitizeStylesheets here
+         * so that we will have a complete set of identifiers to work with.
+         * That's because stylesheets may reference image files,
+         * and those image files will be registered by this sanitization,
+         * and therefore, compiling all normalized identifiers
+         * should not be done before that happens.
          */
-        foreach ($this->ebook->texts as $text)
-            XMLetsGoCrazy::replaceLeaBlockTags($text);
+        $discard = Girlfriend::comeToMe()->sanitizeStylesheets($this->ebook);
         /**
          * Execute all <lea:script> tags.
          */
         foreach ($this->ebook->texts as $text)
             XMLetsGoCrazy::executeLeaScriptTags($text, $this->alphabetSt, $this->ebook);
+        /**
+         * Replace all <lea:block> tags with xhtml content.
+         */
+        foreach ($this->ebook->texts as $text)
+            XMLetsGoCrazy::replaceLeaBlockTags($text);
+        /**
+         * We now have dynamically generated content from scripts and blocks resolved.
+         * Let's then extract images from all text content files and add them to the ebook image list.
+         */
+        foreach ($this->ebook->texts as $text)
+            $this->ebook->addImages(XMLetsGoCrazy::extractImages($text->xpath));
         /**
          * Replace all <lea:image> tags with xhtml.
          */
@@ -449,7 +461,8 @@ final class PaisleyPark
             ];
             $targetData["lea-tgt-" . Girlfriend::comeToMe()->strToEpubIdentifier($text->title)]
                 = $targetData["lea-tgt-" . Girlfriend::comeToMe()->strToEpubIdentifier(
-                string: $text->title . " by " . $text->authors[0]->name)] = $target;
+                string: $text->title . " by " . $text->authors[0]->name)]
+                = $target;
         }
         foreach ($this->ebook->targets as $target)
             $targetData[$target->identifier] = [

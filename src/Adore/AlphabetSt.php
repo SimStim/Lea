@@ -24,13 +24,20 @@ class AlphabetSt
         "toc" => "tableOfContents",
         "table of contents" => "tableOfContents",
         "list content" => "tableOfContents",
+        "toc plain" => "tableOfContentsPlain",
+        "list content plain" => "tableOfContentsPlain",
+        "table of contents plain" => "tableOfContentsPlain",
         "colophon" => "listRights",
+        "list rights" => "listRights",
         "text rights" => "listRights",
         "list text rights" => "listRights",
         "blurbs" => "listBlurbs",
         "list blurbs" => "listBlurbs",
         "text blurbs" => "listBlurbs",
         "linked image" => "linkedImage",
+        "list authors" => "listAuthors",
+        "authors" => "listAuthors",
+        "text authors" => "listAuthors",
     ];
 
     /**
@@ -46,6 +53,30 @@ class AlphabetSt
         foreach ($ebook->texts as $text)
             $toc .= "<li><lea:link>" . $text->title . "</lea:link></li>" . PHP_EOL;
         $toc .= "</ol>" . PHP_EOL;
+        XMLetsGoCrazy::replaceNodeWithStringContent(node: $node, string: $toc);
+    }
+
+    /**
+     * Generates a plain-text table of contents and inserts it into the DOM structure.
+     *
+     * @param DOMElement $node
+     * @param Ebook $ebook
+     * @return void
+     */
+    public function tableOfContentsPlain(DOMElement $node, Ebook $ebook): void
+    {
+        $filter = $node->hasAttribute(qualifiedName: 'filter')
+            ? $node->getAttribute(qualifiedName: 'filter')
+            : "";
+        $titles = [];
+        foreach ($ebook->texts as $text)
+            if ($filter !== "" && !str_contains($text->title, $filter))
+                $titles[$text->title] = $text->title;
+        ksort(array: $titles);
+        $toc = PHP_EOL;
+        foreach ($titles as $title)
+            $toc .= $title . ", " . PHP_EOL;
+        $toc = trim($toc, ", \n") . ".";
         XMLetsGoCrazy::replaceNodeWithStringContent(node: $node, string: $toc);
     }
 
@@ -83,6 +114,39 @@ class AlphabetSt
                 $blurbs .= "<h4 class='$class'><lea:link>" . $text->title . " by " . $text->authors[0]->name
                     . "</lea:link></h4>" . $text->blurb . PHP_EOL;
         XMLetsGoCrazy::replaceNodeWithStringContent(node: $node, string: $blurbs);
+    }
+
+    /**
+     * Iterates over all authors and inserts text blocks into the DOM structure
+     * based on the author's name.
+     * Useful for creating a back matter chapter of author biographies,
+     * or just a list of authors, depending on what you put into the text blocks.
+     *
+     * @param DOMElement $node
+     * @param Ebook $ebook
+     * @return void
+     */
+    public function listAuthors(DOMElement $node, Ebook $ebook): void
+    {
+        $folder = $node->hasAttribute(qualifiedName: 'folder')
+            ? $node->getAttribute(qualifiedName: 'folder')
+            : "";
+        $class = $node->hasAttribute(qualifiedName: 'class')
+            ? $node->getAttribute(qualifiedName: 'class')
+            : "";
+        $authors = [];
+        foreach ($ebook->texts as $text)
+            foreach ($text->authors as $author)
+                $authors[$author->name] = $author;
+        ksort(array: $authors);
+        $output = "";
+        $ctr = 0;
+        foreach ($authors as $author) {
+            if ($ctr++ > 0)
+                $output .= "<div class='$class'/>" . PHP_EOL;
+            $output .= "<lea:block>$folder/$author->name.xhtml</lea:block>" . PHP_EOL;
+        }
+        XMLetsGoCrazy::replaceNodeWithStringContent(node: $node, string: $output);
     }
 
     /**

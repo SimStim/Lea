@@ -6,6 +6,7 @@ namespace Lea\Adore;
 
 use BadMethodCallException;
 use Exception;
+use Lea\Domain\Image;
 use NoDiscard;
 use SebastianBergmann\Version;
 use Throwable;
@@ -212,14 +213,27 @@ final class Girlfriend
      * Reads a file from storage into a string in memory
      * - Returns an empty string on read error
      *
-     * @param string $fileName
+     * @param string $filePath
      * @return string
+     * @throws Exception
      */
     #[NoDiscard]
-    public function readFile(string $fileName): string
+    public function readFile(string $filePath): string
     {
-        $content = @file_get_contents($fileName);
-        return $content ?: "";
+        $loadFilePath = $filePath;
+        if (!file_exists($filePath)) {
+            $parts = pathinfo($filePath);
+            $similarFile = array_find(
+                array: scandir($parts["dirname"]),
+                callback: fn($file) => strcasecmp($file, $parts["basename"]) === 0
+            ) ?? "";
+            if ($similarFile !== "") {
+                $loadFilePath = $parts["dirname"] . "/" . $similarFile;
+                Girlfriend::comeToMe()->makeDoveCry(new Text($filePath), "fileReadSimilar",
+                    $filePath, $loadFilePath);
+            }
+        }
+        return @file_get_contents(filename: $loadFilePath) ?: "";
     }
 
     /**
@@ -340,13 +354,13 @@ final class Girlfriend
         $process = proc_open($cmd, $descriptors, $pipes);
         if (!is_resource($process))
             return ['error' => 'Failed to start process.'];
-        echo "Checking ePub with EPUBCheck, please be patient." . PHP_EOL . PHP_EOL;
+        echo PHP_EOL . "[   ] Checking ePub with EPUBCheck, please be patient.";
         $animCtr = 0;
         echo Fancy::HIDE_CURSOR;
         while (proc_get_status($process)["running"]) {
             echo "\r[ " . Fancy::PURPLE_RAIN_BOLD_INVERSE_WHITE
                 . Fancy::ANIMATION[$animCtr++ % strlen(string: Fancy::ANIMATION)] . Fancy::RESET
-                . " ]" . Fancy::CLR_EOL;
+                . " ]";
             flush();
             usleep(microseconds: 200000);
         }
@@ -363,5 +377,46 @@ final class Girlfriend
             "stderr" => $stderr,
             "return" => $returnCode
         ];
+    }
+
+    /**
+     * Sanitizes the stylesheets of the given eBook by modifying image URLs and ensuring their proper inclusion.
+     *
+     * @param Ebook $ebook The eBook instance containing the stylesheets to be processed.
+     * @return array An associative array where each key is the original stylesheet's name,
+     *               and each value is the sanitized content of the stylesheet.
+     *               The sanitization replaces URLs of external PNG/JPEG images
+     *               with normalized paths referencing the ePub's internal structure.
+     * @throws Exception
+     */
+    #[NoDiscard]
+    public function sanitizeStylesheets(Ebook $ebook): array
+    {
+        /**
+         * The "brain-breaking" regex:
+         * url\(            # literal "url("
+         * \s*              # optional whitespace
+         * [\'"]?           # optional quote
+         * (?!data:)        # exclude data URIs
+         * ([^\'")]+        # capture everything except quotes or )
+         * \.(?:png|jpe?g)) # ending in png/jpg/jpeg
+         * [\'"]?           # optional quote
+         * \s*              # optional whitespace
+         * \)
+         */
+        $sanitizedStylesheets = [];
+        foreach ($ebook->stylesheets as $stylesheet)
+            $sanitizedStylesheets[$stylesheet] =
+                preg_replace_callback(
+                    pattern: '/url\(\s*[\'"]?(?!data:)([^\'")]+\.(?:png|jpe?g))[\'"]?\s*\)/i',
+                    callback: function ($matches) use ($ebook) {
+                        $imageFileName = $matches[1];    // full path to file inside url()
+                        $imageNormalizedName = Girlfriend::comeToMe()->strToEpubImageFileName(basename($imageFileName));
+                        $ebook->addImages([new Image ($imageFileName, $imageNormalizedName)]);
+                        return "url('../Images/$imageNormalizedName')";
+                    },
+                    subject: Girlfriend::comeToMe()->readFile(filePath: Girlfriend::$pathStyles . $stylesheet)
+                );
+        return $sanitizedStylesheets;
     }
 }

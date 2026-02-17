@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lea\Adore;
 
 use DOMException;
+use Exception;
 use NoDiscard;
 use ZipArchive;
 use Lea\Domain\Date;
@@ -40,6 +41,7 @@ final class TheOpera
      * - Tells the audience how to listen
      *
      * @return void (also known as Caesura)
+     * @throws Exception
      */
     public function theOverture(): void
     {
@@ -52,11 +54,11 @@ final class TheOpera
             "lea-logo-ascii.txt" => "fa89b6f5ec8ba63ccc5b1f83dff81208e0cb7a272824caaeea464cc16ae67a0b",
         ];
         foreach ($hashes as $fileName => $hash) {
-            $content = Girlfriend::comeToMe()->readFile(fileName: Girlfriend::$pathPurpleRain . $fileName);
+            $content = Girlfriend::comeToMe()->readFile(filePath: Girlfriend::$pathPurpleRain . $fileName);
             if (hash(algo: "sha256", data: $content) !== $hash) {
                 echo($fileName === array_key_first($hashes)
                     ? "Die weißen Tauben sind müde." . PHP_EOL
-                    : Girlfriend::comeToMe()->readFile(fileName: Girlfriend::$pathPurpleRain . array_key_first($hashes)));
+                    : Girlfriend::comeToMe()->readFile(filePath: Girlfriend::$pathPurpleRain . array_key_first($hashes)));
                 exit;
             }
         }
@@ -128,13 +130,14 @@ final class TheOpera
      * Generates the cover xhtml from a template file, injecting the extracted cover file name.
      *
      * @return string
+     * @throws Exception
      */
     public function generateCoverFile(): string
     {
         return str_replace(
             search: "###",
             replace: Girlfriend::comeToMe()->strToEpubImageFileName($this->ebook->cover),
-            subject: Girlfriend::comeToMe()->readFile(fileName: Girlfriend::$pathPurpleRain . "covertemplate.xhtml")
+            subject: Girlfriend::comeToMe()->readFile(filePath: Girlfriend::$pathPurpleRain . "covertemplate.xhtml")
         );
     }
 
@@ -142,6 +145,7 @@ final class TheOpera
      * Generates the nav-xhtml.
      *
      * @return string
+     * @throws Exception
      */
     public function generateNavFile(): string
     {
@@ -159,7 +163,7 @@ final class TheOpera
         return str_replace(
             search: "###",
             replace: $toc,
-            subject: Girlfriend::comeToMe()->readFile(fileName: Girlfriend::$pathPurpleRain . "navtemplate.xhtml")
+            subject: Girlfriend::comeToMe()->readFile(filePath: Girlfriend::$pathPurpleRain . "navtemplate.xhtml")
         );
     }
 
@@ -352,13 +356,17 @@ final class TheOpera
      * @param array $errorLog
      * @return bool
      * @throws DOMException
-     * @throws \Exception
+     * @throws Exception
      */
     #[NoDiscard]
     public function conductor(array $errorLog): bool
     {
         $zip = new ZipArchive();
-        $epubFileName = Girlfriend::$pathEpubs . $this->ebook->title . " - " . $this->ebook->publisher->imprint . ".epub";
+        $epubFilePath = Girlfriend::$pathEpubs
+            . Girlfriend::comeToMe()->recall(name: "subfolder-epub");
+        $epubFileName = $epubFilePath . $this->ebook->title . " - " . $this->ebook->publisher->imprint . ".epub";
+        if (!is_dir($epubFilePath))
+            mkdir($epubFilePath);
         $zip->open(filename: $epubFileName, flags: ZipArchive::CREATE | ZipArchive::OVERWRITE);
         $zip->addFile(filepath: Girlfriend::$pathPurpleRain . "mimetype", entryname: "mimetype");
         $zip->setCompressionName(name: 'mimetype', method: ZipArchive::CM_STORE);
@@ -374,11 +382,13 @@ final class TheOpera
             );
         /**
          * Add any user-defined stylesheets.
+         * We sanitze them to add included iamge files to the ePub,
+         * and use normalized file names instead of the original ones.
          */
-        foreach ($this->ebook->stylesheets as $stylesheet)
-            $zip->addFile(
-                filepath: Girlfriend::$pathStyles . $stylesheet,
-                entryname: "OEBPS/Styles/" . $this->identifiers[$this->idMarkers["stylesheet"] . $stylesheet]["epubFileName"],
+        foreach (Girlfriend::comeToMe()->sanitizeStylesheets($this->ebook) as $fileName => $content)
+            $zip->addFromString(
+                name: "OEBPS/Styles/" . $this->identifiers[$this->idMarkers["stylesheet"] . $fileName]["epubFileName"],
+                content: $content
             );
         /**
          * Add all files defined through <lea:image> in both text and ebook config files.

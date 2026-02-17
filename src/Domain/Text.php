@@ -6,6 +6,7 @@ namespace Lea\Domain;
 
 use DOMDocument;
 use DOMXPath;
+use Exception;
 use Lea\Adore\Girlfriend;
 
 /**
@@ -34,8 +35,13 @@ final class Text
             set => trim(string: $value);
         },
         private(set) ?string $xhtml = null {
+            /**
+             * @throws Exception
+             */
             get => $this->xhtml ??= Girlfriend::comeToMe()->readFile(
-                fileName: Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . $this->fileName
+                filePath: Girlfriend::$pathText
+                . Girlfriend::comeToMe()->recall(name: "subfolder-text")
+                . $this->fileName
             );
             set {
                 if ($value !== null) {

@@ -167,7 +167,7 @@ final class XMLetsGoCrazy
     #[NoDiscard]
     public static function extractRights(DOMXPath $xpath): string
     {
-        $nodes = $xpath->query("/" . self::$rootElement . "/lea:rights");
+        $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:rights");
         if ($nodes->length === 0)
             return "";
         $rightsNode = $nodes->item(index: 0);
@@ -298,7 +298,7 @@ final class XMLetsGoCrazy
     #[NoDiscard]
     public static function extractBlurb(DOMXPath $xpath): string
     {
-        $nodes = $xpath->query("/" . self::$rootElement . "/lea:blurb");
+        $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:blurb");
         if ($nodes->length === 0)
             return "";
         $blurbNode = $nodes->item(index: 0);
@@ -582,7 +582,7 @@ final class XMLetsGoCrazy
      *
      * @throws ReflectionException|Exception
      */
-    public static function executeLeaScriptTags(Text $text, AlphabetSt $scripts, Ebook $ebook): void
+    public static function executeLeaScriptTags(Ebook|Text $text, AlphabetSt $scripts, Ebook $ebook): void
     {
         $nodes = $text->xpath->query(expression: "//lea:script");
         foreach ($nodes as $node) {
@@ -610,12 +610,13 @@ final class XMLetsGoCrazy
         foreach ($nodes as $node) {
             $subfolder = trim(string: $node->textContent, characters: "/ ") . "/";
             if (!$node->hasAttribute('tag')) {
+                Girlfriend::comeToMe()->remember(name: "subfolder-epub", data: $subfolder);
                 Girlfriend::comeToMe()->remember(name: "subfolder-text", data: $subfolder);
                 Girlfriend::comeToMe()->remember(name: "subfolder-images", data: $subfolder);
                 continue;
             }
             $attr = $node->getAttribute('tag');
-            if (!in_array($attr, ["text", "images"])) {
+            if (!in_array($attr, ["epub", "text", "images"])) {
                 Girlfriend::comeToMe()->makeDoveCry($ebook, "subfolderTagUndefined", $attr,
                     Girlfriend::$pathEbooks . $ebook->fileName);
                 continue;

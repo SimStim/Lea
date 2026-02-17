@@ -307,6 +307,16 @@ final class Affirmation
                 "message" => "Script 'linkedImage' is missing the missing the mandatory 'image' attribute.",
                 "suggestion" => "Add the attribute 'image'."
             ],
+            "fileReadSimilar" => [
+                "flaw" => Flaw::Severe,
+                "message" => "File not found, reading a similar file.",
+                "suggestion" => "File names on this operating system are case-sensitive."
+                    . " Check for exact spelling of the file name given." . PHP_EOL
+                    . "File name provided: " . Fancy::INVERSE . Fancy::BOLD . "#1#" . Fancy::RESET . "." . PHP_EOL
+                    . "File name read:     " . Fancy::INVERSE . Fancy::BOLD . "#2#" . Fancy::RESET . "." . PHP_EOL
+                    . "This is a low-level error message, therefore I cannot be more specific"
+                    . " about the exact location."
+            ],
         ];
     }
 }

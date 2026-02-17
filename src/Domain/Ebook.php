@@ -14,7 +14,7 @@ use Lea\Adore\Girlfriend;
 final class Ebook
 {
     private(set) string $xml {
-        get => $this->xml ??= Girlfriend::comeToMe()->readFile(fileName: Girlfriend::$pathEbooks . $this->fileName);
+        get => $this->xml ??= Girlfriend::comeToMe()->readFile(filePath: Girlfriend::$pathEbooks . $this->fileName);
     }
     private(set) DOMDocument $dom {
         get => $this->dom ??= XMLetsGoCrazy::createDOMFromFragments($this->xml);
@@ -94,8 +94,10 @@ final class Ebook
             $targets = array_merge(
                 $targets,
                 XMLetsGoCrazy::extractTargets(
-                    $text->xpath,
-                    Girlfriend::comeToMe()->strToEpubTextFileName(title: $text->title . " by " . $text->authors[0]->name)
+                    xpath: $text->xpath,
+                    targetFileName: Girlfriend::comeToMe()->strToEpubTextFileName(
+                        title: $text->title . " by " . $text->authors[0]->name
+                    )
                 ));
         return $targets;
     }

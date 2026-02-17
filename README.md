@@ -23,7 +23,7 @@ add meaning later.
 * support for book series collections with ISSN
 * support for anthologies with per-text authors and rights
 * support for text blocks
-* support for the execution of pre-made scripts
+* support for the execution of pre-made scripts enabling handling of any edge cases like linked images
 * <lea:> tags anywhere in the source files, for example, for images with captions
 * validation of external links
 * support for advanced typesetting: embedded fonts and stylesheets
@@ -58,6 +58,15 @@ Copyright Eduard Pech (https://logophilia.eu/the-director-without-a-service-weap
 PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones
+
+1.0.5
+
+* Added a third option to the lea:subfolder tag for the ePub output folder.
+* Added a method to sanitize stylesheets; included images are automatically imported into the ePub.
+* Scripts are processed first now, so that they can output blocks; useful for dynamic lists.
+* Added a script to iterate over all authors and include text blocks based on their names.
+* Girlfriend's readFile is not case-sensitive anymore on Linux; she'll still complain.
+* Changed script execution to work on ebook config files; handy for some dc tag automation.
 
 1.0.4
 
