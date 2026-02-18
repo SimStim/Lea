@@ -172,13 +172,19 @@ class AlphabetSt
         $caption = $node->hasAttribute(qualifiedName: "caption")
             ? $node->getAttribute(qualifiedName: "caption")
             : Girlfriend::comeToMe()->recall(name: "defaultcaption");
+        $folder = $node->hasAttribute(qualifiedName: "folder")
+            ? trim(string: $node->getAttribute(qualifiedName: "folder"), characters: "/ ") . "/"
+            : Girlfriend::comeToMe()->recall(name: "subfolder-images");
         $replacement = "<figure>"
             . "<lea:link to='$to'>"
             . "<img src='../Images/$image' alt='$caption'/>"
             . "</lea:link>"
             . "<figcaption>$caption</figcaption>"
             . "</figure>";
-        $ebook->addImages([new Image(trim($node->getAttribute(qualifiedName: "image")), $caption)]);
+        $ebook->addImages([new Image(
+            fileName: trim($node->getAttribute(qualifiedName: "image")),
+            folder: $folder,
+            caption: $caption)]);
         XMLetsGoCrazy::replaceNodeWithStringContent(node: $node, string: $replacement);
     }
 }

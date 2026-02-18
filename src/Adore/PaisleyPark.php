@@ -263,20 +263,6 @@ final class PaisleyPark
                 Girlfriend::comeToMe()->makeDoveCry($text, "textMultipleBlurbs", $text->blurb,
                     Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName");
         }
-        /**
-         * Checks if there are any <lea:image> tags defining file names not found in the file system.
-         * - Yes = fatal
-         */
-        $missing = [];
-        foreach ($this->ebook->images as $image)
-            if (!is_file(
-                filename: Girlfriend::$pathImages . Girlfriend::comeToMe()->recall(name: "subfolder-images") . $image->fileName)
-            )
-                $missing[] = Girlfriend::$pathImages . Girlfriend::comeToMe()->recall(name: "subfolder-images") . $image->fileName;
-        if (count($missing) > 0)
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "imageReadError",
-                (string)count($missing), implode(separator: PHP_EOL, array: $missing),
-                Girlfriend::$pathEbooks . $this->ebook->fileName);
     }
 
     /**
@@ -356,6 +342,7 @@ final class PaisleyPark
                 . Fancy::ANIMATION[$animCtr++ % strlen(string: Fancy::ANIMATION)] . Fancy::RESET
                 . " ] [ " . Fancy::INVERSE . $active . "/" . count($handles) . " active" . Fancy::RESET . " ]"
                 . " Resolving external link '" . array_rand($urls) . "'" . Fancy::CLR_EOL;
+            flush();
             usleep(microseconds: 200000);
         } while ($active > 0);
         echo Fancy::UNHIDE_CURSOR;
@@ -408,6 +395,27 @@ final class PaisleyPark
         foreach ($this->ebook->texts as $text)
             $this->ebook->addImages(XMLetsGoCrazy::extractImages($text->xpath));
         /**
+         * Checks if there are any <lea:image> tags defining file names not found in the file system.
+         * - Yes = fatal
+         */
+        $missing = [];
+        foreach ($this->ebook->images as $image)
+            if (!is_file(
+                filename: Girlfriend::$pathImages . $image->folder . $image->fileName)
+            )
+                $missing[] = Girlfriend::$pathImages . $image->folder . $image->fileName;
+        if (count($missing) > 0)
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "imageReadError",
+                (string)count($missing), implode(separator: PHP_EOL, array: $missing),
+                Girlfriend::$pathEbooks . $this->ebook->fileName);
+        /**
+         * Replace all <lea:chapter> and <lea:section> tags with xhtml.
+         */
+        foreach ($this->ebook->texts as $text) {
+            XMLetsGoCrazy::replaceLeaChapterTags($text);
+            XMLetsGoCrazy::replaceLeaSectionTags($text);
+        }
+        /**
          * Replace all <lea:image> tags with xhtml.
          */
         foreach ($this->ebook->texts as $text)
@@ -459,8 +467,8 @@ final class PaisleyPark
                 "targetFileName" => Girlfriend::comeToMe()->strToEpubTextFileName(
                     title: $text->title . " by " . $text->authors[0]->name)
             ];
-            $targetData["lea-tgt-" . Girlfriend::comeToMe()->strToEpubIdentifier($text->title)]
-                = $targetData["lea-tgt-" . Girlfriend::comeToMe()->strToEpubIdentifier(
+            $targetData[Girlfriend::$leaPrefixes["target"] . Girlfriend::comeToMe()->strToEpubIdentifier($text->title)]
+                = $targetData[Girlfriend::$leaPrefixes["target"] . Girlfriend::comeToMe()->strToEpubIdentifier(
                 string: $text->title . " by " . $text->authors[0]->name)]
                 = $target;
         }

@@ -13,6 +13,9 @@ final class Image
         private(set) string $fileName {
             set => trim(string: $value);
         },
+        private(set) string $folder {
+            set => trim(string: $value);
+        },
         private(set) string $caption = "" {
             set => trim(string: $value);
         }

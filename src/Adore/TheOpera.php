@@ -7,6 +7,7 @@ namespace Lea\Adore;
 use DOMException;
 use Exception;
 use NoDiscard;
+use RuntimeException;
 use ZipArchive;
 use Lea\Domain\Date;
 use Lea\Domain\Ebook;
@@ -74,53 +75,58 @@ final class TheOpera
         $identifiers = [];
         foreach ($this->ebook->authors as $author) {
             $identifiers[$this->idMarkers["author"] . $author->name] = [
-                "epubIdentifier" => "lea-cre-" . Girlfriend::comeToMe()->strToEpubIdentifier($author->name),
+                "epubIdentifier" => Girlfriend::$leaPrefixes["creator"]
+                    . Girlfriend::comeToMe()->strToEpubIdentifier($author->name),
                 "epubFileName" => "",
             ];
         }
         foreach ($this->ebook->contributors as $contributor) {
             $identifiers[$this->idMarkers["contributor"] . $contributor->name] = [
-                "epubIdentifier" => "lea-con-" . Girlfriend::comeToMe()->strToEpubIdentifier($contributor->name),
+                "epubIdentifier" => Girlfriend::$leaPrefixes["contributor"]
+                    . Girlfriend::comeToMe()->strToEpubIdentifier($contributor->name),
                 "epubFileName" => "",
             ];
         }
         foreach ($this->ebook->texts as $text) {
             $title = $text->title . " by " . $text->authors[0]->name;
             $identifiers[$this->idMarkers["text"] . $text->fileName] = [
-                "epubIdentifier" => "lea-txt-" . Girlfriend::comeToMe()->strToEpubIdentifier($title),
+                "epubIdentifier" => Girlfriend::$leaPrefixes["text"]
+                    . Girlfriend::comeToMe()->strToEpubIdentifier($title),
                 "epubFileName" => Girlfriend::comeToMe()->strToEpubTextFileName($title),
             ];
             foreach ($text->authors as $author) {
                 $identifiers[$this->idMarkers["author"] . $author->name] = [
-                    "epubIdentifier" => "lea-cre-" . Girlfriend::comeToMe()->strToEpubIdentifier($author->name),
+                    "epubIdentifier" => Girlfriend::$leaPrefixes["creator"]
+                        . Girlfriend::comeToMe()->strToEpubIdentifier($author->name),
                     "epubFileName" => "",
                 ];
             }
         }
         $identifiers[$this->idMarkers["text"] . "nav.xhtml"] = [
-            "epubIdentifier" => "lea-txt-nav-xhtml",
+            "epubIdentifier" => Girlfriend::$leaPrefixes["text"] . "nav-xhtml",
             "epubFileName" => "nav.xhtml",
         ];
         foreach ($this->ebook->fonts as $font) {
             $identifiers[$this->idMarkers["font"] . $font] = [
-                "epubIdentifier" => "lea-fnt-" . Girlfriend::comeToMe()->strToEpubIdentifier($font),
+                "epubIdentifier" => Girlfriend::$leaPrefixes["font"] . Girlfriend::comeToMe()->strToEpubIdentifier($font),
                 "epubFileName" => basename($font),
             ];
         }
         foreach ($this->ebook->stylesheets as $stylesheet) {
             $identifiers[$this->idMarkers["stylesheet"] . $stylesheet] = [
-                "epubIdentifier" => "lea-css-" . Girlfriend::comeToMe()->strToEpubIdentifier($stylesheet),
+                "epubIdentifier" => Girlfriend::$leaPrefixes["stylesheet"]
+                    . Girlfriend::comeToMe()->strToEpubIdentifier($stylesheet),
                 "epubFileName" => basename($stylesheet),
             ];
         }
         foreach ($this->ebook->images as $image) {
             $identifiers[$this->idMarkers["image"] . $image->fileName] = [
-                "epubIdentifier" => "lea-img-" . Girlfriend::comeToMe()->strToEpubIdentifier($image->fileName),
+                "epubIdentifier" => Girlfriend::$leaPrefixes["image"] . Girlfriend::comeToMe()->strToEpubIdentifier($image->fileName),
                 "epubFileName" => Girlfriend::comeToMe()->strToEpubImageFileName($image->fileName),
             ];
         }
         $identifiers[$this->idMarkers["image"] . $this->ebook->cover] = [
-            "epubIdentifier" => "lea-img-" . Girlfriend::comeToMe()->strToEpubIdentifier($this->ebook->cover),
+            "epubIdentifier" => Girlfriend::$leaPrefixes["image"] . Girlfriend::comeToMe()->strToEpubIdentifier($this->ebook->cover),
             "epubFileName" => Girlfriend::comeToMe()->strToEpubImageFileName($this->ebook->cover),
         ];
         return $identifiers;
@@ -184,7 +190,7 @@ final class TheOpera
             . "<dc:title>" . $this->ebook->title . "</dc:title>" . PHP_EOL
             . "<dc:description>" . $this->ebook->description . "</dc:description>" . PHP_EOL;
         if ($this->ebook->collection->title !== "") {
-            $collectionId = "lea-col-" . Girlfriend::comeToMe()->strToEpubIdentifier($this->ebook->collection->title);
+            $collectionId = Girlfriend::$leaPrefixes["collection"] . Girlfriend::comeToMe()->strToEpubIdentifier($this->ebook->collection->title);
             $metadata .= "<meta property='dcterms:isPartOf'>urn:issn:" . $this->ebook->collection->issn . "</meta>" . PHP_EOL
                 . "<meta property='belongs-to-collection' id='$collectionId'>" . $this->ebook->collection->title . "</meta>" . PHP_EOL
                 . "<meta refines='#$collectionId' property='collection-type'>series</meta>" . PHP_EOL
@@ -201,36 +207,42 @@ final class TheOpera
             . "<dc:rights>" . $this->ebook->rights . "</dc:rights>" . PHP_EOL
             . "<dc:language>" . $this->ebook->language . "</dc:language>" . PHP_EOL;
         foreach ($this->ebook->authors as $author) {
-            $metadata .= "<dc:creator id='lea-cre-" . Girlfriend::comeToMe()->strToEpubIdentifier($author->name)
+            $metadata .= "<dc:creator id='" . Girlfriend::$leaPrefixes["creator"]
+                . Girlfriend::comeToMe()->strToEpubIdentifier($author->name)
                 . "'>" . $author->name . "</dc:creator>" . PHP_EOL;
             if ($author->fileAs !== "")
-                $metadata .= "<meta refines='#lea-cre-" . Girlfriend::comeToMe()->strToEpubIdentifier($author->name)
+                $metadata .= "<meta refines='#" . Girlfriend::$leaPrefixes["creator"]
+                    . Girlfriend::comeToMe()->strToEpubIdentifier($author->name)
                     . "' property='file-as'>" . $author->fileAs . "</meta>" . PHP_EOL;
         }
         foreach ($this->ebook->authors as $author)
-            $metadata .= "<meta refines='#lea-cre-" . Girlfriend::comeToMe()->strToEpubIdentifier($author->name)
+            $metadata .= "<meta refines='#" . Girlfriend::$leaPrefixes["creator"]
+                . Girlfriend::comeToMe()->strToEpubIdentifier($author->name)
                 . "' property='role' scheme='marc:relators'>aut</meta>" . PHP_EOL;
         $seq = 1;
         foreach ($this->ebook->authors as $author)
-            $metadata .= "<meta refines='#lea-cre-" . Girlfriend::comeToMe()->strToEpubIdentifier($author->name)
+            $metadata .= "<meta refines='#" . Girlfriend::$leaPrefixes["creator"]
+                . Girlfriend::comeToMe()->strToEpubIdentifier($author->name)
                 . "' property='display-seq'>" . $seq++ . "</meta>" . PHP_EOL;
         foreach ($this->ebook->contributors as $contributor) {
-            $metadata .= "<dc:contributor id='lea-con-" . Girlfriend::comeToMe()->strToEpubIdentifier($contributor->name)
+            $metadata .= "<dc:contributor id='" . Girlfriend::$leaPrefixes["contributor"]
+                . Girlfriend::comeToMe()->strToEpubIdentifier($contributor->name)
                 . "'>" . $contributor->name . "</dc:contributor>" . PHP_EOL;
             foreach ($contributor->roles as $role)
-                $metadata .= "<meta refines='#lea-con-" . Girlfriend::comeToMe()->strToEpubIdentifier($contributor->name)
+                $metadata .= "<meta refines='#" . Girlfriend::$leaPrefixes["contributor"]
+                    . Girlfriend::comeToMe()->strToEpubIdentifier($contributor->name)
                     . "' property='role' scheme='marc:relators'>$role</meta>" . PHP_EOL;
         }
         foreach ($this->ebook->texts as $text)
             foreach ($text->authors as $author)
                 if ($author->name !== Girlfriend::comeToMe()->leaNamePlain)
-                    $metadata .= "<meta refines='#lea-txt-"
+                    $metadata .= "<meta refines='#" . Girlfriend::$leaPrefixes["text"]
                         . Girlfriend::comeToMe()->strToEpubIdentifier($text->title . " by " . $text->authors[0]->name)
                         . "' property='dcterms:creator'>" . $author->name . "</meta>" . PHP_EOL;
         foreach ($this->ebook->subjects as $subject)
             $metadata .= "<dc:subject>$subject</dc:subject>" . PHP_EOL;
         if ($this->ebook->cover !== "")
-            $metadata .= "<meta name='cover' content='lea-img-"
+            $metadata .= "<meta name='cover' content='" . Girlfriend::$leaPrefixes["image"]
                 . Girlfriend::comeToMe()->strToEpubIdentifier($this->ebook->cover) . "'/>" . PHP_EOL;
         $metadata .= "<meta name='generator' content='" . Girlfriend::comeToMe()->leaNamePlain . "'/>" . PHP_EOL;
         return $metadata;
@@ -393,11 +405,15 @@ final class TheOpera
         /**
          * Add all files defined through <lea:image> in both text and ebook config files.
          */
+        set_error_handler(function ($errno, $errstr) {
+            throw new RuntimeException($errstr, $errno);
+        });
         foreach ($this->ebook->images as $image)
             $zip->addFile(
-                filepath: Girlfriend::$pathImages . Girlfriend::comeToMe()->recall(name: "subfolder-images") . $image->fileName,
+                filepath: Girlfriend::$pathImages . $image->folder . $image->fileName,
                 entryname: "OEBPS/Images/" . $this->identifiers[$this->idMarkers["image"] . $image->fileName]["epubFileName"]
             );
+        restore_error_handler();
         /**
          * Also add the cover image file.
          */

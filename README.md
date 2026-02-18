@@ -59,6 +59,26 @@ PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones
 
+Notes to self:
+
+- refactor xpath queries to cached case-insensitive matching for better UX.
+- import of word processor files and image manipulations before 2Q2026.
+
+Note to readers:
+
+- template system may be abandoned; undecided about utility.
+- this is production-grade and feature-complete; code frequency will slow down short-term.
+
+1.0.6
+
+* Added new tags for chapter and section headings.
+* Turned formerly hard-coded prefixes into constants.
+* Image tags got an optional folder attribute; useful for blocks.
+* Image tags were resolved too early, missing block or script inserts.
+* Added folder property to Image class to store the subfolder specific to an image.
+* Minor refactorings.
+* This version is going to be used to produce The Pitch Science Fiction 1Q2026; accept no substitutes!
+
 1.0.5
 
 * Added a third option to the lea:subfolder tag for the ePub output folder.

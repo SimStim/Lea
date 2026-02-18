@@ -6,6 +6,7 @@ namespace Lea\Domain;
 
 use DOMDocument;
 use DOMXPath;
+use Exception;
 use Lea\Adore\Girlfriend;
 
 /**
@@ -14,6 +15,9 @@ use Lea\Adore\Girlfriend;
 final class Ebook
 {
     private(set) string $xml {
+        /**
+         * @throws Exception
+         */
         get => $this->xml ??= Girlfriend::comeToMe()->readFile(filePath: Girlfriend::$pathEbooks . $this->fileName);
     }
     private(set) DOMDocument $dom {
@@ -97,7 +101,7 @@ final class Ebook
                     xpath: $text->xpath,
                     targetFileName: Girlfriend::comeToMe()->strToEpubTextFileName(
                         title: $text->title . " by " . $text->authors[0]->name
-                    )
+                    ),
                 ));
         return $targets;
     }

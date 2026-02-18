@@ -35,6 +35,16 @@ final class Girlfriend
         ')', '[', ']', '{', '}', '&', '/', '\\', '’', '⊙',
         '🝄', '#', '<', '>', '='
     ];
+    public static array $leaPrefixes = [
+        "target" => "lea-tgt-",
+        "image" => "lea-img-",
+        "creator" => "lea-cre-",
+        "contributor" => "lea-con-",
+        "font" => "lea-fnt-",
+        "stylesheet" => "lea-css-",
+        "collection" => "lea-col-",
+        "text" => "lea-txt-",
+    ];
     private(set) string $leaVersion {
         get => $this->leaVersion ??= self::comeToMe()->computeLeaVersion(minVersion: self::$minVersion);
     }
@@ -268,7 +278,7 @@ final class Girlfriend
             string: str_replace(
                 search: self::$characterNonGrata,
                 replace: "-",
-                subject: "lea-img-" . $parts['filename']
+                subject: Girlfriend::$leaPrefixes["image"] . $parts['filename']
             ) . "." . $parts['extension']
         );
     }
@@ -412,7 +422,11 @@ final class Girlfriend
                     callback: function ($matches) use ($ebook) {
                         $imageFileName = $matches[1];    // full path to file inside url()
                         $imageNormalizedName = Girlfriend::comeToMe()->strToEpubImageFileName(basename($imageFileName));
-                        $ebook->addImages([new Image ($imageFileName, $imageNormalizedName)]);
+                        $ebook->addImages([new Image (
+                            fileName: $imageFileName,
+                            folder: self::comeToMe()->recall(name: "subfolder-images"),
+                            caption: $imageNormalizedName)
+                        ]);
                         return "url('../Images/$imageNormalizedName')";
                     },
                     subject: Girlfriend::comeToMe()->readFile(filePath: Girlfriend::$pathStyles . $stylesheet)

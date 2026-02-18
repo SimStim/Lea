@@ -336,11 +336,14 @@ final class XMLetsGoCrazy
         $nodes = $xpath->query(expression: "//lea:image");
         $images = [];
         foreach ($nodes as $node) {
-            $caption = $node->hasAttribute('caption')
-                ? $node->getAttribute('caption')
+            $caption = $node->hasAttribute("caption")
+                ? $node->getAttribute("caption")
                 : Girlfriend::comeToMe()->recall(name: "defaultcaption");
+            $folder = $node->hasAttribute("folder")
+                ? trim(string: $node->getAttribute(qualifiedName: "folder"), characters: "/ ") . "/"
+                : Girlfriend::comeToMe()->recall(name: "subfolder-images");
             $fileName = trim($node->textContent);
-            $images[] = new Image($fileName, $caption);
+            $images[] = new Image(fileName: $fileName, folder: $folder, caption: $caption);
         }
         return $images;
     }
@@ -492,7 +495,8 @@ final class XMLetsGoCrazy
         foreach ($nodes as $node)
             $targets[] = new Target(
                 name: $node->textContent,
-                identifier: "lea-tgt-" . Girlfriend::comeToMe()->strToEpubIdentifier($node->textContent),
+                identifier: Girlfriend::$leaPrefixes["target"]
+                . Girlfriend::comeToMe()->strToEpubIdentifier($node->textContent),
                 targetFileName: $targetFileName
             );
         return $targets;
@@ -536,7 +540,8 @@ final class XMLetsGoCrazy
                 ? $node->getAttribute('to')
                 : $node->textContent;
             if (filter_var($linkTarget, filter: FILTER_VALIDATE_URL) === false) {
-                $linkTarget = "lea-tgt-" . Girlfriend::comeToMe()->strToEpubIdentifier($linkTarget);
+                $linkTarget = Girlfriend::$leaPrefixes["target"]
+                    . Girlfriend::comeToMe()->strToEpubIdentifier($linkTarget);
                 if (!isset($targetData[$linkTarget])) {
                     Girlfriend::comeToMe()->makeDoveCry($text, "linkTargetUndefined",
                         Girlfriend::$pathEbooks . $text->fileName, trim($linkTarget));
@@ -568,10 +573,66 @@ final class XMLetsGoCrazy
     {
         $nodes = $text->xpath->query(expression: "//lea:target");
         foreach ($nodes as $node) {
-            $replacement = "<a id='lea-tgt-" . Girlfriend::comeToMe()->strToEpubIdentifier($node->textContent) . "'></a>";
+            $replacement = "<a id='" . Girlfriend::$leaPrefixes["target"]
+                . Girlfriend::comeToMe()->strToEpubIdentifier($node->textContent) . "'></a>";
             $fragment = $text->dom->createDocumentFragment();
             $fragment->appendXML($replacement);
             $node->parentNode->replaceChild($fragment, $node);
+        }
+    }
+
+    /**
+     * Replace <lea:chapter> tags with html.
+     * - <lea:chapter content-top="CHAPTER ONE" class-top="heading break-before"
+     *                class-bottom="hr heading">The Pyramid of Bottles</lea:chapter>
+     * =>
+     * <h2 title="The Call from Beyond - CHAPTER ONE - The Pyramid of Bottles"
+     *     class="heading break-before">CHAPTER ONE</h2>
+     * <h3 class="hr heading">The Pyramid of Bottles</h3>
+     *
+     * @param Text $text
+     * @return void
+     */
+    public static function replaceLeaChapterTags(Text $text): void
+    {
+        $nodes = $text->xpath->query(expression: "//lea:chapter");
+        foreach ($nodes as $node) {
+            $contentTop = $node->hasAttribute("content-top")
+                ? $node->getAttribute("content-top")
+                : $node->textContent;
+            $classTop = $node->hasAttribute("class-top")
+                ? $node->getAttribute("class-top")
+                : $node->textContent;
+            $classBottom = $node->hasAttribute("class-bottom")
+                ? $node->getAttribute("class-bottom")
+                : $node->textContent;
+            $title = trim($node->textContent);
+            $replacement = "<h2 title='$text->title - $contentTop - $title' class='$classTop'>$contentTop</h2>"
+                . "<h3 class='$classBottom'>$title</h3>";
+            self::replaceNodeWithStringContent($node, $replacement);
+        }
+    }
+
+    /**
+     * Replace <lea:section> tags with html.
+     * - <lea:section class="heading">The Pyramid of Bottles</lea:section>
+     * =>
+     * <h2 title="The Call from Beyond - The Pyramid of Bottles"
+     *     class="heading">The Pyramid of Bottles</h2>
+     *
+     * @param Text $text
+     * @return void
+     */
+    public static function replaceLeaSectionTags(Text $text): void
+    {
+        $nodes = $text->xpath->query(expression: "//lea:section");
+        foreach ($nodes as $node) {
+            $class = $node->hasAttribute("class")
+                ? $node->getAttribute("class")
+                : $node->textContent;
+            $sectionTitle = trim($node->textContent);
+            $replacement = "<h2 title='$text->title - $sectionTitle' class='$class'>$sectionTitle</h2>";
+            self::replaceNodeWithStringContent($node, $replacement);
         }
     }
 
