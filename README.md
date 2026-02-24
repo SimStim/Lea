@@ -1,7 +1,7 @@
-# 🝄 Lea ePub anvil
+# 🝄 Lea EPUB Anvil
 
-Lea produces ePubs conforming to the latest standards, i.e., 3.3 at the time of writing. Lea is not trying to be a full
-ePub authoring environment, a semantic curator, or a replacement for Sigil's editorial layer. Lea is a compiler,
+Lea produces EPUBs conforming to the latest standards, i.e., 3.3 at the time of writing. Lea is not trying to be a full
+EPUB authoring environment, a semantic curator, or a replacement for Sigil's editorial layer. Lea is a compiler,
 validator, and normalizer. The output is intended to be opened in Sigil. Lea guarantees correctness, human editors can
 add meaning later.
 
@@ -10,7 +10,7 @@ add meaning later.
 - filename and identifier consistency
 - dynamic local cross-file link targets
 - external link target validity check
-- generation of ePub manifest, including metadata and spine
+- generation of EPUB manifest, including metadata and spine
 - error messages with focused suggestions for fixes
 - easy to learn and use if you know some XML or HTML
 - Lea is a bitch, the female dog variant; you can always rely on her
@@ -19,7 +19,7 @@ add meaning later.
 
 * filename and identifier consistency
 * dynamic local cross-file link targets
-* generation of ePub OPF manifest
+* generation of EPUB OPF manifest
 * support for book series collections with ISSN
 * support for anthologies with per-text authors and rights
 * support for text blocks
@@ -27,9 +27,9 @@ add meaning later.
 * <lea:> tags anywhere in the source files, for example, for images with captions
 * validation of external links
 * support for advanced typesetting: embedded fonts and stylesheets
-* EPUB checker validation
+* EPUBCheck validation
 * command-line arguments for run-time configuration
-* the example ebook of 7+ MB compiles into a 3.2 MB ePub in 0.236 seconds on my Zen-2 based slow-ass notebook
+* the example ebook of 7+ MB compiles into a 3.2 MB EPUB in 0.236 seconds on my Zen-2 based slow-ass notebook
 
 ### Planned
 
@@ -47,7 +47,7 @@ time. If 🝄 is the forge, then ⊙ is the moment when the hammer strikes and a
 coherence. ⊙ marks the point around which a meaning is calibrated. Lea's process is information-preserving
 normalization, or a lossless canonicalization.
 
-With the release of "⊙ 1.0.0," Lea will be able to dynamically create an ePub from config and content files only.
+With the release of "⊙ 1.0.0," Lea will be able to dynamically create an EPUB from config and content files only.
 
 Releases marked with ⊙ are recommended for most users. These releases will be stable, have long-term support, and will
 come with major new features.
@@ -59,15 +59,25 @@ PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones
 
+1.0.7
+
+* Fixed disregard of the optional "to" attribute when validating URLs.
+* Visual change: Lea ePub anvil ⇒ Lea EPUB Anvil; seems to be more visually balanced.
+* Refactoring, and a lot of small fixes addressing grammar changes.
+* This version is not a full release, but the grammar should be close to stable at this point.
+
 Notes to self:
 
-- refactor xpath queries to cached case-insensitive matching for better UX.
+- refactor for a new LeaTags class enabling case-insensitive cached XPath queries.
+- new helper class NewPowerGeneration.
+- pipe every file access through Girlfriend for centralized error handling.
+- check for the existence of extensions before using them, e.g., curl.
 - import of word processor files and image manipulations before 2Q2026.
 
 Note to readers:
 
 - template system may be abandoned; undecided about utility.
-- this is production-grade and feature-complete; code frequency will slow down short-term.
+- this repo now includes the world's first Lea-produced published work.
 
 1.0.6
 
@@ -81,8 +91,8 @@ Note to readers:
 
 1.0.5
 
-* Added a third option to the lea:subfolder tag for the ePub output folder.
-* Added a method to sanitize stylesheets; included images are automatically imported into the ePub.
+* Added a third option to the lea:subfolder tag for the EPUB output folder.
+* Added a method to sanitize stylesheets; included images are automatically imported into the EPUB.
 * Scripts are processed first now, so that they can output blocks; useful for dynamic lists.
 * Added a script to iterate over all authors and include text blocks based on their names.
 * Girlfriend's readFile is not case-sensitive anymore on Linux; she'll still complain.
@@ -147,7 +157,7 @@ a confident attitude (Push) Believe me, you will get busy"
 
 0.0.21 "No image at all?"
 
-* Mostly refactoring the handling of ePub cover and navigation files.
+* Mostly refactoring the handling of EPUB cover and navigation files.
 * Added a new Image class, as well as extraction and handling of images.
 * Added memory to Girlfriend.
 * Added new subfolder tag for global subfolder definition.
@@ -182,7 +192,7 @@ But that don't make the dirty little things they say about you true (You tell 'e
 
 * Added three string normalization methods to Girlfriend.
 * Started with theOpera, which implies adding ZipArchive dependency to composer.json.
-* Lea can produce a complete ePub now, minus table of contents and DOM headers. Getting there!
+* Lea can produce a complete EPUB now, minus table of contents and DOM headers. Getting there!
 
 0.0.16: "Come to the park and play with us. There are many rules in Paisley Park."
 

@@ -52,10 +52,10 @@ final class Girlfriend
         get => $this->leaNameShort ??= "Lea";
     }
     private(set) string $leaNamePlain {
-        get => $this->leaNamePlain ??= self::comeToMe()->leaNameShort . " ePub anvil " . self::comeToMe()->leaVersion;
+        get => $this->leaNamePlain ??= self::comeToMe()->leaNameShort . " EPUB Anvil " . self::comeToMe()->leaVersion;
     }
     private(set) string $leaName {
-        get => $this->leaName ??= Fancy::BOLD . self::comeToMe()->leaNameShort . " ePub anvil" . Fancy::UNBOLD . " " . self::comeToMe()->leaVersion;
+        get => $this->leaName ??= Fancy::BOLD . self::comeToMe()->leaNameShort . " EPUB Anvil" . Fancy::UNBOLD . " " . self::comeToMe()->leaVersion;
     }
     private(set) array $doveCries = [];
     private static Affirmation $affirmation;
@@ -219,6 +219,18 @@ final class Girlfriend
         self::comeToMe()->doveCries = [];
     }
 
+    private static function get_calling_class(): string
+    {
+        $trace = debug_backtrace();
+        $class = $trace[0]['class'];
+        for ($i = 0; $i < count($trace); $i++) {
+            if (isset($trace[$i])) // is it set?
+                if ($class != $trace[$i]['class'])
+                    return $trace[$i]['class'];
+        }
+        return "";
+    }
+
     /**
      * Reads a file from storage into a string in memory
      * - Returns an empty string on read error
@@ -237,7 +249,12 @@ final class Girlfriend
                 array: scandir($parts["dirname"]),
                 callback: fn($file) => strcasecmp($file, $parts["basename"]) === 0
             ) ?? "";
-            if ($similarFile !== "") {
+            if ($similarFile === "") {
+                Girlfriend::comeToMe()->makeDoveCry(new Text($filePath), "fileReadError",
+                    $loadFilePath);
+                throw new Exception("Error trying to read file '$loadFilePath'." . PHP_EOL
+                    . "File requested in class '" . self::get_calling_class() . "'." . PHP_EOL);
+            } else {
                 $loadFilePath = $parts["dirname"] . "/" . $similarFile;
                 Girlfriend::comeToMe()->makeDoveCry(new Text($filePath), "fileReadSimilar",
                     $filePath, $loadFilePath);
@@ -344,7 +361,7 @@ final class Girlfriend
     }
 
     /**
-     * Executes the final ePub validation process using epubcheck.jar and returns the result.
+     * Executes the final EPUB validation process using EPUBCheck.jar and returns the result.
      *
      * @param string $fileName The path to the EPUB file to be checked.
      * @return array An associative array containing the following keys:
@@ -364,7 +381,7 @@ final class Girlfriend
         $process = proc_open($cmd, $descriptors, $pipes);
         if (!is_resource($process))
             return ['error' => 'Failed to start process.'];
-        echo PHP_EOL . "[   ] Checking ePub with EPUBCheck, please be patient.";
+        echo PHP_EOL . "[   ] Checking EPUB with EPUBCheck, please be patient.";
         $animCtr = 0;
         echo Fancy::HIDE_CURSOR;
         while (proc_get_status($process)["running"]) {

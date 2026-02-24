@@ -517,7 +517,9 @@ final class XMLetsGoCrazy
         $nodes = $xpath->query(expression: "//lea:link");
         $links = [];
         foreach ($nodes as $node)
-            $links[] = strtolower(trim($node->textContent));
+            $links[] = strtolower(string: $node->hasAttribute("to")
+                ? trim($node->getAttribute("to"))
+                : trim($node->textContent));
         return $links;
     }
 
@@ -606,9 +608,9 @@ final class XMLetsGoCrazy
             $classBottom = $node->hasAttribute("class-bottom")
                 ? $node->getAttribute("class-bottom")
                 : $node->textContent;
-            $title = trim($node->textContent);
-            $replacement = "<h2 title='$text->title - $contentTop - $title' class='$classTop'>$contentTop</h2>"
-                . "<h3 class='$classBottom'>$title</h3>";
+            $chapterTitle = trim($node->textContent);
+            $replacement = "<h2 title='" . $text->title . "—" . $chapterTitle
+                . "' class='$classTop'>$contentTop</h2><h3 class='$classBottom'>$chapterTitle</h3>";
             self::replaceNodeWithStringContent($node, $replacement);
         }
     }
@@ -631,7 +633,8 @@ final class XMLetsGoCrazy
                 ? $node->getAttribute("class")
                 : $node->textContent;
             $sectionTitle = trim($node->textContent);
-            $replacement = "<h2 title='$text->title - $sectionTitle' class='$class'>$sectionTitle</h2>";
+            $replacement = "<h2 title='" . $text->title . "—" . $sectionTitle
+                . "' class='$class'>$sectionTitle</h2>";
             self::replaceNodeWithStringContent($node, $replacement);
         }
     }
@@ -733,7 +736,11 @@ final class XMLetsGoCrazy
     {
         $nodes = $text->xpath->query(expression: "//lea:block");
         foreach ($nodes as $node) {
-            $blockFileName = Girlfriend::$pathBlocks . trim($node->textContent);
+            $blockFileName = Girlfriend::$pathBlocks
+                . ($node->hasAttribute("folder")
+                    ? trim(string: $node->getAttribute(qualifiedName: "folder"), characters: "/ ") . "/"
+                    : "")
+                . trim($node->textContent);
             $replacement = Girlfriend::comeToMe()->readFile($blockFileName);
             if ($replacement === "") {
                 Girlfriend::comeToMe()->makeDoveCry($text, "blockReadError", $blockFileName, $text->fileName);

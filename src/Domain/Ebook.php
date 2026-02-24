@@ -140,7 +140,7 @@ final class Ebook
     }
 
     /**
-     * Adds an Image object to the collection of images.
+     * Adds Image objects to the collection of images.
      *
      * @param array $images
      * @return void
@@ -148,5 +148,16 @@ final class Ebook
     public function addImages(array $images): void
     {
         $this->images = array_merge($this->images, $images);
+    }
+
+    /**
+     * Adds subjects to the collection of subjects.
+     *
+     * @param array $subjects
+     * @return void
+     */
+    public function addSubjects(array $subjects): void
+    {
+        $this->subjects = array_unique(array_merge($this->subjects, $subjects));
     }
 }

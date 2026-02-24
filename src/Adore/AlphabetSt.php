@@ -105,14 +105,17 @@ class AlphabetSt
      */
     public function listBlurbs(DOMElement $node, Ebook $ebook): void
     {
-        $class = $node->hasAttribute(qualifiedName: 'heading-class')
-            ? $node->getAttribute(qualifiedName: 'heading-class')
+        $class = $node->hasAttribute(qualifiedName: "class")
+            ? $node->getAttribute(qualifiedName: "class")
             : "";
+        $heading = $node->hasAttribute(qualifiedName: "heading")
+            ? $node->getAttribute(qualifiedName: "heading")
+            : "h4";
         $blurbs = "";
         foreach ($ebook->texts as $text)
             if (!empty($text->blurb))
-                $blurbs .= "<h4 class='$class'><lea:link>" . $text->title . " by " . $text->authors[0]->name
-                    . "</lea:link></h4>" . $text->blurb . PHP_EOL;
+                $blurbs .= "<$heading class='$class'><lea:link>" . $text->title . " by " . $text->authors[0]->name
+                    . "</lea:link></$heading>" . $text->blurb . PHP_EOL;
         XMLetsGoCrazy::replaceNodeWithStringContent(node: $node, string: $blurbs);
     }
 

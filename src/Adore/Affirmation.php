@@ -63,7 +63,7 @@ final class Affirmation
                 "flaw" => Flaw::Info,
                 "message" => "External links were not checked this time.",
                 "suggestion" => "To validate them, add 'check-links' to your command."
-                    . "[ $ " . Fancy::INVERSE . Fancy::BOLD . "lea #1# check-links" . Fancy::RESET . " ]"
+                    . " [ $ " . Fancy::INVERSE . Fancy::BOLD . "lea #1# check-links" . Fancy::RESET . " ]"
             ],
             "ebookNotWellFormed" => [
                 "flaw" => Flaw::Fatal,
@@ -266,8 +266,8 @@ final class Affirmation
             "epubNotChecked" => [
                 "flaw" => Flaw::Info,
                 "message" => "EPUBCheck was not requested this time.",
-                "suggestion" => "To run EPUBCheck after ePub generation, add 'check-epub' to your command. "
-                    . "[ $ " . Fancy::INVERSE . Fancy::BOLD . "lea #1# check-epub" . Fancy::RESET . " ]"
+                "suggestion" => "To run EPUBCheck after EPUB generation, add 'check-epub' to your command."
+                    . " [ $ " . Fancy::INVERSE . Fancy::BOLD . "lea #1# check-epub" . Fancy::RESET . " ]"
             ],
             "blockReadError" => [
                 "flaw" => Flaw::Fatal,
@@ -316,6 +316,11 @@ final class Affirmation
                     . "File name read:     " . Fancy::INVERSE . Fancy::BOLD . "#2#" . Fancy::RESET . "." . PHP_EOL
                     . "This is a low-level error message, therefore I cannot be more specific"
                     . " about the exact location."
+            ],
+            "fileReadError" => [
+                "flaw" => Flaw::Fatal,
+                "message" => "Low-level error while reading file.",
+                "suggestion" => "File requested: #1#."
             ],
         ];
     }

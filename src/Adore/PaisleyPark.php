@@ -184,13 +184,6 @@ final class PaisleyPark
             Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookMultipleISBNs",
                 $this->ebook->isbn->isbn, Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
-         * Checks if there are any <lea:subject> declarations.
-         * - no = warning about missing subject declarations
-         */
-        if (count($this->ebook->subjects) === 0)
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookSubjectRecommended",
-                Girlfriend::$pathEbooks . $this->ebook->fileName);
-        /**
          * If there is a <lea:cover> declaration, check if the file exists in the file system.
          * - No = fatal
          */
@@ -293,10 +286,10 @@ final class PaisleyPark
             $infoOnly = $infoOnly && ($msg->flaw === Flaw::Info);
         }
         if (!$infoOnly) {
-            echo Fancy::fatal(msg: "[ FATAL ]") . " cannot be resolved. No ePub will be produced." . PHP_EOL;
-            echo Fancy::severe(msg: "[ SEVERE ]") . " requires guessing. The ePub must not be published." . PHP_EOL;
-            echo Fancy::warning(msg: "[ WARNING ]") . " denotes missing optional data. The ePub should not be published." . PHP_EOL;
-            echo Fancy::info(msg: "[ INFO ]") . " shows potential for improvement. The produced ePub may be less than ideal." . PHP_EOL;
+            echo Fancy::info(msg: "[ INFO ]") . "    shows potential for improvement. The produced EPUB may be less than ideal." . PHP_EOL;
+            echo Fancy::warning(msg: "[ WARNING ]") . " denotes missing optional data. The EPUB should not be published." . PHP_EOL;
+            echo Fancy::severe(msg: "[ SEVERE ]") . "  requires guessing from Lea. The EPUB must not be published." . PHP_EOL;
+            echo Fancy::fatal(msg: "[ FATAL ]") . "   cannot be resolved. No EPUB will be produced." . PHP_EOL;
         }
         echo PHP_EOL;
         return !$fatal;
@@ -308,7 +301,7 @@ final class PaisleyPark
      * @return void
      * @throws Exception
      */
-    private function validateUrls(): void
+    private function validateURLs(): void
     {
         $urls = [];
         foreach ($this->ebook->texts as $text)
@@ -389,25 +382,44 @@ final class PaisleyPark
         foreach ($this->ebook->texts as $text)
             XMLetsGoCrazy::replaceLeaBlockTags($text);
         /**
+         * Execute all <lea:script> tags.
+         */
+        foreach ($this->ebook->texts as $text)
+            XMLetsGoCrazy::executeLeaScriptTags($text, $this->alphabetSt, $this->ebook);
+        /**
          * We now have dynamically generated content from scripts and blocks resolved.
          * Let's then extract images from all text content files and add them to the ebook image list.
          */
         foreach ($this->ebook->texts as $text)
             $this->ebook->addImages(XMLetsGoCrazy::extractImages($text->xpath));
         /**
+         * Also, extract subjects from all text content files and add them to the ebook image list.
+         */
+        foreach ($this->ebook->texts as $text)
+            $this->ebook->addSubjects(XMLetsGoCrazy::extractSubjects($text->xpath));
+        /**
+         * Checks if there are any <lea:subject> declarations.
+         * - no = warning about missing subject declarations
+         */
+        if (count($this->ebook->subjects) === 0)
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookSubjectRecommended",
+                Girlfriend::$pathEbooks . $this->ebook->fileName);
+        /**
          * Checks if there are any <lea:image> tags defining file names not found in the file system.
          * - Yes = fatal
          */
-        $missing = [];
-        foreach ($this->ebook->images as $image)
-            if (!is_file(
-                filename: Girlfriend::$pathImages . $image->folder . $image->fileName)
-            )
-                $missing[] = Girlfriend::$pathImages . $image->folder . $image->fileName;
-        if (count($missing) > 0)
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "imageReadError",
-                (string)count($missing), implode(separator: PHP_EOL, array: $missing),
-                Girlfriend::$pathEbooks . $this->ebook->fileName);
+        /**
+         * $missing = [];
+         * foreach ($this->ebook->images as $image)
+         * if (!is_file(
+         * filename: Girlfriend::$pathImages . $image->folder . $image->fileName)
+         * )
+         * $missing[] = Girlfriend::$pathImages . $image->folder . $image->fileName;
+         * if (count($missing) > 0)
+         * Girlfriend::comeToMe()->makeDoveCry($this->ebook, "imageReadError",
+         * (string)count($missing), implode(separator: PHP_EOL, array: $missing),
+         * Girlfriend::$pathEbooks . $this->ebook->fileName);
+         */
         /**
          * Replace all <lea:chapter> and <lea:section> tags with xhtml.
          */
@@ -421,7 +433,7 @@ final class PaisleyPark
         foreach ($this->ebook->texts as $text)
             XMLetsGoCrazy::replaceLeaImageTags($text);
         /**
-         * If a cover image was defined, create a text file for it and add it to the ePub.
+         * If a cover image was defined, create a text file for it and add it to the EPUB.
          */
         if ($this->ebook->cover !== "") {
             $text = new Text(fileName: "cover.xhtml", xhtml: $this->theOpera->generateCoverFile(), title: "Cover");
@@ -429,9 +441,9 @@ final class PaisleyPark
             $this->ebook->addText(text: $text);
         }
         /**
-         * The nav.xhtml is mandatory ePub navigation, so we create and add it here.
+         * The nav.xhtml is mandatory EPUB navigation, so we create and add it here.
          */
-        $text = new Text(fileName: "nav.xhtml", xhtml: $this->theOpera->generateNavFile(), title: "ePub Navigation");
+        $text = new Text(fileName: "nav.xhtml", xhtml: $this->theOpera->generateNavFile(), title: "EPUB Navigation");
         $text->addAuthor(new Author(Girlfriend::comeToMe()->leaNamePlain));
         $this->ebook->addText(text: $text);
         /**
@@ -453,7 +465,7 @@ final class PaisleyPark
          * If the user requested to check external links, do it now.
          */
         if (Girlfriend::comeToMe()->recall(name: "check-links") === "yes")
-            $this->validateUrls();
+            $this->validateURLs();
         else
             Girlfriend::comeToMe()->makeDoveCry($this->ebook, "linksNotChecked", $this->ebook->fileName);
         /**
@@ -500,7 +512,7 @@ final class PaisleyPark
     public function pControl(): bool
     {
         try {
-            $this->theOpera->theOverture(); // ascertain we're laughing in the purple rain
+            $this->theOpera->theOverture();         // make sure we're laughing in the purple rain
             $this->segue();
             if (!$this->inThisBedEyeScream()) exit;
             $errorLog = Girlfriend::comeToMe()->doveCries;

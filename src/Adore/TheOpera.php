@@ -51,7 +51,7 @@ final class TheOpera
             "mimetype" => "e468e350d1143eb648f60c7b0bd6031101ec0544a361ca74ecef256ac901f48b",
             "container.xml" => "c54cb884813a53ce2fc9b3102ca8ee5c03b0397a2cb984500830e86c65ec092f",
             "covertemplate.xhtml" => "2d3d15c1277cc6a1f429afb8ef8dcc8e04949ccc4f743c4039333245ca7f76ce",
-            "navtemplate.xhtml" => "d11d6254bd0701633e39f92211d512af19fbb62d270bb0ab460be3f684456a38",
+            "navtemplate.xhtml" => "00b2b08eab2ce2b7069dd7b942f9333b5dd643e6d21a19753cc4ff33b3c64647",
             "lea-logo-ascii.txt" => "fa89b6f5ec8ba63ccc5b1f83dff81208e0cb7a272824caaeea464cc16ae67a0b",
         ];
         foreach ($hashes as $fileName => $hash) {
@@ -239,7 +239,9 @@ final class TheOpera
                     $metadata .= "<meta refines='#" . Girlfriend::$leaPrefixes["text"]
                         . Girlfriend::comeToMe()->strToEpubIdentifier($text->title . " by " . $text->authors[0]->name)
                         . "' property='dcterms:creator'>" . $author->name . "</meta>" . PHP_EOL;
-        foreach ($this->ebook->subjects as $subject)
+        $subjects = $this->ebook->subjects;
+        sort($subjects);
+        foreach ($subjects as $subject)
             $metadata .= "<dc:subject>$subject</dc:subject>" . PHP_EOL;
         if ($this->ebook->cover !== "")
             $metadata .= "<meta name='cover' content='" . Girlfriend::$leaPrefixes["image"]
@@ -334,6 +336,7 @@ final class TheOpera
      * @param string $timeStamp
      * @param array $epubCheckCapture
      * @return string
+     * @throws Exception
      */
     private function generateProductionLog(array $errorLog, string $timeStamp, array $epubCheckCapture): string
     {
@@ -409,9 +412,9 @@ final class TheOpera
             throw new RuntimeException($errstr, $errno);
         });
         foreach ($this->ebook->images as $image)
-            $zip->addFile(
-                filepath: Girlfriend::$pathImages . $image->folder . $image->fileName,
-                entryname: "OEBPS/Images/" . $this->identifiers[$this->idMarkers["image"] . $image->fileName]["epubFileName"]
+            $zip->addFromString(
+                "OEBPS/Images/" . $this->identifiers[$this->idMarkers["image"] . $image->fileName]["epubFileName"],
+                Girlfriend::comeToMe()->readFile(Girlfriend::$pathImages . $image->folder . $image->fileName),
             );
         restore_error_handler();
         /**
