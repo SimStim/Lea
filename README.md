@@ -1,9 +1,10 @@
 # 🝄 Lea EPUB Anvil
 
-Lea produces EPUBs conforming to the latest standards, i.e., 3.3 at the time of writing. Lea is not trying to be a full
-EPUB authoring environment, a semantic curator, or a replacement for Sigil's editorial layer. Lea is a compiler,
-validator, and normalizer. The output is intended to be opened in Sigil. Lea guarantees correctness, human editors can
-add meaning later.
+Lea produces EPUBs conforming to the latest standards, i.e., 3.3 at the time of writing.
+Lea is not trying to be a full EPUB authoring environment, a semantic curator,
+or a replacement for Sigil's editorial layer. Lea is a compiler, validator, and normalizer.
+The output is intended to be opened in Sigil. Lea guarantees correctness,
+human editors can add meaning later.
 
 ## Features
 
@@ -29,28 +30,37 @@ add meaning later.
 * support for advanced typesetting: embedded fonts and stylesheets
 * EPUBCheck validation
 * command-line arguments for run-time configuration
-* the example ebook of 7+ MB compiles into a 3.2 MB EPUB in 0.236 seconds on my Zen-2 based slow-ass notebook
+* repo includes the world's very first, fully Lea-produced actually published title,
+  compiling ~8 MB into a 3.3 MB EPUB file in 0.273 seconds on my Zen-2 based notebook
 
 ### Planned
 
-* template system for images
 * automatic detection and content-based compression of image files
 * import of word processor documents into Lea definition files
 * simple but useful reports
+* important: throw error on unknown attributes instead of silently ignoring them.
+* refactor for a new LeaTags class enabling case-insensitive cached XPath queries.
+* new helper class NewPowerGeneration.
+* pipe every file access through Girlfriend for centralized error handling.
+* check for the existence of extensions before using them, e.g., curl.
+* might as well add the ncx, generated EPUB will be backwards-compatible with the EPUB2 standard.
+* time-frame: import of word processor files and image manipulations before 2Q2026.
 
 ## 1.0.0 and ⊙
 
-🝄 stands for Lea as a holistic entity. The glyph ⊙ was chosen as a marker for specific aspects at defined points in
-time. If 🝄 is the forge, then ⊙ is the moment when the hammer strikes and a new creation emerges.
+🝄 stands for Lea as a holistic entity. The glyph ⊙ was chosen as a marker for specific aspects
+at defined points in time. If 🝄 is the flux for soldering, then ⊙ is the moment when
+the soldering iron heats the flux and a new creation emerges.
 
-⊙ expresses a structured combination where the structure matters more than the operands. It is not about symmetry but
-coherence. ⊙ marks the point around which a meaning is calibrated. Lea's process is information-preserving
-normalization, or a lossless canonicalization.
+⊙ expresses a structured combination where the structure matters more than the operands.
+It is not about symmetry but coherence. ⊙ marks the point around which a meaning is calibrated.
+Lea's process is information-preserving normalization, or a lossless canonicalization.
 
-With the release of "⊙ 1.0.0," Lea will be able to dynamically create an EPUB from config and content files only.
+With the release of "⊙ 1.0.0," Lea will be able to dynamically create an EPUB
+from config and content files only.
 
-Releases marked with ⊙ are recommended for most users. These releases will be stable, have long-term support, and will
-come with major new features.
+Releases marked with ⊙ are recommended for most users. These releases will be stable,
+have long-term support, and will come with major new features.
 
 ## License
 
@@ -59,6 +69,21 @@ PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 
 ## Kilometer stones
 
+1.0.8
+
+* Fixed the skip attribute; it was not filtering correctly.
+* Added the lea:option tag and the include-images option.
+* The lea:defaultcaption tag is an option now (TOFKAD: "the option formerly known as defaultcaption").
+* Added an Essentials edition to the repo, check out the minimal differences between the config files.
+* Method for rewrapping DOM had stylesheet.css hard-coded; fixed.
+* Added ncx generation for EPUB2-compatibility: guide and ncx generators, and ncx template file.
+* Added default values to Girlfriend's memory.
+* Changed behavior: images linked from stylesheets are always loaded from the stylesheet folder now.
+* Added regex to the skip attribute because you can't have enough brain damage.
+* Added transliteration map to the strToEpub* functions; the things you do for Philip José Farmer!
+* Changed grammar to allow child nodes inside captions for formatting them.
+* Changed the check-links command-line option to check-urls for elevated semantic accuracy.
+
 1.0.7
 
 * Fixed disregard of the optional "to" attribute when validating URLs.
@@ -66,24 +91,11 @@ PolyForm-Noncommercial-1.0.0; see separate file LICENSE.md for details.
 * Refactoring, and a lot of small fixes addressing grammar changes.
 * This version is not a full release, but the grammar should be close to stable at this point.
 
-Notes to self:
-
-- refactor for a new LeaTags class enabling case-insensitive cached XPath queries.
-- new helper class NewPowerGeneration.
-- pipe every file access through Girlfriend for centralized error handling.
-- check for the existence of extensions before using them, e.g., curl.
-- import of word processor files and image manipulations before 2Q2026.
-
-Note to readers:
-
-- template system may be abandoned; undecided about utility.
-- this repo now includes the world's first Lea-produced published work.
-
 1.0.6
 
 * Added new tags for chapter and section headings.
 * Turned formerly hard-coded prefixes into constants.
-* Image tags got an optional folder attribute; useful for blocks.
+* Image tags got an optional folder attribute; useful inside blocks.
 * Image tags were resolved too early, missing block or script inserts.
 * Added folder property to Image class to store the subfolder specific to an image.
 * Minor refactorings.
@@ -92,7 +104,7 @@ Note to readers:
 1.0.5
 
 * Added a third option to the lea:subfolder tag for the EPUB output folder.
-* Added a method to sanitize stylesheets; included images are automatically imported into the EPUB.
+* Added a method to sanitize stylesheets; images included there are automatically imported into the EPUB.
 * Scripts are processed first now, so that they can output blocks; useful for dynamic lists.
 * Added a script to iterate over all authors and include text blocks based on their names.
 * Girlfriend's readFile is not case-sensitive anymore on Linux; she'll still complain.

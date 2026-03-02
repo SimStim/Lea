@@ -59,11 +59,11 @@ final class Affirmation
                     . "Text file name: #1#" . PHP_EOL
                     . "Link name: '#2#'"
             ],
-            "linksNotChecked" => [
+            "urlsNotChecked" => [
                 "flaw" => Flaw::Info,
                 "message" => "External links were not checked this time.",
-                "suggestion" => "To validate them, add 'check-links' to your command."
-                    . " [ $ " . Fancy::INVERSE . Fancy::BOLD . "lea #1# check-links" . Fancy::RESET . " ]"
+                "suggestion" => "To validate them, add 'check-urls' to your command."
+                    . " [ $ " . Fancy::INVERSE . Fancy::BOLD . "lea #1# check-urls" . Fancy::RESET . " ]"
             ],
             "ebookNotWellFormed" => [
                 "flaw" => Flaw::Fatal,
@@ -306,6 +306,19 @@ final class Affirmation
                 "flaw" => Flaw::Fatal,
                 "message" => "Script 'linkedImage' is missing the missing the mandatory 'image' attribute.",
                 "suggestion" => "Add the attribute 'image'."
+            ],
+            "multipleCaptions" => [
+                "flaw" => Flaw::Severe,
+                "message" => "Multiple captions defined in a DOM object I'm going to use the first definition.",
+                "suggestion" => "Reduce the number of captions in the DOM object to 0 or 1." . PHP_EOL
+                    . "DOM object filename: '#1#'." . PHP_EOL
+                    . "Image name: '#2#'."
+            ],
+            "imageSourceUndefined" => [
+                "flaw" => Flaw::Fatal,
+                "message" => "Image source was not defined.",
+                "suggestion" => "Check the text content file, making sure all image tags define sources." . PHP_EOL
+                    . "Text file name: #1#"
             ],
             "fileReadSimilar" => [
                 "flaw" => Flaw::Severe,

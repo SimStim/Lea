@@ -72,7 +72,7 @@ final class Ebook
         get => $this->fonts ??= XMLetsGoCrazy::extractFonts($this->xpath);
     }
     private(set) array $images {
-        get => $this->images ??= XMLetsGoCrazy::extractImages($this->xpath);
+        get => $this->images ??= XMLetsGoCrazy::extractImages($this);
     }
     private(set) array $targets {
         get => $this->targets ??= $this->extractTargetsFromTexts();

@@ -327,22 +327,40 @@ final class XMLetsGoCrazy
      * - <lea:image>Harry-Harrison-FM-Logophilia-512.jpg</lea:image>
      * - <lea:image caption="Cover with QR code">Hubris-cover-512-qr.jpg</lea:image>
      *
-     * @param DOMXPath $xpath
+     * @param Ebook|Text $domObject
      * @return array
+     * @throws Exception
      */
     #[NoDiscard]
-    public static function extractImages(DOMXPath $xpath): array
+    public static function extractImages(Ebook|Text $domObject): array
     {
-        $nodes = $xpath->query(expression: "//lea:image");
+        $nodes = $domObject->xpath->query(expression: "//lea:image");
         $images = [];
         foreach ($nodes as $node) {
-            $caption = $node->hasAttribute("caption")
-                ? $node->getAttribute("caption")
-                : Girlfriend::comeToMe()->recall(name: "defaultcaption");
+            if (!$node->hasAttribute("source")) {
+                Girlfriend::comeToMe()->makeDoveCry($domObject, "imageSourceUndefined", $domObject->fileName);
+                continue;
+            }
+            $fileName = trim(string: $node->getAttribute(qualifiedName: "source"));
             $folder = $node->hasAttribute("folder")
                 ? trim(string: $node->getAttribute(qualifiedName: "folder"), characters: "/ ") . "/"
                 : Girlfriend::comeToMe()->recall(name: "subfolder-images");
-            $fileName = trim($node->textContent);
+            $captionNodes = $domObject->xpath->query("lea:caption", $node);
+            if ($captionNodes->length === 0)
+                $caption = Girlfriend::comeToMe()->recall(name: "defaultcaption");
+            else {
+                $captionNode = $captionNodes->item(0);
+                if ($captionNodes->length > 1) {
+                    Girlfriend::comeToMe()->makeDoveCry(
+                        $domObject, "multipleCaptions",
+                        $domObject->fileName, trim($node->textContent)
+                    );
+                }
+                $dom = $captionNode->ownerDocument;
+                $caption = '';
+                foreach ($captionNode->childNodes as $child)
+                    $caption .= $dom->saveXML($child);
+            }
             $images[] = new Image(fileName: $fileName, folder: $folder, caption: $caption);
         }
         return $images;
@@ -538,21 +556,23 @@ final class XMLetsGoCrazy
     {
         $nodes = $text->xpath->query(expression: "//lea:link");
         foreach ($nodes as $node) {
-            $linkTarget = $node->hasAttribute('to')
+            $linkTarget = trim(string: $node->hasAttribute('to')
                 ? $node->getAttribute('to')
-                : $node->textContent;
+                : $node->textContent
+            );
+            $linkTargetIdentifier = Girlfriend::$leaPrefixes["target"]
+                . Girlfriend::comeToMe()->strToEpubIdentifier($linkTarget);
             if (filter_var($linkTarget, filter: FILTER_VALIDATE_URL) === false) {
-                $linkTarget = Girlfriend::$leaPrefixes["target"]
-                    . Girlfriend::comeToMe()->strToEpubIdentifier($linkTarget);
-                if (!isset($targetData[$linkTarget])) {
+                if (!isset($targetData[$linkTargetIdentifier])) {
                     Girlfriend::comeToMe()->makeDoveCry($text, "linkTargetUndefined",
-                        Girlfriend::$pathEbooks . $text->fileName, trim($linkTarget));
+                        Girlfriend::$pathEbooks . $text->fileName, $linkTarget);
                     continue;
                 }
             }
             $linkHref = (filter_var($linkTarget, filter: FILTER_VALIDATE_URL) !== false)
                 ? $linkTarget
-                : $targetData[$linkTarget]["targetFileName"] . "#" . $targetData[$linkTarget]["identifier"];
+                : $targetData[$linkTargetIdentifier]["targetFileName"]
+                . "#" . $targetData[$linkTargetIdentifier]["identifier"];
             $fragment = $text->dom->createDocumentFragment();
             foreach ($node->childNodes as $child)
                 $fragment->appendChild($child->cloneNode(true));
@@ -653,7 +673,7 @@ final class XMLetsGoCrazy
             $scriptName = strtolower(trim($node->textContent));
             if (!array_key_exists($scriptName, $scripts->lut)) {
                 Girlfriend::comeToMe()->makeDoveCry($text, "scriptUndefined", $scriptName,
-                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall("subfolder-text") . $text->fileName);
+                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . $text->fileName);
                 continue;
             }
             $scripts->{$scripts->lut[$scriptName]}($node, $ebook);
@@ -694,31 +714,52 @@ final class XMLetsGoCrazy
      * - <lea:defaultcaption>illustration is in the public domain</lea:defaultcaption>
      *
      * @param DOMXPath $xpath
-     * @return string
+     * @return void
      */
-    #[NoDiscard]
-    public static function extractDefaultCaption(DOMXPath $xpath): string
+    public static function extractOptions(DOMXPath $xpath): void
     {
-        return trim($xpath->evaluate(expression: "string(/" . self::$rootElement . "/lea:defaultcaption)"));
+        $nodes = $xpath->query(expression: "//lea:option");
+        foreach ($nodes as $node) {
+            $option = trim($node->textContent);
+            $value = $node->hasAttribute("value")
+                ? $node->getAttribute("value")
+                : "";
+            if ($value !== "")
+                Girlfriend::comeToMe()->remember(name: $option, data: $value);
+        }
     }
 
     /**
      * Replace <lea:image> tags with xhtml template.
      *
      * @param Text $text
+     * @param array $images
      * @return void
      */
-    public static function replaceLeaImageTags(Text $text): void
+    public static function replaceLeaImageTags(Text $text, array $images): void
     {
+        $indexedImages = [];
+        foreach ($images as $image)
+            $indexedImages[$image->fileName] = $image;
         $nodes = $text->xpath->query(expression: "//lea:image");
         foreach ($nodes as $node) {
-            $caption = $node->hasAttribute('caption')
-                ? $node->getAttribute('caption')
-                : Girlfriend::comeToMe()->recall(name: "defaultcaption");
-            $fileName = trim($node->textContent);
-            $replacement = "<figure>" . "<img src='../Images/"
+            $fileName = trim(string: $node->getAttribute(qualifiedName: "source"));
+            if (!isset($indexedImages[$fileName]))  // in case of "include-images" = "no"
+                continue;
+            $caption = $indexedImages[$fileName]->caption;
+            $alt = preg_replace(
+                pattern: '/\s+/',
+                replacement: ' ',
+                subject: strip_tags(preg_replace(
+                    pattern: '/<br\s*\/?>/i',
+                    replacement: ' ',
+                    subject: $caption))
+            );
+            $replacement = Girlfriend::comeToMe()->recall(name: "include-images") === "no"
+                ? ""
+                : "<figure>" . "<img src='../Images/"
                 . Girlfriend::comeToMe()->strToEpubImageFileName($fileName) . "'"
-                . " alt='$caption'/>" . "<figcaption>$caption</figcaption></figure>";
+                . " alt='$alt'/>" . "<figcaption>$caption</figcaption></figure>";
             $fragment = $text->dom->createDocumentFragment();
             $fragment->appendXML($replacement);
             $node->parentNode->replaceChild($fragment, $node);
@@ -766,10 +807,14 @@ final class XMLetsGoCrazy
      *
      * @param DOMDocument $domDocument
      * @param string $title
+     * @param array $stylesheets
      * @return DOMDocument
      * @throws DOMException
      */
-    public static function reWrapDom(DOMDocument $domDocument, string $title = "TITLE"): DOMDocument
+    public static function reWrapDom(
+        DOMDocument $domDocument,
+        string      $title = "TITLE",
+        array       $stylesheets = []): DOMDocument
     {
         if (!str_contains($domDocument->saveXML(), XMLetsGoCrazy::$leaNamespace))
             return $domDocument;
@@ -779,22 +824,24 @@ final class XMLetsGoCrazy
         $dom->encoding = 'UTF-8';
         $dom->formatOutput = false;
         $html = $dom->documentElement;
-        $html->setAttributeNS(namespace: 'http://www.w3.org/2000/xmlns/', qualifiedName: 'xmlns:epub', value: 'http://www.idpf.org/2007/ops');
-        $html->setAttribute(qualifiedName: 'lang', value: 'en-GB');
-        $html->setAttributeNS(namespace: 'http://www.w3.org/XML/1998/namespace', qualifiedName: 'xml:lang', value: 'en-GB');
-        $head = $dom->createElement('head');
+        $html->setAttributeNS(namespace: "http://www.w3.org/2000/xmlns/", qualifiedName: "xmlns:epub", value: "http://www.idpf.org/2007/ops");
+        $html->setAttribute(qualifiedName: "lang", value: "en-GB");
+        $html->setAttributeNS(namespace: "http://www.w3.org/XML/1998/namespace", qualifiedName: "xml:lang", value: "en-GB");
+        $head = $dom->createElement(localName: "head");
         $html->appendChild($head);
-        $generator = $dom->createElement('meta');
-        $generator->setAttribute(qualifiedName: 'name', value: "generator");
-        $generator->setAttribute(qualifiedName: 'content', value: Girlfriend::comeToMe()->leaNameShort);
+        $generator = $dom->createElement(localName: "meta");
+        $generator->setAttribute(qualifiedName: "name", value: "generator");
+        $generator->setAttribute(qualifiedName: "content", value: Girlfriend::comeToMe()->leaNameShort);
         $head->appendChild($generator);
-        $title = $dom->createElement('title', $title);
-        $head->appendChild($title);
-        $stylesheet = $dom->createElement('link');
-        $stylesheet->setAttribute(qualifiedName: 'rel', value: "stylesheet");
-        $stylesheet->setAttribute(qualifiedName: 'type', value: "text/css");
-        $stylesheet->setAttribute(qualifiedName: 'href', value: "../Styles/stylesheet.css");
-        $head->appendChild($stylesheet);
+        $titleTag = $dom->createElement(localName: "title", value: $title);
+        $head->appendChild($titleTag);
+        foreach ($stylesheets as $stylesheet) {
+            $stylesheetTag = $dom->createElement('link');
+            $stylesheetTag->setAttribute(qualifiedName: 'rel', value: "stylesheet");
+            $stylesheetTag->setAttribute(qualifiedName: 'type', value: "text/css");
+            $stylesheetTag->setAttribute(qualifiedName: 'href', value: "../Styles/$stylesheet");
+            $head->appendChild($stylesheetTag);
+        }
         $html->appendChild($head);
         $body = $dom->createElement('body');
         $body->setAttributeNS(namespace: 'http://www.idpf.org/2007/ops', qualifiedName: 'epub:type', value: 'bodymatter');

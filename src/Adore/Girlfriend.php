@@ -29,7 +29,28 @@ final class Girlfriend
     private(set) static string $pathEpubs = REPO . "epubs/";
     private(set) static string $pathEPUBCheck = ROOT . "/resources/EPUBCheck/";
     private(set) static string $pathPurpleRain = ROOT . "/resources/PurpleRain/";
-    private(set) static array $memory = [];
+    private(set) static array $memory = [
+        "check-epub" => "no",
+        "check-urls" => "no",
+        "defaultcaption" => "",
+        "include-images" => "yes",
+        "subfolder-epub" => "",
+        "subfolder-text" => "",
+        "subfolder-images" => "",
+    ];
+    private static array $characterTransliterationMap = [
+        'á' => 'a', 'à' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'å' => 'a', 'Á' => 'A', 'À' => 'A',
+        'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A',
+        'é' => 'e', 'è' => 'e', 'ê' => 'e', 'ë' => 'e', 'É' => 'E', 'È' => 'E', 'Ê' => 'E', 'Ë' => 'E',
+        'í' => 'i', 'ì' => 'i', 'î' => 'i', 'ï' => 'i', 'Í' => 'I', 'Ì' => 'I', 'Î' => 'I', 'Ï' => 'I',
+        'ó' => 'o', 'ò' => 'o', 'ô' => 'o', 'õ' => 'o', 'ö' => 'o', 'Ó' => 'O', 'Ò' => 'O', 'Ô' => 'O',
+        'Õ' => 'O', 'Ö' => 'O',
+        'ú' => 'u', 'ù' => 'u', 'û' => 'u', 'ü' => 'u', 'Ú' => 'U', 'Ù' => 'U', 'Û' => 'U', 'Ü' => 'U',
+        'ñ' => 'n', 'Ñ' => 'N',
+        'ç' => 'c', 'Ç' => 'C',
+        'š' => 's', 'Š' => 'S',
+        'ž' => 'z', 'Ž' => 'Z',
+    ];
     private static array $characterNonGrata = [
         ' ', '.', '\'', '"', ',', ':', ';', '!', '?', '(',
         ')', '[', ']', '{', '}', '&', '/', '\\', '’', '⊙',
@@ -44,6 +65,7 @@ final class Girlfriend
         "stylesheet" => "lea-css-",
         "collection" => "lea-col-",
         "text" => "lea-txt-",
+        "ncx" => "lea-ncx-",
     ];
     private(set) string $leaVersion {
         get => $this->leaVersion ??= self::comeToMe()->computeLeaVersion(minVersion: self::$minVersion);
@@ -100,7 +122,7 @@ final class Girlfriend
      */
     public function parseArguments(array $argv): void
     {
-        self::remember(name: "check-links", data: in_array(needle: "check-links", haystack: $argv) ? "yes" : "no");
+        self::remember(name: "check-urls", data: in_array(needle: "check-urls", haystack: $argv) ? "yes" : "no");
         self::remember(name: "check-epub", data: in_array(needle: "check-epub", haystack: $argv) ? "yes" : "no");
     }
 
@@ -189,7 +211,7 @@ final class Girlfriend
      */
     public function recall(string $name): string
     {
-        return self::$memory["$name"] ?? "";
+        return self::$memory["$name"];
     }
 
     /**
@@ -276,7 +298,7 @@ final class Girlfriend
         return str_replace(
                 search: self::$characterNonGrata,
                 replace: "",
-                subject: ucwords($title)
+                subject: ucwords(strtr($title, self::$characterTransliterationMap))
             ) . ".xhtml";
     }
 
@@ -295,7 +317,10 @@ final class Girlfriend
             string: str_replace(
                 search: self::$characterNonGrata,
                 replace: "-",
-                subject: Girlfriend::$leaPrefixes["image"] . $parts['filename']
+                subject: strtr(
+                    trim(Girlfriend::$leaPrefixes["image"] . $parts['filename']),
+                    self::$characterTransliterationMap
+                )
             ) . "." . $parts['extension']
         );
     }
@@ -313,7 +338,7 @@ final class Girlfriend
         return str_replace(
             search: self::$characterNonGrata,
             replace: '-',
-            subject: strtolower(trim($string))
+            subject: strtr(strtolower(trim($string)), self::$characterTransliterationMap)
         );
     }
 
@@ -440,8 +465,8 @@ final class Girlfriend
                         $imageFileName = $matches[1];    // full path to file inside url()
                         $imageNormalizedName = Girlfriend::comeToMe()->strToEpubImageFileName(basename($imageFileName));
                         $ebook->addImages([new Image (
-                            fileName: $imageFileName,
-                            folder: self::comeToMe()->recall(name: "subfolder-images"),
+                            fileName: Girlfriend::$pathStyles . basename($imageFileName),
+                            folder: "",
                             caption: $imageNormalizedName)
                         ]);
                         return "url('../Images/$imageNormalizedName')";

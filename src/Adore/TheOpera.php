@@ -52,6 +52,7 @@ final class TheOpera
             "container.xml" => "c54cb884813a53ce2fc9b3102ca8ee5c03b0397a2cb984500830e86c65ec092f",
             "covertemplate.xhtml" => "2d3d15c1277cc6a1f429afb8ef8dcc8e04949ccc4f743c4039333245ca7f76ce",
             "navtemplate.xhtml" => "00b2b08eab2ce2b7069dd7b942f9333b5dd643e6d21a19753cc4ff33b3c64647",
+            "tocncxtemplate.xhtml" => "ee8ed1d413f0dfe19be08f3ee6e95a033dbd4e955f20204457f566d8c2a4711c",
             "lea-logo-ascii.txt" => "fa89b6f5ec8ba63ccc5b1f83dff81208e0cb7a272824caaeea464cc16ae67a0b",
         ];
         foreach ($hashes as $fileName => $hash) {
@@ -148,24 +149,32 @@ final class TheOpera
     }
 
     /**
-     * Generates the nav-xhtml.
+     * Generates the nav.xhtml from a template file, injecting the table of contents.
      *
      * @return string
      * @throws Exception
      */
     public function generateNavFile(): string
     {
-        $format = "<li><a href='%s'>%s</a></li>%s";
-        $toc = sprintf($format, $this->identifiers[$this->idMarkers["text"] . "cover.xhtml"]["epubFileName"], "Cover", PHP_EOL);
+        $format = "<li><a href='%s'>%s</a></li>\n";
+        $toc = sprintf(
+            $format,
+            $this->identifiers[$this->idMarkers["text"] . "cover.xhtml"]["epubFileName"],
+            "Cover",
+        );
         foreach ($this->ebook->texts as $text) {
-            if (($text->title !== "Cover") && ($text->title !== "ePub Navigation"))
+            if (($text->title !== "Cover") && ($text->title !== "EPUB Navigation"))
                 $toc .= sprintf(
                     $format,
                     $this->identifiers[$this->idMarkers["text"] . $text->fileName]["epubFileName"],
-                    $text->title, PHP_EOL
+                    $text->title,
                 );
         }
-        $toc .= sprintf($format, $this->identifiers[$this->idMarkers["text"] . "nav.xhtml"]["epubFileName"], "Table of Contents", PHP_EOL);
+        $toc .= sprintf(
+            $format,
+            $this->identifiers[$this->idMarkers["text"] . "nav.xhtml"]["epubFileName"],
+            "Table of Contents",
+        );
         return str_replace(
             search: "###",
             replace: $toc,
@@ -289,6 +298,7 @@ final class TheOpera
                 $image["epubIdentifier"], $image["epubFileName"],
                 pathinfo($image["epubFileName"])['extension'] === "jpg" ? "jpeg"
                     : pathinfo($image["epubFileName"])['extension'], PHP_EOL);
+        $manifest .= "<item id='ncx' href='toc.ncx' media-type='application/x-dtbncx+xml'/>" . PHP_EOL;
         return $manifest;
     }
 
@@ -313,6 +323,11 @@ final class TheOpera
         return $spine;
     }
 
+    private function compileGuide(): string
+    {
+        return "<reference type='toc' title='Table of Contents' href='Text/nav.xhtml#toc'/>" . PHP_EOL;
+    }
+
     /**
      * Compiles the OPF structure for the ePub content.opf file.
      *
@@ -325,8 +340,61 @@ final class TheOpera
             . "<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf\">"
             . $this->compileMetadata() . "</metadata>"
             . "<manifest>" . $this->compileManifest() . "</manifest>"
-            . "<spine>" . $this->compileSpine() . "</spine>"
+            . "<spine toc='ncx'>" . $this->compileSpine() . "</spine>"
+            . "<guide>" . $this->compileGuide() . "</guide>"
             . "</package>" . PHP_EOL;
+    }
+
+    /**
+     * Generates the toc.ncx file from a template file, injecting the nav points.
+     *
+     * @return string
+     * @throws Exception
+     */
+    private function generateTocNcx(): string
+    {
+        $format = "\n\t\t<navPoint id='%s'>\n\t\t\t<navLabel>\n\t\t\t\t<text>%s</text>\n\t\t\t</navLabel>"
+            . "\n\t\t\t<content src='Text/%s' />\n\t\t</navPoint>";
+        $toc = sprintf(
+            $format,
+            Girlfriend::$leaPrefixes["ncx"]
+            . Girlfriend::comeToMe()->strToEpubIdentifier(string: "Cover"),
+            "Cover",
+            $this->identifiers[$this->idMarkers["text"] . "cover.xhtml"]["epubFileName"],
+        );
+        foreach ($this->ebook->texts as $text) {
+            if (($text->title !== "Cover") && ($text->title !== "EPUB Navigation"))
+                $toc .= sprintf(
+                    $format,
+                    Girlfriend::$leaPrefixes["ncx"]
+                    . Girlfriend::comeToMe()->strToEpubIdentifier($text->title),
+                    $text->title,
+                    $this->identifiers[$this->idMarkers["text"] . $text->fileName]["epubFileName"],
+                );
+        }
+        $toc .= sprintf(
+                $format,
+                Girlfriend::$leaPrefixes["ncx"]
+                . Girlfriend::comeToMe()->strToEpubIdentifier(string: "Table of Contents"),
+                "Table of Contents",
+                $this->identifiers[$this->idMarkers["text"] . "nav.xhtml"]["epubFileName"],
+            )
+            . "\n\t";
+        return str_replace(
+            "#3#",
+            $toc,
+            str_replace(
+                "#2#",
+                $this->ebook->title,
+                str_replace(
+                    search: "#1#",
+                    replace: $this->ebook->isbn->isbn,
+                    subject: Girlfriend::comeToMe()->readFile(
+                        filePath: Girlfriend::$pathPurpleRain . "tocncxtemplate.xhtml"
+                    ),
+                ),
+            ),
+        );
     }
 
     /**
@@ -387,6 +455,7 @@ final class TheOpera
         $zip->setCompressionName(name: 'mimetype', method: ZipArchive::CM_STORE);
         $zip->addFile(filepath: Girlfriend::$pathPurpleRain . "container.xml", entryname: "META-INF/container.xml");
         $zip->addFromString(name: "OEBPS/content.opf", content: $this->compileOpf());
+        $zip->addFromString(name: "OEBPS/toc.ncx", content: $this->generateTocNcx());
         /**
          * Add any user-defined font files.
          */
@@ -414,7 +483,11 @@ final class TheOpera
         foreach ($this->ebook->images as $image)
             $zip->addFromString(
                 "OEBPS/Images/" . $this->identifiers[$this->idMarkers["image"] . $image->fileName]["epubFileName"],
-                Girlfriend::comeToMe()->readFile(Girlfriend::$pathImages . $image->folder . $image->fileName),
+                Girlfriend::comeToMe()->readFile(
+                    str_starts_with($image->fileName, "/")
+                        ? $image->fileName
+                        : Girlfriend::$pathImages . $image->folder . $image->fileName
+                ),
             );
         restore_error_handler();
         /**
@@ -425,12 +498,12 @@ final class TheOpera
             entryname: "OEBPS/Images/" . $this->identifiers[$this->idMarkers["image"] . $this->ebook->cover]["epubFileName"]
         );
         /**
-         * Add all text files, including the cover xhtml file and the mandatory nav.xhtml ePub Navigation.
+         * Add all text files, including the cover xhtml file and the mandatory nav.xhtml EPUB Navigation.
          */
         foreach ($this->ebook->texts as $text) {
             $zip->addFromString(
                 name: "OEBPS/Text/" . $this->identifiers[$this->idMarkers["text"] . $text->fileName]["epubFileName"],
-                content: XMLetsGoCrazy::stripLeaDom(XMLetsGoCrazy::reWrapDom($text->dom, $text->title))->saveXML() ?: ""
+                content: XMLetsGoCrazy::stripLeaDom(XMLetsGoCrazy::reWrapDom($text->dom, $text->title, $this->ebook->stylesheets))->saveXML() ?: ""
             );
         }
         $zip->close();

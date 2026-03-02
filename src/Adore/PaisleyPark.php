@@ -82,8 +82,7 @@ final class PaisleyPark
         }
         echo "LOADING" . PHP_EOL;
         XMLetsGoCrazy::extractSubFolder($this->ebook);
-        $defaultCaption = XMLetsGoCrazy::extractDefaultCaption($this->ebook->xpath);
-        Girlfriend::comeToMe()->remember(name: "defaultcaption", data: $defaultCaption);
+        XMLetsGoCrazy::extractOptions($this->ebook->xpath);
         XMLetsGoCrazy::executeLeaScriptTags($this->ebook, $this->alphabetSt, ebook: $this->ebook);
         /**
          * Checks if there is at least one title.
@@ -390,8 +389,9 @@ final class PaisleyPark
          * We now have dynamically generated content from scripts and blocks resolved.
          * Let's then extract images from all text content files and add them to the ebook image list.
          */
-        foreach ($this->ebook->texts as $text)
-            $this->ebook->addImages(XMLetsGoCrazy::extractImages($text->xpath));
+        if (Girlfriend::comeToMe()->recall(name: "include-images") === "yes")
+            foreach ($this->ebook->texts as $text)
+                $this->ebook->addImages(XMLetsGoCrazy::extractImages($text));
         /**
          * Also, extract subjects from all text content files and add them to the ebook image list.
          */
@@ -431,7 +431,7 @@ final class PaisleyPark
          * Replace all <lea:image> tags with xhtml.
          */
         foreach ($this->ebook->texts as $text)
-            XMLetsGoCrazy::replaceLeaImageTags($text);
+            XMLetsGoCrazy::replaceLeaImageTags($text, $this->ebook->images);
         /**
          * If a cover image was defined, create a text file for it and add it to the EPUB.
          */
@@ -464,10 +464,10 @@ final class PaisleyPark
         /**
          * If the user requested to check external links, do it now.
          */
-        if (Girlfriend::comeToMe()->recall(name: "check-links") === "yes")
+        if (Girlfriend::comeToMe()->recall(name: "check-urls") === "yes")
             $this->validateURLs();
         else
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "linksNotChecked", $this->ebook->fileName);
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "urlsNotChecked", $this->ebook->fileName);
         /**
          * At this point, we want to resolve any links in the text content.
          */

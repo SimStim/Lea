@@ -65,12 +65,12 @@ class AlphabetSt
      */
     public function tableOfContentsPlain(DOMElement $node, Ebook $ebook): void
     {
-        $filter = $node->hasAttribute(qualifiedName: 'filter')
-            ? $node->getAttribute(qualifiedName: 'filter')
+        $pattern = $node->hasAttribute(qualifiedName: "skip")
+            ? "/" . $node->getAttribute(qualifiedName: "skip") . "/i"
             : "";
         $titles = [];
         foreach ($ebook->texts as $text)
-            if ($filter !== "" && !str_contains($text->title, $filter))
+            if ($pattern === "" || preg_match($pattern, $text->title) === 0)
                 $titles[$text->title] = $text->title;
         ksort(array: $titles);
         $toc = PHP_EOL;
@@ -137,10 +137,14 @@ class AlphabetSt
         $class = $node->hasAttribute(qualifiedName: 'class')
             ? $node->getAttribute(qualifiedName: 'class')
             : "";
+        $pattern = $node->hasAttribute(qualifiedName: "skip")
+            ? "/" . $node->getAttribute(qualifiedName: "skip") . "/i"
+            : "";
         $authors = [];
         foreach ($ebook->texts as $text)
             foreach ($text->authors as $author)
-                $authors[$author->name] = $author;
+                if ($pattern === "" || preg_match($pattern, $author->name) === 0)
+                    $authors[$author->fileAs !== "" ? $author->fileAs : $author->name] = $author;
         ksort(array: $authors);
         $output = "";
         $ctr = 0;
