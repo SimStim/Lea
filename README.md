@@ -21,7 +21,6 @@ human editors can add meaning later.
 * filename and identifier consistency
 * dynamic local cross-file link targets
 * generation of EPUB OPF manifest
-* generated EPUB is backwards-compatible with the EPUB2 standard
 * support for book series collections with ISSN
 * support for anthologies with per-text authors and rights
 * support for text blocks
@@ -38,14 +37,13 @@ human editors can add meaning later.
 
 * automatic detection and content-based compression of image files
 * import of word processor documents into Lea definition files
-* packaging of Lea definition files for archiving
 * simple but useful reports
 * important: throw error on unknown attributes instead of silently ignoring them.
 * refactor for a new LeaTags class enabling case-insensitive cached XPath queries.
 * new helper class NewPowerGeneration.
-* Add a lea:index tag to define an index and a lea:script to produce the index.
 * pipe every file access through Girlfriend for centralized error handling.
 * check for the existence of extensions before using them, e.g., curl.
+* might as well add the ncx, generated EPUB will be backwards-compatible with the EPUB2 standard.
 * time-frame: import of word processor files and image manipulations before 2Q2026.
 
 ## 1.0.0 and ⊙
