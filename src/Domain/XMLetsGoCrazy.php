@@ -608,7 +608,7 @@ final class XMLetsGoCrazy
      * - <lea:chapter content-top="CHAPTER ONE" class-top="heading break-before"
      *                class-bottom="hr heading">The Pyramid of Bottles</lea:chapter>
      * =>
-     * <h2 title="The Call from Beyond - CHAPTER ONE - The Pyramid of Bottles"
+     * <h2 title="CHAPTER ONE-The Pyramid of Bottles"
      *     class="heading break-before">CHAPTER ONE</h2>
      * <h3 class="hr heading">The Pyramid of Bottles</h3>
      *
@@ -619,18 +619,21 @@ final class XMLetsGoCrazy
     {
         $nodes = $text->xpath->query(expression: "//lea:chapter");
         foreach ($nodes as $node) {
+            $chapterTitle = trim($node->textContent);
+            $title = $node->hasAttribute("title")
+                ? $node->getAttribute("title")
+                : $text->title . "—" . $chapterTitle;
             $contentTop = $node->hasAttribute("content-top")
                 ? $node->getAttribute("content-top")
-                : $node->textContent;
+                : "";
             $classTop = $node->hasAttribute("class-top")
                 ? $node->getAttribute("class-top")
-                : $node->textContent;
+                : "";
             $classBottom = $node->hasAttribute("class-bottom")
                 ? $node->getAttribute("class-bottom")
-                : $node->textContent;
-            $chapterTitle = trim($node->textContent);
-            $replacement = "<h2 title='" . $text->title . "—" . $chapterTitle
-                . "' class='$classTop'>$contentTop</h2><h3 class='$classBottom'>$chapterTitle</h3>";
+                : "";
+            $replacement = "<h2 title='$title' class='$classTop'>$contentTop</h2>"
+                . "<h3 class='$classBottom'>$chapterTitle</h3>";
             self::replaceNodeWithStringContent($node, $replacement);
         }
     }
@@ -649,12 +652,14 @@ final class XMLetsGoCrazy
     {
         $nodes = $text->xpath->query(expression: "//lea:section");
         foreach ($nodes as $node) {
+            $sectionTitle = trim($node->textContent);
+            $title = $node->hasAttribute("title")
+                ? $node->getAttribute("title")
+                : $text->title . "—" . $sectionTitle;
             $class = $node->hasAttribute("class")
                 ? $node->getAttribute("class")
-                : $node->textContent;
-            $sectionTitle = trim($node->textContent);
-            $replacement = "<h2 title='" . $text->title . "—" . $sectionTitle
-                . "' class='$class'>$sectionTitle</h2>";
+                : "";
+            $replacement = "<h2 title='$title' class='$class'>$sectionTitle</h2>";
             self::replaceNodeWithStringContent($node, $replacement);
         }
     }
