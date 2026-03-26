@@ -30,6 +30,7 @@ final class Girlfriend
     private(set) static string $pathEPUBCheck = ROOT . "/resources/EPUBCheck/";
     private(set) static string $pathPurpleRain = ROOT . "/resources/PurpleRain/";
     private(set) static array $memory = [
+        "heath-mode" => "no",
         "check-epub" => "no",
         "check-urls" => "no",
         "defaultcaption" => "",
@@ -38,7 +39,7 @@ final class Girlfriend
         "subfolder-text" => "",
         "subfolder-images" => "",
     ];
-    private static array $characterTransliterationMap = [
+    public static array $characterTransliterationMap = [
         'á' => 'a', 'à' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'å' => 'a', 'Á' => 'A', 'À' => 'A',
         'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A',
         'é' => 'e', 'è' => 'e', 'ê' => 'e', 'ë' => 'e', 'É' => 'E', 'È' => 'E', 'Ê' => 'E', 'Ë' => 'E',
@@ -122,6 +123,7 @@ final class Girlfriend
      */
     public function parseArguments(array $argv): void
     {
+        self::remember(name: "heath-mode", data: in_array(needle: "heath", haystack: $argv) ? "yes" : "no");
         self::remember(name: "check-urls", data: in_array(needle: "check-urls", haystack: $argv) ? "yes" : "no");
         self::remember(name: "check-epub", data: in_array(needle: "check-epub", haystack: $argv) ? "yes" : "no");
     }

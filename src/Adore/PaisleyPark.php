@@ -60,7 +60,8 @@ final class PaisleyPark
      */
     public function segue(): void
     {
-        echo "SEARCHING" . PHP_EOL;
+        if (Girlfriend::comeToMe()->recall(name: "heath-mode") === "no")
+            echo "SEARCHING" . PHP_EOL;
         /**
          * Checks if the ebook config file has been read successfully.
          * - No = fatal
@@ -70,7 +71,8 @@ final class PaisleyPark
                 Girlfriend::$pathEbooks . $this->ebook->fileName);
             return;
         }
-        echo "FOUND" . PHP_EOL;
+        if (Girlfriend::comeToMe()->recall(name: "heath-mode") === "no")
+            echo "FOUND" . PHP_EOL;
         /**
          * Checks if the ebook config file is well-formed.
          * - No = fatal
@@ -80,7 +82,8 @@ final class PaisleyPark
                 Girlfriend::$pathEbooks . $this->ebook->fileName);
             return;
         }
-        echo "LOADING" . PHP_EOL;
+        if (Girlfriend::comeToMe()->recall(name: "heath-mode") === "no")
+            echo "LOADING" . PHP_EOL;
         XMLetsGoCrazy::extractSubFolder($this->ebook);
         XMLetsGoCrazy::extractOptions($this->ebook->xpath);
         XMLetsGoCrazy::executeLeaScriptTags($this->ebook, $this->alphabetSt, ebook: $this->ebook);
@@ -275,12 +278,16 @@ final class PaisleyPark
         $infoOnly = true;
         foreach (Girlfriend::comeToMe()->doveCries as $msg) {
             echo match ($msg->flaw) {
-                Flaw::Info => Fancy::info(msg: "[ INFO ]") . PHP_EOL . $msg->message . PHP_EOL,
+                Flaw::Info => ((Girlfriend::comeToMe()->recall(name: "heath-mode") === "no")
+                    ? Fancy::info(msg: "[ INFO ]") . PHP_EOL . $msg->message . PHP_EOL
+                    : ""),
                 Flaw::Warning => Fancy::warning(msg: "[ WARNING ]" . PHP_EOL) . $msg->message . PHP_EOL,
                 Flaw::Severe => Fancy::severe(msg: "[ SEVERE ]") . PHP_EOL . $msg->message . PHP_EOL,
                 Flaw::Fatal => Fancy::fatal(msg: "[ FATAL ]") . PHP_EOL . $msg->message . PHP_EOL
             };
-            echo Fancy::suggestion(msg: "[ Suggestion ] ") . PHP_EOL . ($msg->suggestion ?: "[ none ]") . PHP_EOL . PHP_EOL;
+            echo((Girlfriend::comeToMe()->recall(name: "heath-mode") === "no") || ($msg->flaw !== Flaw::Info)
+                ? Fancy::suggestion(msg: "[ Suggestion ] ") . PHP_EOL . ($msg->suggestion ?: "[ none ]") . PHP_EOL . PHP_EOL
+                : "");
             $fatal = $fatal || ($msg->flaw === Flaw::Fatal);
             $infoOnly = $infoOnly && ($msg->flaw === Flaw::Info);
         }
@@ -514,21 +521,28 @@ final class PaisleyPark
     {
         try {
             $this->theOpera->theOverture();         // make sure we're laughing in the purple rain
+            $errorLog = [];
             $this->segue();
-            if (!$this->inThisBedEyeScream()) exit;
-            $errorLog = Girlfriend::comeToMe()->doveCries;
-            Girlfriend::comeToMe()->silenceDoves();
+            if (Girlfriend::comeToMe()->recall(name: "heath-mode") === "no") {
+                if (!$this->inThisBedEyeScream()) exit;
+                $errorLog = Girlfriend::comeToMe()->doveCries;
+                Girlfriend::comeToMe()->silenceDoves();
+            }
             $this->seguePartTwo();
             if (!$this->inThisBedEyeScream()) exit;
-            $errorLog = array_merge($errorLog, Girlfriend::comeToMe()->doveCries);
+            if (Girlfriend::comeToMe()->recall(name: "heath-mode") === "no") {
+                $errorLog = array_merge($errorLog, Girlfriend::comeToMe()->doveCries);
+            }
             Girlfriend::comeToMe()->silenceDoves();
-            $return = $this->theOpera->conductor($errorLog);
-            if (!$this->inThisBedEyeScream()) exit; // error log already written into ePub, nothing to save here
+            if (Girlfriend::comeToMe()->recall(name: "heath-mode") === "no") {
+                $return = $this->theOpera->conductor($errorLog);
+                if (!$this->inThisBedEyeScream()) exit; // error log already written into ePub, nothing to save here
+            }
         } catch (Throwable $e) {
             Girlfriend::comeToMe()->extraordinary(throwable: $e);
         }
         echo "READY." . PHP_EOL . PHP_EOL
             . sprintf("0 OK, %s:8%s", Girlfriend::comeToMe()->whereAmI()["line"], PHP_EOL);
-        return $return;
+        return $return ?? true;
     }
 }
