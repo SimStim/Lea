@@ -109,10 +109,9 @@ final class XMLetsGoCrazy
     public static function checkLeaTagsCase(DOMNodeList $nodes): array
     {
         $caseErrors = [];
-        foreach ($nodes as $node) {
+        foreach ($nodes as $node)
             if ($node->nodeName !== strtolower($node->nodeName))
                 $caseErrors[] = $node->nodeName;
-        }
         return $caseErrors;
     }
 
