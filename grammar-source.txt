@@ -170,21 +170,6 @@ format = string
 count >= 0
 format = string (resolved via textContent; inline markup is stripped)
 
-<lea:section>
-
-count >= 0
-format = string (resolved via textContent; inline markup is stripped)
-
-attribute "title"
-
-count = [0, 1]
-format = string
-
-attribute "class"
-
-count = [0, 1]
-format = string
-
 <lea:chapter>
 
 count >= 0
@@ -206,6 +191,31 @@ count = [0, 1]
 format = string
 
 attribute "class-bottom"
+
+count = [0, 1]
+format = string
+
+<lea:section>
+
+count >= 0
+format = string (resolved via textContent; inline markup is stripped)
+
+attribute "title"
+
+count = [0, 1]
+format = string
+
+attribute "class"
+
+count = [0, 1]
+format = string
+
+<lea:subsection>
+
+count >= 0
+format = string (resolved via textContent; inline markup is stripped)
+
+attribute "class"
 
 count = [0, 1]
 format = string

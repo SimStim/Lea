@@ -426,6 +426,7 @@ final class PaisleyPark
         foreach ($this->ebook->texts as $text) {
             XMLetsGoCrazy::replaceLeaChapterTags($text);
             XMLetsGoCrazy::replaceLeaSectionTags($text);
+            XMLetsGoCrazy::replaceLeaSubSectionTags($text);
         }
         /**
          * Replace all <lea:image> tags with xhtml.
