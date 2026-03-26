@@ -340,6 +340,12 @@ final class Affirmation
                 "message" => "Low-level error while reading file.",
                 "suggestion" => "File requested: #1#."
             ],
+            "preflightErrors" => [
+                "flaw" => Flaw::Fatal,
+                "message" => "Preflight found errors with lea:tag names. List of misspelled lea:tags:" . PHP_EOL
+                    . "#1#" . PHP_EOL,
+                "suggestion" => "Please fix them in your favorite editor before continuing." . PHP_EOL,
+            ],
         ];
     }
 }

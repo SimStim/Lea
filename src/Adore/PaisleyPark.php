@@ -37,12 +37,32 @@ final class PaisleyPark
     }
 
     /**
+     * The Preflight checks.
+     * @return void
+     * @throws Exception
+     */
+    private function preflightChecks(): void
+    {
+        $preflightErrors = XMLetsGoCrazy::checkLeaTagsCase(XMLetsGoCrazy::extractAllLeaTags($this->ebook));
+        foreach ($this->ebook->texts as $text)
+            $preflightErrors = array_merge($preflightErrors,
+                XMLetsGoCrazy::checkLeaTagsCase(XMLetsGoCrazy::extractAllLeaTags($text)));
+        if (count($preflightErrors) > 0) {
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "preflightErrors",
+                implode(separator: PHP_EOL, array: $preflightErrors));
+            (void)PaisleyPark::inThisBedEyeScream();
+            exit(1);
+        }
+    }
+
+    /**
      * You got the horn so why don't you blow it?
      *
      * The Cream gets the hard data structures for the ebook all lubed up.
      *
      * @param string $fileName
      * @return Ebook
+     * @throws Exception
      */
     #[NoDiscard]
     private function cream(string $fileName): Ebook
@@ -86,7 +106,9 @@ final class PaisleyPark
             echo "LOADING" . PHP_EOL;
         XMLetsGoCrazy::extractSubFolder($this->ebook);
         XMLetsGoCrazy::extractOptions($this->ebook->xpath);
+        $this->preflightChecks();
         XMLetsGoCrazy::executeLeaScriptTags($this->ebook, $this->alphabetSt, ebook: $this->ebook);
+        $this->preflightChecks();   // needs checking after dynamically created content
         /**
          * Checks if there is at least one title.
          * - No = fatal
@@ -382,6 +404,7 @@ final class PaisleyPark
          */
         foreach ($this->ebook->texts as $text)
             XMLetsGoCrazy::executeLeaScriptTags($text, $this->alphabetSt, $this->ebook);
+        $this->preflightChecks();   // needs checking after dynamically created content
         /**
          * Replace all <lea:block> tags with xhtml content.
          */
@@ -392,6 +415,7 @@ final class PaisleyPark
          */
         foreach ($this->ebook->texts as $text)
             XMLetsGoCrazy::executeLeaScriptTags($text, $this->alphabetSt, $this->ebook);
+        $this->preflightChecks();   // needs checking after dynamically created content
         /**
          * We now have dynamically generated content from scripts and blocks resolved.
          * Let's then extract images from all text content files and add them to the ebook image list.

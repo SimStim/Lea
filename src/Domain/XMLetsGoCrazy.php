@@ -8,6 +8,7 @@ use DOMDocument;
 use DOMElement;
 use DOMException;
 use DOMImplementation;
+use DOMNodeList;
 use DOMXPath;
 use Exception;
 use NoDiscard;
@@ -88,6 +89,31 @@ final class XMLetsGoCrazy
     public static function isWellFormed(DOMXPath $xpath): bool
     {
         return $xpath->document->documentElement !== null;
+    }
+
+    /**
+     * Extracts all <lea:*> tags from a DOMXPath object
+     * @param Ebook|Text $domObject
+     * @return DOMNodeList
+     */
+    public static function extractAllLeaTags(Ebook|Text $domObject): DOMNodeList
+    {
+        return $domObject->xpath->query(expression: "//lea:*");
+    }
+
+    /**
+     * Checks a DOMNodeList of lea:tag DOMNode objects for the proper case
+     * @param DOMNodeList $nodes
+     * @return array
+     */
+    public static function checkLeaTagsCase(DOMNodeList $nodes): array
+    {
+        $caseErrors = [];
+        foreach ($nodes as $node) {
+            if ($node->nodeName !== strtolower($node->nodeName))
+                $caseErrors[] = $node->nodeName;
+        }
+        return $caseErrors;
     }
 
     /**
