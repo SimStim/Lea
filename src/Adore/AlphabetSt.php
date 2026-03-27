@@ -78,7 +78,7 @@ class AlphabetSt
         $toc = PHP_EOL;
         foreach ($titles as $title)
             $toc .= $title . ", " . PHP_EOL;
-        $toc = trim($toc, ", \n") . ".";
+        $toc = trim($toc, characters: ", \n") . ".";
         XMLetsGoCrazy::replaceNodeWithStringContent(node: $node, string: $toc);
     }
 
@@ -115,9 +115,16 @@ class AlphabetSt
             : "h4";
         $blurbs = "";
         foreach ($ebook->texts as $text)
-            if (!empty($text->blurb))
-                $blurbs .= "<$heading class='$class'><lea:link>" . $text->title . " by " . $text->authors[0]->name
-                    . "</lea:link></$heading>" . $text->blurb . PHP_EOL;
+            if (!empty($text->blurb)) {
+                $authors = "";
+                foreach ($text->authors as $author)
+                    $authors .= $author->name . ", ";
+                $authors = trim($authors, characters: ", ");
+                $linkTarget = $text->title . " by " . $text->authors[0]->name;
+                $blurbs .= "<$heading class='$class'>"
+                    . "<lea:link to='$linkTarget'>" . $text->title . " by $authors</lea:link></$heading>"
+                    . "<p>" . $text->blurb . "</p>" . PHP_EOL;
+            }
         XMLetsGoCrazy::replaceNodeWithStringContent(node: $node, string: $blurbs);
     }
 
