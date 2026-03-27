@@ -295,8 +295,10 @@ class Heath
                     $authors .= "<a href=\"/authors/" . Girlfriend::comeToMe()->strToEpubIdentifier($author) . "\">"
                         . $author . "</a>, ";
                 }
-                $output .= "<h2><a href=\"/stories/" . Girlfriend::comeToMe()->strToEpubIdentifier($story) . "\">"
-                    . $story . "</a> by "
+                $output .= "<h2><a href=\"/stories/"
+                    . Girlfriend::comeToMe()->strToEpubIdentifier(
+                        string: $story . " " . $this->index["stories"][$story]["authors"][0])
+                    . "\">" . $story . "</a> by "
                     . substr($authors, offset: 0, length: strlen($authors) - 2) . "</h2>" . PHP_EOL . PHP_EOL
                     . "<p>" . $this->index["stories"][$story]["blurb"] . "</p>" . PHP_EOL . PHP_EOL;
             }
