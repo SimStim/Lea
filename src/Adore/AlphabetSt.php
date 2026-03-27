@@ -150,10 +150,14 @@ class AlphabetSt
         ksort(array: $authors);
         $output = "";
         $ctr = 0;
+        $authorsSeen = [];
         foreach ($authors as $author) {
-            if ($ctr++ > 0)
-                $output .= "<div class='$class'/>" . PHP_EOL;
-            $output .= "<lea:block>$folder/$author->name.xhtml</lea:block>" . PHP_EOL;
+            if (!in_array($author->name, $authorsSeen)) {
+                if ($ctr++ > 0)
+                    $output .= "<div class='$class'/>" . PHP_EOL;
+                $output .= "<lea:block>$folder/$author->name.xhtml</lea:block>" . PHP_EOL;
+                $authorsSeen[] = $author->name;
+            }
         }
         XMLetsGoCrazy::replaceNodeWithStringContent(node: $node, string: $output);
     }
