@@ -92,7 +92,7 @@ final class XMLetsGoCrazy
     }
 
     /**
-     * Extracts all <lea:*> tags from a DOMXPath object
+     * Extracts all <lea:*> tags from a DOMXPath object.
      * @param Ebook|Text $domObject
      * @return DOMNodeList
      */
@@ -102,17 +102,29 @@ final class XMLetsGoCrazy
     }
 
     /**
-     * Checks a DOMNodeList of lea:tag DOMNode objects for the proper case
+     * Checks a DOMNodeList of lea:tag DOMNode objects for the proper case and spelling errors.
      * @param DOMNodeList $nodes
      * @return array
      */
-    public static function checkLeaTagsCase(DOMNodeList $nodes): array
+    public static function checkLeaTags(DOMNodeList $nodes): array
     {
-        $caseErrors = [];
-        foreach ($nodes as $node)
+        $caseErrors = $spellingErrors = [];
+        foreach ($nodes as $node) {
             if ($node->nodeName !== strtolower($node->nodeName))
                 $caseErrors[] = $node->nodeName;
-        return $caseErrors;
+            if (!in_array(
+                needle: $node->nodeName,
+                haystack: [
+                    "lea:title", "lea:author", "lea:date", "lea:description", "lea:script",
+                    "lea:collection", "lea:publisher", "lea:rights", "lea:language", "lea:subfolder",
+                    "lea:option", "lea:text", "lea:contributor", "lea:stylesheet", "lea:cover",
+                    "lea:isbn", "lea:font", "lea:image", "lea:caption", "lea:subject",
+                    "lea:blurb", "lea:chapter", "lea:section", "lea:subsection", "lea:link",
+                    "lea:target", "lea:block", "lea:comment",
+                ]))
+                $spellingErrors[] = $node->nodeName;
+        }
+        return [$caseErrors, $spellingErrors];
     }
 
     /**

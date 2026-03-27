@@ -43,16 +43,26 @@ final class PaisleyPark
      */
     private function preflightChecks(): void
     {
-        $preflightErrors = XMLetsGoCrazy::checkLeaTagsCase(XMLetsGoCrazy::extractAllLeaTags($this->ebook));
-        foreach ($this->ebook->texts as $text)
-            $preflightErrors = array_merge($preflightErrors,
-                XMLetsGoCrazy::checkLeaTagsCase(XMLetsGoCrazy::extractAllLeaTags($text)));
-        if (count($preflightErrors) > 0) {
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "preflightErrors",
-                implode(separator: PHP_EOL, array: $preflightErrors));
-            (void)PaisleyPark::inThisBedEyeScream();
-            exit(1);
+        $preflightErrors = XMLetsGoCrazy::checkLeaTags(XMLetsGoCrazy::extractAllLeaTags($this->ebook));
+        foreach ($this->ebook->texts as $text) {
+            $preflightErrors[0] = array_merge($preflightErrors[0],
+                XMLetsGoCrazy::checkLeaTags(XMLetsGoCrazy::extractAllLeaTags($text))[0]);
+            $preflightErrors[1] = array_merge($preflightErrors[1],
+                XMLetsGoCrazy::checkLeaTags(XMLetsGoCrazy::extractAllLeaTags($text))[1]);
         }
+        if (count($preflightErrors[0]) > 0) {
+            $preflightErrors[0]
+                |> array_unique(...)
+                |> (fn($x) => implode(separator: PHP_EOL, array: $x))
+                |> (fn($x) => Girlfriend::comeToMe()->makeDoveCry($this->ebook, "preflightErrors", $x));
+        }
+        if (count($preflightErrors[1]) > 0) {
+            $preflightErrors[1]
+                |> array_unique(...)
+                |> (fn($x) => implode(separator: PHP_EOL, array: $x))
+                |> (fn($x) => Girlfriend::comeToMe()->makeDoveCry($this->ebook, "preflightErrors", $x));
+        }
+        if (!$this->inThisBedEyeScream()) exit(1);
     }
 
     /**
@@ -103,7 +113,7 @@ final class PaisleyPark
             return;
         }
         if (Girlfriend::comeToMe()->recall(name: "heath-mode") === "no")
-            echo "LOADING" . PHP_EOL;
+            echo "LOADING" . PHP_EOL . PHP_EOL;
         XMLetsGoCrazy::extractSubFolder($this->ebook);
         XMLetsGoCrazy::extractOptions($this->ebook->xpath);
         $this->preflightChecks();
@@ -317,9 +327,8 @@ final class PaisleyPark
             echo Fancy::info(msg: "[ INFO ]") . "    shows potential for improvement. The produced EPUB may be less than ideal." . PHP_EOL;
             echo Fancy::warning(msg: "[ WARNING ]") . " denotes missing optional data. The EPUB should not be published." . PHP_EOL;
             echo Fancy::severe(msg: "[ SEVERE ]") . "  requires guessing from Lea. The EPUB must not be published." . PHP_EOL;
-            echo Fancy::fatal(msg: "[ FATAL ]") . "   cannot be resolved. No EPUB will be produced." . PHP_EOL;
+            echo Fancy::fatal(msg: "[ FATAL ]") . "   cannot be resolved. No EPUB will be produced." . PHP_EOL . PHP_EOL;
         }
-        echo PHP_EOL;
         return !$fatal;
     }
 
@@ -548,19 +557,19 @@ final class PaisleyPark
             $errorLog = [];
             $this->segue();
             if (Girlfriend::comeToMe()->recall(name: "heath-mode") === "no") {
-                if (!$this->inThisBedEyeScream()) exit;
+                if (!$this->inThisBedEyeScream()) exit(1);
                 $errorLog = Girlfriend::comeToMe()->doveCries;
                 Girlfriend::comeToMe()->silenceDoves();
             }
             $this->seguePartTwo();
-            if (!$this->inThisBedEyeScream()) exit;
+            if (!$this->inThisBedEyeScream()) exit(1);
             if (Girlfriend::comeToMe()->recall(name: "heath-mode") === "no") {
                 $errorLog = array_merge($errorLog, Girlfriend::comeToMe()->doveCries);
             }
             Girlfriend::comeToMe()->silenceDoves();
             if (Girlfriend::comeToMe()->recall(name: "heath-mode") === "no") {
                 $return = $this->theOpera->conductor($errorLog);
-                if (!$this->inThisBedEyeScream()) exit; // error log already written into ePub, nothing to save here
+                if (!$this->inThisBedEyeScream()) exit(1); // error log already written into ePub, nothing to save here
             }
         } catch (Throwable $e) {
             Girlfriend::comeToMe()->extraordinary(throwable: $e);

@@ -25,11 +25,12 @@ human editors can add meaning later.
 * support for anthologies with per-text authors and rights
 * support for text blocks
 * support for the execution of pre-made scripts enabling handling of any edge cases like linked images
-* <lea:> tags anywhere in the source files, for example, for images with captions
+* <lea:> tags may appear anywhere in the source files, for example, for images with captions
 * validation of external links
 * support for advanced typesetting: embedded fonts and stylesheets
 * EPUBCheck validation
 * command-line arguments for run-time configuration
+* <lea:> tags are globally checked for syntactical correctness, even those dynamically injected by scripts
 * generated EPUB is backwards-compatible with the EPUB2 standard
 * repo includes the world's very first, fully Lea-produced actually published title,
   compiling ~8 MB into a 3.3 MB EPUB file in 0.273 seconds on my Zen-2 based notebook
@@ -39,7 +40,6 @@ human editors can add meaning later.
 * automatic detection and content-based compression of image files
 * import of word processor documents into Lea definition files
 * simple but useful reports
-* important: throw error on unknown attributes instead of silently ignoring them.
 * new helper class NewPowerGeneration.
 * pipe every file access through Girlfriend for centralized error handling.
 * check for the existence of extensions before using them, e.g., curl.
