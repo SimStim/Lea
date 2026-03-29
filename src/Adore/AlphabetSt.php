@@ -123,7 +123,7 @@ class AlphabetSt
                 $linkTarget = $text->title . " by " . $text->authors[0]->name;
                 $blurbs .= "<$heading class='$class'>"
                     . "<lea:link to='$linkTarget'>" . $text->title . " by $authors</lea:link></$heading>"
-                    . "<p>" . $text->blurb . "</p>" . PHP_EOL;
+                    . $text->blurb . PHP_EOL;
             }
         XMLetsGoCrazy::replaceNodeWithStringContent(node: $node, string: $blurbs);
     }

@@ -34,7 +34,7 @@ class Heath
             echo $this->heathName . Fancy::BG_RED . Fancy::BLACK . Fancy::BLINK . " [ ERROR ] " . Fancy::UNBLINK
                 . Fancy::BG_WHITE . Fancy::BLACK . " Repository expected at "
                 . Fancy::RED . $dir . Fancy::BLACK . " was not found. " . Fancy::RESET . PHP_EOL;
-            exit;
+            exit (1);
         }
     }
 
@@ -200,6 +200,17 @@ class Heath
             $contents = @file_get_contents(filename: REPO . "heath/authors/"
                 . strtr($author, Girlfriend::$characterTransliterationMap) . ".xhtml") ?? "";
             if ($contents === "") continue;
+            if ($contents === false) {
+                echo PHP_EOL . Fancy::BLINK . Fancy::BG_RED . Fancy::WHITE . " [ Fatal ] "
+                    . Fancy::RESET . " " . Fancy::INVERSE . REPO . "heath/authors/"
+                    . strtr($author, Girlfriend::$characterTransliterationMap) . ".xhtml"
+                    . Fancy::RESET . " not found." . PHP_EOL . PHP_EOL;
+                exit(1);
+            }
+            @copy(
+                from: REPO . "heath/authors/" . $properties["portrait"],
+                to: $this->hugo . "assets/img/authors/" . $properties["portrait"]
+            );
             $civilName = "";
             if (preg_match(pattern: "/#.*#/", subject: $contents, matches: $matches)) {
                 $civilName = trim($matches[0], characters: " #");
