@@ -63,6 +63,7 @@ final class PaisleyPark
                 |> (fn($x) => Girlfriend::comeToMe()->makeDoveCry($this->ebook, "preflightErrors", $x));
         }
         if (!$this->inThisBedEyeScream()) exit(1);
+        Girlfriend::comeToMe()->silenceDoves(); // only non-fatal at this point
     }
 
     /**
@@ -205,7 +206,7 @@ final class PaisleyPark
                 (string)count($this->ebook->contributors), Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * Checks if the ISBN is valid.
-         * - No = fatal
+         * - No = severe, continue
          */
         if (!$this->ebook->isbn->isValid)
             Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookInvalidISBN",
@@ -563,9 +564,8 @@ final class PaisleyPark
             }
             $this->seguePartTwo();
             if (!$this->inThisBedEyeScream()) exit(1);
-            if (Girlfriend::comeToMe()->recall(name: "heath-mode") === "no") {
+            if (Girlfriend::comeToMe()->recall(name: "heath-mode") === "no")
                 $errorLog = array_merge($errorLog, Girlfriend::comeToMe()->doveCries);
-            }
             Girlfriend::comeToMe()->silenceDoves();
             if (Girlfriend::comeToMe()->recall(name: "heath-mode") === "no") {
                 $return = $this->theOpera->conductor($errorLog);

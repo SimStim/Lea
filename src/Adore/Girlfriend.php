@@ -51,11 +51,12 @@ final class Girlfriend
         'ç' => 'c', 'Ç' => 'C',
         'š' => 's', 'Š' => 'S',
         'ž' => 'z', 'Ž' => 'Z',
+        'œ' => 'oe', 'Œ' => 'OE', 'æ' => 'ae', 'Æ' => 'AE', 'ß' => 'ss'
     ];
     private static array $characterNonGrata = [
         ' ', '.', '\'', '"', ',', ':', ';', '!', '?', '(',
         ')', '[', ']', '{', '}', '&', '/', '\\', '’', '⊙',
-        '🝄', '#', '<', '>', '='
+        '🝄', '#', '<', '>', '=', '—', '–', '−'
     ];
     public static array $leaPrefixes = [
         "target" => "lea-tgt-",
