@@ -283,6 +283,20 @@ class Heath
         $hugoPublicationsDir = $this->hugo . "content/publications/";
         if (is_dir(filename: $hugoPublicationsDir)) $this->rmDir(dir: $hugoPublicationsDir);
         foreach ($this->index["publications"] as $publication => $properties) {
+            $contents = @file_get_contents(filename: REPO . "heath/publications/"
+                . strtr($publication, Girlfriend::$characterTransliterationMap) . ".xhtml") ?? "";
+            if ($contents === "") continue;
+            if ($contents === false) {
+                echo PHP_EOL . Fancy::BLINK . Fancy::BG_RED . Fancy::WHITE . " [ Fatal ] "
+                    . Fancy::RESET . " " . Fancy::INVERSE . REPO . "heath/publications/"
+                    . strtr($publication, Girlfriend::$characterTransliterationMap) . ".xhtml"
+                    . Fancy::RESET . " not found." . PHP_EOL . PHP_EOL;
+                exit(1);
+            }
+            @copy(
+                from: REPO . "heath/publications/" . strtr($publication, Girlfriend::$characterTransliterationMap) . ".jpg",
+                to: $this->hugo . "assets/img/publications/" . strtr($publication, Girlfriend::$characterTransliterationMap) . ".jpg"
+            );
             $output = "+++" . PHP_EOL
                 . "draft = false" . PHP_EOL
                 . "title = '" . $publication . "'" . PHP_EOL
@@ -299,19 +313,28 @@ class Heath
             if (isset($properties["series"]))
                 $output .= "cross-reference-series = [\"" . $properties["series"]["title"] . "\"]" . PHP_EOL
                     . "series_order = " . $properties["series"]["position"] . PHP_EOL;
-            $output .= "+++" . PHP_EOL;
+            $output .= "+++" . PHP_EOL
+                . $contents . PHP_EOL
+                . (is_file(filename: $this->hugo . "assets/img/publications/" . strtr($publication, Girlfriend::$characterTransliterationMap) . ".jpg")
+                    ? "{{< publication-cover" . PHP_EOL
+                    . "    src=\"img/publications/" . strtr($publication, Girlfriend::$characterTransliterationMap) . ".jpg\"" . PHP_EOL
+                    . "    alt=\"Illustration by Eduard Pech\"" . PHP_EOL
+                    . ">}}" . PHP_EOL . PHP_EOL
+                    : "");
             foreach ($properties["stories"] as $story) {
-                $authors = "";
-                foreach ($this->index["stories"][$story]["authors"] as $author) {
-                    $authors .= "<a href=\"/authors/" . Girlfriend::comeToMe()->strToEpubIdentifier($author) . "\">"
-                        . $author . "</a>, ";
+                if (!str_contains(haystack: $story, needle: "Table of Contents")) {
+                    $authors = "";
+                    foreach ($this->index["stories"][$story]["authors"] as $author) {
+                        $authors .= "<a href=\"/authors/" . Girlfriend::comeToMe()->strToEpubIdentifier($author) . "\">"
+                            . $author . "</a>, ";
+                    }
+                    $output .= "<h4><a href=\"/stories/"
+                        . Girlfriend::comeToMe()->strToEpubIdentifier(
+                            string: $story . " " . $this->index["stories"][$story]["authors"][0])
+                        . "\">" . $story . "</a> by "
+                        . substr($authors, offset: 0, length: strlen($authors) - 2) . "</h4>" . PHP_EOL . PHP_EOL
+                        . "<p>" . $this->index["stories"][$story]["blurb"] . "</p>" . PHP_EOL . PHP_EOL;
                 }
-                $output .= "<h2><a href=\"/stories/"
-                    . Girlfriend::comeToMe()->strToEpubIdentifier(
-                        string: $story . " " . $this->index["stories"][$story]["authors"][0])
-                    . "\">" . $story . "</a> by "
-                    . substr($authors, offset: 0, length: strlen($authors) - 2) . "</h2>" . PHP_EOL . PHP_EOL
-                    . "<p>" . $this->index["stories"][$story]["blurb"] . "</p>" . PHP_EOL . PHP_EOL;
             }
             if (!is_dir(filename: $hugoPublicationsDir))
                 mkdir(directory: $hugoPublicationsDir, permissions: 0755, context: null);
