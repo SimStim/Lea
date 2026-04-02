@@ -8,6 +8,7 @@ use DOMDocument;
 use DOMElement;
 use DOMException;
 use DOMImplementation;
+use DOMNode;
 use DOMNodeList;
 use DOMXPath;
 use Exception;
@@ -89,6 +90,20 @@ final class XMLetsGoCrazy
     public static function isWellFormed(DOMXPath $xpath): bool
     {
         return $xpath->document->documentElement !== null;
+    }
+
+    /**
+     * Returns the innerXML of a DOMElement object
+     * @param DOMElement $node
+     * @return string
+     */
+    private static function innerXML(DOMNode $node): string
+    {
+        $dom = $node->ownerDocument;
+        $innerXml = '';
+        foreach ($node->childNodes as $child)
+            $innerXml .= $dom->saveXML($child);
+        return trim($innerXml);
     }
 
     /**
@@ -207,12 +222,7 @@ final class XMLetsGoCrazy
         $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:rights");
         if ($nodes->length === 0)
             return "";
-        $rightsNode = $nodes->item(index: 0);
-        $dom = $rightsNode->ownerDocument;
-        $innerXml = '';
-        foreach ($rightsNode->childNodes as $child)
-            $innerXml .= $dom->saveXML($child);
-        return trim($innerXml);
+        return self::innerXML($nodes->item(index: 0));
     }
 
     /**
@@ -338,12 +348,7 @@ final class XMLetsGoCrazy
         $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:blurb");
         if ($nodes->length === 0)
             return "";
-        $blurbNode = $nodes->item(index: 0);
-        $dom = $blurbNode->ownerDocument;
-        $innerXml = '';
-        foreach ($blurbNode->childNodes as $child)
-            $innerXml .= $dom->saveXML($child);
-        return trim($innerXml);
+        return self::innerXML($nodes->item(index: 0));
     }
 
     /**
@@ -393,10 +398,7 @@ final class XMLetsGoCrazy
                         $domObject->fileName, trim($node->textContent)
                     );
                 }
-                $dom = $captionNode->ownerDocument;
-                $caption = '';
-                foreach ($captionNode->childNodes as $child)
-                    $caption .= $dom->saveXML($child);
+                $caption = self::innerXML($captionNode);
             }
             $images[] = new Image(fileName: $fileName, folder: $folder, caption: $caption);
         }
@@ -656,10 +658,10 @@ final class XMLetsGoCrazy
     {
         $nodes = $text->xpath->query(expression: "//lea:chapter");
         foreach ($nodes as $node) {
-            $chapterTitle = trim($node->textContent);
+            $chapterTitle = self::innerXML($node);
             $title = $node->hasAttribute("title")
                 ? $node->getAttribute("title")
-                : $text->title . "—" . $chapterTitle;
+                : $text->title . "—" . $node->textContent;
             $contentTop = $node->hasAttribute("content-top")
                 ? $node->getAttribute("content-top")
                 : "";
@@ -689,10 +691,10 @@ final class XMLetsGoCrazy
     {
         $nodes = $text->xpath->query(expression: "//lea:section");
         foreach ($nodes as $node) {
-            $sectionTitle = trim($node->textContent);
+            $sectionTitle = self::innerXML($node);
             $title = $node->hasAttribute("title")
                 ? $node->getAttribute("title")
-                : $text->title . "—" . $sectionTitle;
+                : $text->title . "—" . $node->textContent;
             $class = $node->hasAttribute("class")
                 ? $node->getAttribute("class")
                 : "";
