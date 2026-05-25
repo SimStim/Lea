@@ -197,7 +197,7 @@ class AlphabetSt
             : Girlfriend::comeToMe()->recall(name: "subfolder-images");
         $replacement = "<figure>"
             . "<lea:link to='$to'>"
-            . "<img src='../Images/$image' alt='$caption'/>"
+            . "<img src='../Images/$image' alt='" . htmlspecialchars($caption, flags: ENT_QUOTES, encoding: 'UTF-8') . "'/>"
             . "</lea:link>"
             . "<figcaption>$caption</figcaption>"
             . "</figure>";

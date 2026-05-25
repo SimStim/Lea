@@ -61,7 +61,10 @@ class Heath
 
     private function addStoryToPublication(string $title, string $story): void
     {
-        if ((!in_array($story, ["Cover", "EPUB Navigation", "The Journey Continues"]))
+        if ((!in_array($story, [
+                "Cover", "EPUB Navigation", "The Journey Continues",
+                "Inhalt", "Der Autor", "Die Publikation", "Der Verlag"
+            ]))
             && (!str_starts_with($story, needle: "About"))
             && (!in_array(needle: $story, haystack: $this->index["publications"][$title]["stories"] ?? [])))
             $this->index["publications"][$title]["stories"][] = $story;
@@ -88,7 +91,10 @@ class Heath
 
     private function addStoryToAuthor(string $title, $story): void
     {
-        if ((!in_array($story, ["Cover", "EPUB Navigation", "The Journey Continues"]))
+        if ((!in_array($story, [
+                "Cover", "EPUB Navigation", "The Journey Continues",
+                "Inhalt", "Der Autor", "Die Publikation", "Der Verlag"
+            ]))
             && (!str_starts_with($story, needle: "About"))
             && (!in_array(needle: $story, haystack: $this->index["authors"][$title]["stories"] ?? [])))
             $this->index["authors"][$title]["stories"][] = $story;
@@ -104,7 +110,10 @@ class Heath
     private function addAuthorToStory(string $title, string $author): void
     {
         if (($author !== Girlfriend::comeToMe()->leaNamePlain)
-            && (!in_array($title, ["Cover", "EPUB Navigation", "The Journey Continues"]))
+            && (!in_array($title, [
+                "Cover", "EPUB Navigation", "The Journey Continues",
+                "Inhalt", "Der Autor", "Die Publikation", "Der Verlag"
+            ]))
             && (!str_starts_with($title, needle: "About"))
             && (!in_array(needle: $author, haystack: $this->index["stories"][$title]["authors"] ?? [])))
             $this->index["stories"][$title]["authors"][] = $author;
@@ -112,14 +121,20 @@ class Heath
 
     private function addBlurbToStory(string $title, string $blurb): void
     {
-        if ((!in_array($title, ["Cover", "EPUB Navigation", "The Journey Continues"]))
+        if ((!in_array($title, [
+                "Cover", "EPUB Navigation", "The Journey Continues",
+                "Inhalt", "Der Autor", "Die Publikation", "Der Verlag"
+            ]))
             && (!str_starts_with($title, needle: "About")))
             $this->index["stories"][$title]["blurb"] = $blurb;
     }
 
     private function addPublicationToStory(string $title, string $publication): void
     {
-        if ((!in_array($title, ["Cover", "EPUB Navigation", "The Journey Continues"]))
+        if ((!in_array($title, [
+                "Cover", "EPUB Navigation", "The Journey Continues",
+                "Inhalt", "Der Autor", "Die Publikation", "Der Verlag"
+            ]))
             && (!str_starts_with($title, needle: "About")))
             $this->index["stories"][$title]["publications"][] = $publication;
     }
