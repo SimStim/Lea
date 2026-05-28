@@ -166,7 +166,9 @@ class AlphabetSt
             if (!in_array($author->name, $authorsSeen)) {
                 if ($ctr++ > 0)
                     $output .= "<div class='$class'/>" . PHP_EOL;
-                $output .= "<lea:block>$folder/$author->name.xhtml</lea:block>" . PHP_EOL;
+                $output .= "<lea:block>$folder/$author->name"
+                    . ($ebook->language === "en" ? "" : " (" . $ebook->language . ")")
+                    . ".xhtml</lea:block>" . PHP_EOL;
                 $authorsSeen[] = $author->name;
             }
         }
