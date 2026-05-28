@@ -97,7 +97,7 @@ class AlphabetSt
             : "";
         $rights = "";
         foreach ($ebook->texts as $text)
-            if (!empty($text->rights) && preg_match($pattern, $text->title) === 0)
+            if (!empty($text->rights) && $pattern !== "" && preg_match($pattern, $text->title) === 0)
                 $rights .= $text->rights . PHP_EOL;
         XMLetsGoCrazy::replaceNodeWithStringContent(node: $node, string: $rights);
     }
