@@ -66,6 +66,7 @@ class Heath
                 "Inhalt", "Der Autor", "Die Publikation", "Der Verlag"
             ]))
             && (!str_starts_with($story, needle: "About"))
+            && (!str_starts_with($story, needle: "Über"))
             && (!in_array(needle: $story, haystack: $this->index["publications"][$title]["stories"] ?? [])))
             $this->index["publications"][$title]["stories"][] = $story;
     }
@@ -96,6 +97,7 @@ class Heath
                 "Inhalt", "Der Autor", "Die Publikation", "Der Verlag"
             ]))
             && (!str_starts_with($story, needle: "About"))
+            && (!str_starts_with($story, needle: "Über"))
             && (!in_array(needle: $story, haystack: $this->index["authors"][$title]["stories"] ?? [])))
             $this->index["authors"][$title]["stories"][] = $story;
     }
@@ -115,6 +117,7 @@ class Heath
                 "Inhalt", "Der Autor", "Die Publikation", "Der Verlag"
             ]))
             && (!str_starts_with($title, needle: "About"))
+            && (!str_starts_with($title, needle: "Über"))
             && (!in_array(needle: $author, haystack: $this->index["stories"][$title]["authors"] ?? [])))
             $this->index["stories"][$title]["authors"][] = $author;
     }
@@ -125,7 +128,8 @@ class Heath
                 "Cover", "EPUB Navigation", "The Journey Continues",
                 "Inhalt", "Der Autor", "Die Publikation", "Der Verlag"
             ]))
-            && (!str_starts_with($title, needle: "About")))
+            && (!str_starts_with($title, needle: "About"))
+            && (!str_starts_with($title, needle: "Über")))
             $this->index["stories"][$title]["blurb"] = $blurb;
     }
 
@@ -135,7 +139,8 @@ class Heath
                 "Cover", "EPUB Navigation", "The Journey Continues",
                 "Inhalt", "Der Autor", "Die Publikation", "Der Verlag"
             ]))
-            && (!str_starts_with($title, needle: "About")))
+            && (!str_starts_with($title, needle: "About"))
+            && (!str_starts_with($title, needle: "Über")))
             $this->index["stories"][$title]["publications"][] = $publication;
     }
 
