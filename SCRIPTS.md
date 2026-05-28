@@ -77,11 +77,11 @@ Aliases:
 
 Reads attributes:
 
-- none
+- `skip` (optional regex body; wrapped as `/<skip>/i`)
 
 Behavior:
 
-- concatenates rights content from all texts.
+- concatenates rights content from all texts, optionally filtered by `skip`.
 
 ### 4) `listBlurbs`
 

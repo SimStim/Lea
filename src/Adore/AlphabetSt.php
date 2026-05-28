@@ -84,6 +84,7 @@ class AlphabetSt
 
     /**
      * Iterates over all text files and inserts their rights into the DOM structure.
+     * Texts can be skipped explicitly using the skip attribute.
      *
      * @param DOMElement $node The DOM node where the colophon will be inserted. This node will be replaced.
      * @param Ebook $ebook The ebook object containing the texts with rights information for generating the colophon.
@@ -91,9 +92,12 @@ class AlphabetSt
      */
     public function listRights(DOMElement $node, Ebook $ebook): void
     {
+        $pattern = $node->hasAttribute(qualifiedName: "skip")
+            ? "/" . $node->getAttribute(qualifiedName: "skip") . "/i"
+            : "";
         $rights = "";
         foreach ($ebook->texts as $text)
-            if (!empty($text->rights))
+            if (!empty($text->rights) && preg_match($pattern, $text->title) === 0)
                 $rights .= $text->rights . PHP_EOL;
         XMLetsGoCrazy::replaceNodeWithStringContent(node: $node, string: $rights);
     }
