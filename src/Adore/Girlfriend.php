@@ -130,6 +130,27 @@ final class Girlfriend
     }
 
     /**
+     * calculate and return memory currently available to Lea in statu agendi
+     * @return int
+     */
+    public static function availableMemory(): int
+    {
+        $val = trim(ini_get(option: 'memory_limit'));
+        if ($val === '-1') return PHP_INT_MAX;
+        $last = strtolower($val[strlen($val) - 1]);
+        $val = (int)$val;
+        switch ($last) {
+            case 'g':
+                $val *= 1024;
+            case 'm':
+                $val *= 1024;
+            case 'k':
+                $val *= 1024;
+        }
+        return $val - memory_get_usage(real_usage: true);
+    }
+
+    /**
      * Concentrate on you is all I have to do.
      *
      * Purport:
