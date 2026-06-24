@@ -317,7 +317,7 @@ final class XMLetsGoCrazy
     public static function extractContributors(DOMXPath $xpath): array
     {
         $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:contributor");
-        if ($nodes === false || $nodes->length !== 1) return [];
+        if ($nodes === false || $nodes->length === 0) return [];
         $contributors = [];
         foreach ($nodes as $node) {
             $roles = array_intersect(
