@@ -25,7 +25,7 @@ use Lea\Adore\Girlfriend;
 final class XMLetsGoCrazy
 {
     private(set) static string $leaNamespace = "https://logophilia.eu/lea/2026/xhtml";
-    private(set) static string $rootElement = "xmletsgocrazy";
+    private(set) static string $rootElement = "lea";
 
     /**
      * Takes an xml fragments string and wraps it in the lea:namespace root element,
