@@ -27,8 +27,21 @@ final class XMLetsGoCrazy
     private(set) static string $leaNamespace = "https://logophilia.eu/lea/2026/xhtml";
     private(set) static string $rootElement = "xmletsgocrazy";
 
+    /**
+     * Takes an xml fragments string and wraps it in the lea:namespace root element,
+     * unless it is already wrapped, in which case it just returns the trimmed input string
+     *
+     * @param $fragments
+     * @return string
+     */
     public static function wrapInLeaNamespace($fragments): string
     {
+        if (trim($fragments) !== "") {
+            $dom = new DOMDocument();   // check if already wrapped...
+            if (@$dom->loadXML($fragments)
+                && $dom->documentElement?->tagName === self::$rootElement)
+                return $fragments;
+        }
         return "<" . self::$rootElement
             . " xmlns:lea='" . self::$leaNamespace
             . "'>$fragments</" . self::$rootElement . ">";
