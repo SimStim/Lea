@@ -109,11 +109,33 @@ final class Girlfriend
     {
     }
 
-    public function __wakeup(): void
+    function getCpuSpecsBinary(): string
     {
-        throw new BadMethodCallException(
-            message: "Cannot unserialize exclusive instance of " . self::class . ", you ... singleton?"
-        );
+        if (!is_readable('/proc/cpuinfo')) {
+            return "Unknown CPU";
+        }
+
+        $cpuinfo = file_get_contents('/proc/cpuinfo');
+        $model = 'Unknown Processor';
+
+        if (preg_match('/model name\s*:\s*(.+)/i', $cpuinfo, $matches)) {
+            $model = trim($matches[1]);
+        }
+
+        // Attempt to read hardware limits (stored in kHz)
+        $sysCpuPath = '/sys/devices/system/cpu/cpu0/cpufreq/bios_limit';
+        if (!is_readable($sysCpuPath)) {
+            $sysCpuPath = '/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq';
+        }
+
+        $maxGhz = 'Unknown';
+        if (is_readable($sysCpuPath)) {
+            $maxKhz = (int)trim(file_get_contents($sysCpuPath));
+            // Binary conversion preference: kHz to GHz via 1024^2
+            $maxGhz = round($maxKhz / (1024 * 1024), 1) . ' GHz';
+        }
+
+        return "CPU: {$model} @ {$maxGhz}";
     }
 
     /**
