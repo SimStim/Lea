@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Lea\Adore;
 
-use BadMethodCallException;
 use Exception;
 use Lea\Domain\Image;
 use NoDiscard;
@@ -109,13 +108,6 @@ final class Girlfriend
     {
     }
 
-    public function __wakeup(): void
-    {
-        throw new BadMethodCallException(
-            message: "Cannot unserialize exclusive instance of " . self::class . ", you ... singleton?"
-        );
-    }
-
     /**
      * Only one option for now, let's keep this simple.
      *
@@ -130,10 +122,32 @@ final class Girlfriend
     }
 
     /**
+     * attempt to get and return CPU info in a human-readable format
+     * @return string
+     */
+    function getCpuInfo(): string
+    {
+        $model = "Unpronounceable CPU";
+        if (!is_readable(filename: "/proc/cpuinfo"))
+            return $model;
+        $cpuInfo = file_get_contents(filename: "/proc/cpuinfo");
+        if (preg_match('/model name\s*:\s*(.+)/i', $cpuInfo, $matches))
+            $model = trim($matches[1]);
+        // attempt to read hardware limits stored in kHz
+        $sysCpuPath = "/sys/devices/system/cpu/cpu0/cpufreq/bios_limit";
+        if (!is_readable($sysCpuPath))
+            $sysCpuPath = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq";
+        $maxMhz = "Unpronounceable Speed";
+        if (is_readable($sysCpuPath))
+            $maxMhz = round(num: (int)trim(file_get_contents($sysCpuPath)) / 1024, precision: 3) . " MHz";
+        return "$model @ $maxMhz";
+    }
+
+    /**
      * calculate and return memory currently available to Lea in statu agendi
      * @return int
      */
-    public static function availableMemory(): int
+    public static function getAvailableMemory(): int
     {
         $val = trim(ini_get(option: 'memory_limit'));
         if ($val === '-1') return PHP_INT_MAX;
