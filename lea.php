@@ -15,6 +15,8 @@ require_once ROOT . "/vendor/autoload.php";
 
 Girlfriend::comeToMe()->parseArguments($argv);
 Girlfriend::comeToMe()->emotionalPump();
+Girlfriend::comeToMe()->remember(name: "earlyRAM", data: (string)Girlfriend::comeToMe()->getAvailableMemory());
+Girlfriend::comeToMe()->remember(name: "earlyTime", data: (string)microtime(as_float: true));
 Girlfriend::comeToMe()->myNameIsLea();
 
 if (Girlfriend::comeToMe()->recall(name: "heath-mode") === "yes") {

@@ -147,7 +147,7 @@ final class Girlfriend
      * calculate and return memory currently available to Lea in statu agendi
      * @return int
      */
-    public static function getAvailableMemory(): int
+    public function getAvailableMemory(): int
     {
         $val = trim(ini_get(option: 'memory_limit'));
         if ($val === '-1') return PHP_INT_MAX;

@@ -411,23 +411,31 @@ final class TheOpera
         $productionLog = Girlfriend::comeToMe()->readFile(Girlfriend::$pathPurpleRain . "lea-logo-ascii.txt")
             . Girlfriend::comeToMe()->leaNamePlain . " Production Log." . PHP_EOL
             . "----------------------------------------------------------------" . PHP_EOL . PHP_EOL
-            . "Production Date: $timeStamp" . PHP_EOL . PHP_EOL . PHP_EOL;
+            . "Production Date : $timeStamp" . PHP_EOL
+            . "Production Time : " . round(
+                num: microtime(as_float: true) - (float)Girlfriend::comeToMe()->recall(name: "earlyTime"),
+                precision: 6
+            ) . " seconds" . PHP_EOL
+            . "CPU Info        : " . Girlfriend::comeToMe()->getCpuInfo() . PHP_EOL
+            . "Memory Usage    : " . (int)Girlfriend::comeToMe()->recall(name: "earlyRAM")
+            - Girlfriend::comeToMe()->getAvailableMemory() . " bytes" . PHP_EOL
+            . PHP_EOL;
         foreach ($errorLog as $error)
-            $productionLog .= "Severity:        " . strtoupper($error->flaw->name) . PHP_EOL
-                . "Message:         "
+            $productionLog .= "Severity        : " . strtoupper($error->flaw->name) . PHP_EOL
+                . "Message         : "
                 . preg_replace(pattern: Fancy::STRIP_ANSI_REGEX, replacement: '', subject: $error->message) . PHP_EOL
-                . "Suggestion:      "
-                . preg_replace(pattern: Fancy::STRIP_ANSI_REGEX, replacement: '', subject: $error->suggestion)
-                . PHP_EOL . PHP_EOL . PHP_EOL;
-        $productionLog .= "EPUBCheck Log." . PHP_EOL
+                . "Suggestion      : "
+                . preg_replace(pattern: Fancy::STRIP_ANSI_REGEX, replacement: '', subject: $error->suggestion) . PHP_EOL
+                . PHP_EOL;
+        $productionLog .= PHP_EOL . "EPUBCheck Log." . PHP_EOL
             . "----------------------------------------------------------------" . PHP_EOL . PHP_EOL
             . "[ STDOUT ]" . PHP_EOL . PHP_EOL
             . ($epubCheckCapture["stdout"] ?? "NULL") . PHP_EOL . PHP_EOL
             . "[ STDERR ]" . PHP_EOL . PHP_EOL
             . ($epubCheckCapture["stderr"] ?? "NULL") . PHP_EOL . PHP_EOL
             . "[ RETURN ]" . PHP_EOL . PHP_EOL
-            . ($epubCheckCapture["return"] ?? "NULL") . PHP_EOL . PHP_EOL . PHP_EOL;
-        $productionLog .= "----------------------------------------------------------------" . PHP_EOL
+            . ($epubCheckCapture["return"] ?? "NULL") . PHP_EOL . PHP_EOL;
+        $productionLog .= PHP_EOL . "----------------------------------------------------------------" . PHP_EOL
             . "Excuse me, but is this really goodbye?" . PHP_EOL;
         return $productionLog;
     }
