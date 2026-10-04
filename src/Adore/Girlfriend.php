@@ -18,7 +18,7 @@ use Lea\Domain\Text;
 final class Girlfriend
 {
     private static ?self $instance = null;
-    private static string $minVersion = "⊙1.0.0";
+    private static string $minVersion = "⊙1.1.0";
     private(set) static string $pathEbooks = REPO . "ebooks/";
     private(set) static string $pathBlocks = REPO . "blocks/";
     private(set) static string $pathFonts = REPO . "fonts/";
@@ -246,10 +246,15 @@ final class Girlfriend
      *
      * @param string $name
      * @return string
+     * @throws Exception
      */
     public function recall(string $name): string
     {
-        return self::$memory["$name"];
+        if (isset(self::$memory["$name"])) {
+            return self::$memory["$name"];
+        }
+        self::comeToMe()->makeDoveCry(new Text(fileName: "Girlfriends by AnnaStesia"), "girlfriendErrorMemory", $name);
+        return "";
     }
 
     /**

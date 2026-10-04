@@ -77,6 +77,7 @@ final readonly class Fancy
      * Precomposed styles.
      * Lea's personality palette.
      */
+    public const string DEBUG = self::PURPLE_RAIN_BOLD_INVERSE_WHITE;
     public const string INFO = self::CYAN;
     public const string SUCCESS = self::GREEN . self::BOLD;
     public const string WARNING = self::BRIGHT_YELLOW;
@@ -84,7 +85,6 @@ final readonly class Fancy
     public const string FATAL = self::RED . self::INVERSE . self::BOLD . self::BLINK;
     public const string SUGGESTION = self::WHITE . self::BOLD;
     public const string NOTICE = self::MAGENTA;
-    public const string DEBUG = self::BRIGHT_BLACK;
     public const string PURPLE_RAIN = "\033[38;2;144;99;205m";
     public const string PURPLE_RAIN_INVERSE_WHITE = self::BG_WHITE . self::PURPLE_RAIN . self::INVERSE;
     public const string PURPLE_RAIN_BOLD = self::PURPLE_RAIN . self::BOLD;
@@ -93,6 +93,11 @@ final readonly class Fancy
     /**
      * Helpers for cleaner usage
      */
+    public static function debug(string $msg): string
+    {
+        return self::DEBUG . $msg . self::RESET;
+    }
+
     public static function info(string $msg): string
     {
         return self::INFO . $msg . self::RESET;

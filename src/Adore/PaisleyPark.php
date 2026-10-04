@@ -303,6 +303,7 @@ final class PaisleyPark
      * - true if no fatal errors detected
      *
      * @return bool
+     * @throws Exception
      */
     #[NoDiscard]
     public function inThisBedEyeScream(): bool
@@ -316,7 +317,8 @@ final class PaisleyPark
                     : ""),
                 Flaw::Warning => Fancy::warning(msg: "[ WARNING ]" . PHP_EOL) . $msg->message . PHP_EOL,
                 Flaw::Severe => Fancy::severe(msg: "[ SEVERE ]") . PHP_EOL . $msg->message . PHP_EOL,
-                Flaw::Fatal => Fancy::fatal(msg: "[ FATAL ]") . PHP_EOL . $msg->message . PHP_EOL
+                Flaw::Fatal => Fancy::fatal(msg: "[ FATAL ]") . PHP_EOL . $msg->message . PHP_EOL,
+                Flaw::Debug => Fancy::debug(msg: "[ DEBUG ]") . PHP_EOL . $msg->message . PHP_EOL
             };
             echo((Girlfriend::comeToMe()->recall(name: "heath-mode") === "no") || ($msg->flaw !== Flaw::Info)
                 ? Fancy::suggestion(msg: "[ Suggestion ] ") . PHP_EOL . ($msg->suggestion ?: "[ none ]") . PHP_EOL . PHP_EOL
@@ -328,7 +330,8 @@ final class PaisleyPark
             echo Fancy::info(msg: "[ INFO ]") . "    shows potential for improvement. The produced EPUB may be less than ideal." . PHP_EOL;
             echo Fancy::warning(msg: "[ WARNING ]") . " denotes missing optional data. The EPUB should not be published." . PHP_EOL;
             echo Fancy::severe(msg: "[ SEVERE ]") . "  requires guessing from Lea. The EPUB must not be published." . PHP_EOL;
-            echo Fancy::fatal(msg: "[ FATAL ]") . "   cannot be resolved. No EPUB will be produced." . PHP_EOL . PHP_EOL;
+            echo Fancy::fatal(msg: "[ FATAL ]") . "   cannot be resolved. No EPUB will be produced." . PHP_EOL;
+            echo Fancy::debug(msg: "[ DEBUG ]") . "   reveals forbidden knowledge, accessible to Lea maintainers only." . PHP_EOL . PHP_EOL;
         }
         return !$fatal;
     }

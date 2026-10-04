@@ -617,7 +617,8 @@ final class XMLetsGoCrazy
             if (filter_var($linkTarget, filter: FILTER_VALIDATE_URL) === false) {
                 if (!isset($targetData[$linkTargetIdentifier])) {
                     Girlfriend::comeToMe()->makeDoveCry($text, "linkTargetUndefined",
-                        Girlfriend::$pathEbooks . $text->fileName, $linkTarget);
+                        Girlfriend::$pathEbooks . $text->fileName,
+                        $node->parentNode->ownerDocument->saveXML($node->parentNode));
                     continue;
                 }
             }

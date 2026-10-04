@@ -11,6 +11,7 @@ namespace Lea\Adore;
  */
 enum Flaw
 {
+    case Debug;
     case Info;
     case Warning;
     case Severe;

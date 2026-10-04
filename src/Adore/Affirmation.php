@@ -57,7 +57,7 @@ final class Affirmation
                 "message" => "Link to undefined link target.",
                 "suggestion" => "Check the text content file, making sure the link target exists" . PHP_EOL
                     . "Text file name: #1#" . PHP_EOL
-                    . "Link name: '#2#'"
+                    . "Context dump: '#2#'"
             ],
             "urlsNotChecked" => [
                 "flaw" => Flaw::Info,
@@ -339,6 +339,11 @@ final class Affirmation
                 "flaw" => Flaw::Fatal,
                 "message" => "Low-level error while reading file.",
                 "suggestion" => "File requested: #1#."
+            ],
+            "girlfriendErrorMemory" => [
+                "flaw" => Flaw::Debug,
+                "message" => "Your girlfriend couldn't recall something: '#1#'",
+                "suggestion" => "Contact current Lea maintainers."
             ],
             "preflightErrors" => [
                 "flaw" => Flaw::Fatal,
