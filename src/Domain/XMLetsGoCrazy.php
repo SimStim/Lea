@@ -841,9 +841,8 @@ final class XMLetsGoCrazy
                 : "<figure>" . "<img src='../Images/"
                 . Girlfriend::comeToMe()->strToEpubImageFileName($fileName) . "'"
                 . " alt='" . htmlspecialchars($alt, flags: ENT_QUOTES | ENT_HTML5, encoding: 'UTF-8')
-                . "'/><figcaption>"
-                . htmlspecialchars($caption, flags: ENT_QUOTES | ENT_HTML5, encoding: 'UTF-8')
-                . "</figcaption>"
+                . "'/>"
+                . "<figcaption>$caption</figcaption>"
                 . "</figure>";
             $fragment = $text->dom->createDocumentFragment();
             $fragment->appendXML($replacement);
