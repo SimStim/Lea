@@ -572,7 +572,11 @@ function editText(string $sandbox, Closure $edit): void
 /** Create an empty file inside the sandbox's arx tree. */
 function emptyFile(string $sandbox, string $relativePath): void
 {
-    file_put_contents(filename: "$sandbox/arx/$relativePath", data: "");
+    $path = "$sandbox/arx/$relativePath";
+    $directory = dirname(path: $path);
+    if (!is_dir($directory))
+        mkdir($directory, 0777, true);
+    file_put_contents(filename: $path, data: "");
 }
 
 /** Remove the first line containing $fragment. */
