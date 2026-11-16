@@ -1,5 +1,8 @@
 name: Controversies
 
+# Run titles default to the commit message; pin it to something stable.
+run-name: Basic tests
+
 on:
   push:
   workflow_dispatch:
