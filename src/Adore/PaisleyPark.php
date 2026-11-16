@@ -54,13 +54,13 @@ final class PaisleyPark
             $preflightErrors[0]
                 |> array_unique(...)
                 |> (fn($x) => implode(separator: PHP_EOL, array: $x))
-                |> (fn($x) => Girlfriend::comeToMe()->makeDoveCry($this->ebook, "preflightErrors", $x));
+                |> (fn($x) => Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::CorePreflightErrors, $x));
         }
         if (count($preflightErrors[1]) > 0) {
             $preflightErrors[1]
                 |> array_unique(...)
                 |> (fn($x) => implode(separator: PHP_EOL, array: $x))
-                |> (fn($x) => Girlfriend::comeToMe()->makeDoveCry($this->ebook, "preflightErrors", $x));
+                |> (fn($x) => Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::CorePreflightErrors, $x));
         }
         if (!$this->inThisBedEyeScream()) exit(1);
         Girlfriend::comeToMe()->silenceDoves(); // only non-fatal at this point
@@ -98,7 +98,7 @@ final class PaisleyPark
          * - No = fatal
          */
         if ($this->ebook->xml === "") {
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookReadError",
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookReadError,
                 Girlfriend::$pathEbooks . $this->ebook->fileName);
             return;
         }
@@ -109,7 +109,7 @@ final class PaisleyPark
          * - No = fatal
          */
         if (!XMLetsGoCrazy::isWellFormed($this->ebook->xpath)) {
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookNotWellFormed",
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookNotWellFormed,
                 Girlfriend::$pathEbooks . $this->ebook->fileName);
             return;
         }
@@ -125,98 +125,98 @@ final class PaisleyPark
          * - No = fatal
          */
         if ($this->ebook->title === "")
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookTitleRequired",
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookTitleRequired,
                 Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * Checks if there is more than one <lea:title> definition.
          * - Yes = use first, continue with a warning message
          */
         if ($this->ebook->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:title")->length > 1)
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookMultipleTitles",
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookMultipleTitles,
                 $this->ebook->title, Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * Checks if there is at least one <lea:description>.
          * - No = severe, continue
          */
         if ($this->ebook->description === "")
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookDescriptionRecommended",
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookDescriptionRecommended,
                 Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * Checks if there is more than one <lea:description> definition.
          * - yes = use first, continue with a warning message
          */
         if ($this->ebook->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:description")->length > 1)
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookMultipleDescriptions",
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookMultipleDescriptions,
                 $this->ebook->description, Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * Checks if there is at least one <lea:publisher>.
          * - No = severe, continue
          */
         if (!$this->ebook->publisher->isValid())
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookPublisherMandatory",
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookPublisherMandatory,
                 Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * Checks if there is at least one <lea:rights> tag.
          * - no = severe, continue
          */
         if ($this->ebook->rights === "")
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookRightsRecommended",
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookRightsRecommended,
                 Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * Checks if there is more than one <lea:rights> definitions.
          * - yes = use first, continue with warning message
          */
         if ($this->ebook->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:rights")->length > 1)
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookMultipleRights",
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookMultipleRights,
                 $this->ebook->rights, Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * Checks if there is at least one <lea:language> tag.
          * - no = severe, continue
          */
         if ($this->ebook->language === "")
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookLanguageRecommended",
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookLanguageRecommended,
                 Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * Checks if there is at least one author.
          * - no = fatal
          */
         if (count($this->ebook->authors) === 0)
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookAuthorRequired",
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookAuthorRequired,
                 Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * Checks if there are invalid <author> definitions present in the ebook config.
          * - yes = continue with all valid <author> definitions
          */
         if (!XMLetsGoCrazy::validateAuthors($this->ebook->xpath))
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookInvalidAuthor",
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookInvalidAuthor,
                 (string)count($this->ebook->authors), Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * Checks if the date has been extracted successfully
          * - No = fatal
          */
         if (!$this->ebook->date->isValid())
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookInvalidDate",
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookInvalidDate,
                 Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * Checks if there are invalid <contributor> definitions present in the ebook config.
          * - Yes = continue with all valid <contributor> definitions
          */
         if (!XMLetsGoCrazy::validateContributors($this->ebook))
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookInvalidContributor",
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookInvalidContributor,
                 (string)count($this->ebook->contributors), Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * Checks if the ISBN is valid.
          * - No = severe, continue
          */
         if (!$this->ebook->isbn->isValid)
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookInvalidISBN",
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookInvalidISBN,
                 $this->ebook->isbn->isbn, Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * Checks if there are more than one <isbn> definitions.
          * - Yes = use first, continue with a warning message
          */
         if ($this->ebook->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:isbn")->length > 1)
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookMultipleISBNs",
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookMultipleISBNs,
                 $this->ebook->isbn->isbn, Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * If there is a <lea:cover> declaration, check if the file exists in the file system.
@@ -224,14 +224,14 @@ final class PaisleyPark
          */
         $coverFileName = Girlfriend::$pathImages . Girlfriend::comeToMe()->recall(name: "subfolder-images") . $this->ebook->cover;
         if (($this->ebook->cover !== "") && !is_file(filename: $coverFileName))
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookInvalidCover",
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookInvalidCover,
                 $coverFileName, Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * Check if there is more than one <lea:cover> definition.
          * - Yes = use first, continue with a warning message
          */
         if ($this->ebook->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:cover")->length > 1)
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookMultipleCovers",
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookMultipleCovers,
                 $this->ebook->cover, Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * Time to direct our gaze at the text files
@@ -242,7 +242,7 @@ final class PaisleyPark
              * - No = fatal
              */
             if ($text->xhtml === "") {
-                Girlfriend::comeToMe()->makeDoveCry($text, "textReadError",
+                Girlfriend::comeToMe()->makeDoveCry($text, Controversy::TextReadError,
                     Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName");
                 continue;
             }
@@ -251,7 +251,7 @@ final class PaisleyPark
              * - No = fatal
              */
             if (!XMLetsGoCrazy::isWellFormed($text->xpath)) {
-                Girlfriend::comeToMe()->makeDoveCry($text, "textNotWellFormed",
+                Girlfriend::comeToMe()->makeDoveCry($text, Controversy::TextNotWellFormed,
                     Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName");
                 continue;
             }
@@ -260,35 +260,35 @@ final class PaisleyPark
              * - No = fatal
              */
             if ($text->title === "")
-                Girlfriend::comeToMe()->makeDoveCry($text, "textTitleRequired",
+                Girlfriend::comeToMe()->makeDoveCry($text, Controversy::TextTitleRequired,
                     Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName");
             /**
              * Checks if there are more than one <title> definitions.
              * - Yes = use first, continue with a warning message
              */
             if ($text->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:title")->length > 1)
-                Girlfriend::comeToMe()->makeDoveCry($text, "textMultipleTitles", $text->title,
+                Girlfriend::comeToMe()->makeDoveCry($text, Controversy::TextMultipleTitles, $text->title,
                     Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName");
             /**
              * Checks if there is at least one author.
              * - no = fatal
              */
             if (count($text->authors) === 0)
-                Girlfriend::comeToMe()->makeDoveCry($text, "textAuthorRequired",
+                Girlfriend::comeToMe()->makeDoveCry($text, Controversy::TextAuthorRequired,
                     Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName");
             /**
              * Checks if there are invalid <author> definitions present in the text file.
              * - Yes = continue with all valid <author> definitions
              */
             if (XMLetsGoCrazy::validateAuthors($text->xpath) === false)
-                Girlfriend::comeToMe()->makeDoveCry($text, "textInvalidAuthor", (string)count($text->authors),
+                Girlfriend::comeToMe()->makeDoveCry($text, Controversy::TextInvalidAuthor, (string)count($text->authors),
                     Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName");
             /**
              * Checks if there are more than one <lea:blurb> definitions.
              * - Yes = use the first blurb found, continue with a warning message
              */
             if ($text->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:blurb")->length > 1)
-                Girlfriend::comeToMe()->makeDoveCry($text, "textMultipleBlurbs", $text->blurb,
+                Girlfriend::comeToMe()->makeDoveCry($text, Controversy::TextMultipleBlurbs, $text->blurb,
                     Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName");
         }
     }
@@ -384,9 +384,9 @@ final class PaisleyPark
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $error = curl_error($ch);
             if ($httpCode >= 400)
-                Girlfriend::comeToMe()->makeDoveCry($this->ebook, "externalLinkCheckFailed", $key);
+                Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::LinkExternalCheckFailed, $key);
             elseif ($error)
-                Girlfriend::comeToMe()->makeDoveCry($this->ebook, "externalLinkCheckTimeout", $key, $error);
+                Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::LinkExternalCheckTimeout, $key, $error);
         }
         curl_multi_close($mh);
         echo "\r" . Fancy::CLR_EOL;
@@ -446,7 +446,7 @@ final class PaisleyPark
          * - no = warning about missing subject declarations
          */
         if (count($this->ebook->subjects) === 0)
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "ebookSubjectRecommended",
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookSubjectRecommended,
                 Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
          * Checks if there are any <lea:image> tags defining file names not found in the file system.
@@ -460,7 +460,7 @@ final class PaisleyPark
          * )
          * $missing[] = Girlfriend::$pathImages . $image->folder . $image->fileName;
          * if (count($missing) > 0)
-         * Girlfriend::comeToMe()->makeDoveCry($this->ebook, "imageReadError",
+         * Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::ImageReadError,
          * (string)count($missing), implode(separator: PHP_EOL, array: $missing),
          * Girlfriend::$pathEbooks . $this->ebook->fileName);
          */
@@ -512,7 +512,7 @@ final class PaisleyPark
         if (Girlfriend::comeToMe()->recall(name: "check-urls") === "yes")
             $this->validateURLs();
         else
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "urlsNotChecked", $this->ebook->fileName);
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::LinkUrlsNotChecked, $this->ebook->fileName);
         /**
          * At this point, we want to resolve any links in the text content.
          */
@@ -543,7 +543,7 @@ final class PaisleyPark
          * Finally, throw an Info message to the user if EPUBCheck was not requested.
          */
         if (Girlfriend::comeToMe()->recall(name: "check-epub") === "no")
-            Girlfriend::comeToMe()->makeDoveCry($this->ebook, "epubNotChecked", $this->ebook->fileName);
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EpubNotChecked, $this->ebook->fileName);
     }
 
     /**

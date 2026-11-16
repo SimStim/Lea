@@ -253,7 +253,7 @@ final class Girlfriend
         if (isset(self::$memory["$name"])) {
             return self::$memory["$name"];
         }
-        self::comeToMe()->makeDoveCry(new Text(fileName: "Girlfriends by AnnaStesia"), "girlfriendErrorMemory", $name);
+        self::comeToMe()->makeDoveCry(new Text(fileName: "Girlfriends by AnnaStesia"), Controversy::CoreGirlfriendMemory, $name);
         return "";
     }
 
@@ -264,12 +264,12 @@ final class Girlfriend
      * When doves cry, something needs your attention.
      *
      * @param Ebook|Text $object
-     * @param string $identifier
+     * @param Controversy $identifier
      * @param mixed ...$params
      * @return void
      * @throws Exception
      */
-    public function makeDoveCry(Ebook|Text $object, string $identifier, ...$params): void
+    public function makeDoveCry(Ebook|Text $object, Controversy $identifier, ...$params): void
     {
         self::comeToMe()->doveCries[] = self::$affirmation->cry($object, $identifier, ...$params);
     }
@@ -315,13 +315,13 @@ final class Girlfriend
                 callback: fn($file) => strcasecmp($file, $parts["basename"]) === 0
             ) ?? "";
             if ($similarFile === "") {
-                Girlfriend::comeToMe()->makeDoveCry(new Text($filePath), "fileReadError",
+                Girlfriend::comeToMe()->makeDoveCry(new Text($filePath), Controversy::CoreFileReadError,
                     $loadFilePath);
                 throw new Exception("Error trying to read file '$loadFilePath'." . PHP_EOL
                     . "File requested in class '" . self::get_calling_class() . "'." . PHP_EOL);
             } else {
                 $loadFilePath = $parts["dirname"] . "/" . $similarFile;
-                Girlfriend::comeToMe()->makeDoveCry(new Text($filePath), "fileReadSimilar",
+                Girlfriend::comeToMe()->makeDoveCry(new Text($filePath), Controversy::CoreFileReadSimilar,
                     $filePath, $loadFilePath);
             }
         }
@@ -466,7 +466,7 @@ final class Girlfriend
         fclose($pipes[2]);
         $returnCode = proc_close($process);
         if ($returnCode !== 0)
-            Girlfriend::comeToMe()->makeDoveCry(new Ebook(fileName: $fileName), "checkEpubFailure", $stdout, $stderr);
+            Girlfriend::comeToMe()->makeDoveCry(new Ebook(fileName: $fileName), Controversy::EpubCheckFailure, $stdout, $stderr);
         return [
             "stdout" => $stdout,
             "stderr" => $stderr,

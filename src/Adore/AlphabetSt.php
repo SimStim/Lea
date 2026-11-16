@@ -186,12 +186,12 @@ class AlphabetSt
     public function linkedImage(DOMElement $node, Ebook $ebook): void
     {
         if (!$node->hasAttribute(qualifiedName: "to")) {
-            Girlfriend::comeToMe()->makeDoveCry($ebook, "linkedImageMissingTo");
+            Girlfriend::comeToMe()->makeDoveCry($ebook, Controversy::ImageLinkedMissingTo);
             return;
         }
         $to = $node->getAttribute(qualifiedName: "to");
         if (!$node->hasAttribute(qualifiedName: "image")) {
-            Girlfriend::comeToMe()->makeDoveCry($ebook, "linkedImageMissingImage");
+            Girlfriend::comeToMe()->makeDoveCry($ebook, Controversy::ImageLinkedMissingImage);
             return;
         }
         $image = Girlfriend::comeToMe()->strToEpubImageFileName($node->getAttribute(qualifiedName: "image"));
@@ -226,7 +226,7 @@ class AlphabetSt
     public function lockedImage(DOMElement $node, Ebook $ebook): void
     {
         if (!$node->hasAttribute(qualifiedName: "image")) {
-            Girlfriend::comeToMe()->makeDoveCry($ebook, "lockedImageMissingImage");
+            Girlfriend::comeToMe()->makeDoveCry($ebook, Controversy::ImageLockedMissingImage);
             return;
         }
         $image = Girlfriend::comeToMe()->strToEpubImageFileName($node->getAttribute(qualifiedName: "image"));

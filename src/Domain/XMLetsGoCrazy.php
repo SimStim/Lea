@@ -15,6 +15,7 @@ use Exception;
 use NoDiscard;
 use ReflectionException;
 use Lea\Adore\AlphabetSt;
+use Lea\Adore\Controversy;
 use Lea\Adore\Girlfriend;
 
 /**
@@ -393,7 +394,7 @@ final class XMLetsGoCrazy
         $images = [];
         foreach ($nodes as $node) {
             if (!$node->hasAttribute("source")) {
-                Girlfriend::comeToMe()->makeDoveCry($domObject, "imageSourceUndefined", $domObject->fileName);
+                Girlfriend::comeToMe()->makeDoveCry($domObject, Controversy::ImageSourceUndefined, $domObject->fileName);
                 continue;
             }
             $fileName = trim(string: $node->getAttribute(qualifiedName: "source"));
@@ -407,7 +408,7 @@ final class XMLetsGoCrazy
                 $captionNode = $captionNodes->item(0);
                 if ($captionNodes->length > 1) {
                     Girlfriend::comeToMe()->makeDoveCry(
-                        $domObject, "multipleCaptions",
+                        $domObject, Controversy::ImageMultipleCaptions,
                         $domObject->fileName, trim($node->textContent)
                     );
                 }
@@ -616,7 +617,7 @@ final class XMLetsGoCrazy
                 . Girlfriend::comeToMe()->strToEpubIdentifier($linkTarget);
             if (filter_var($linkTarget, filter: FILTER_VALIDATE_URL) === false) {
                 if (!isset($targetData[$linkTargetIdentifier])) {
-                    Girlfriend::comeToMe()->makeDoveCry($text, "linkTargetUndefined",
+                    Girlfriend::comeToMe()->makeDoveCry($text, Controversy::LinkTargetUndefined,
                         Girlfriend::$pathEbooks . $text->fileName,
                         $node->parentNode->ownerDocument->saveXML($node->parentNode));
                     continue;
@@ -753,7 +754,7 @@ final class XMLetsGoCrazy
         foreach ($nodes as $node) {
             $scriptName = strtolower(trim($node->textContent));
             if (!array_key_exists($scriptName, $scripts->lut)) {
-                Girlfriend::comeToMe()->makeDoveCry($text, "scriptUndefined", $scriptName,
+                Girlfriend::comeToMe()->makeDoveCry($text, Controversy::TextScriptUndefined, $scriptName,
                     Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . $text->fileName);
                 continue;
             }
@@ -782,7 +783,7 @@ final class XMLetsGoCrazy
             }
             $attr = $node->getAttribute('tag');
             if (!in_array($attr, ["epub", "text", "images"])) {
-                Girlfriend::comeToMe()->makeDoveCry($ebook, "subfolderTagUndefined", $attr,
+                Girlfriend::comeToMe()->makeDoveCry($ebook, Controversy::EbookSubfolderTagUndefined, $attr,
                     Girlfriend::$pathEbooks . $ebook->fileName);
                 continue;
             }
@@ -868,7 +869,7 @@ final class XMLetsGoCrazy
                 . trim($node->textContent);
             $replacement = Girlfriend::comeToMe()->readFile($blockFileName);
             if ($replacement === "") {
-                Girlfriend::comeToMe()->makeDoveCry($text, "blockReadError", $blockFileName, $text->fileName);
+                Girlfriend::comeToMe()->makeDoveCry($text, Controversy::CoreBlockReadError, $blockFileName, $text->fileName);
                 continue;
             }
             $replacementDom = new DOMDocument(version: '1.0', encoding: 'UTF-8');
