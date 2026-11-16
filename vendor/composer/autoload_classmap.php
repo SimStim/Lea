@@ -9,10 +9,12 @@ return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'Lea\\Adore\\Affirmation' => $baseDir . '/src/Adore/Affirmation.php',
     'Lea\\Adore\\AlphabetSt' => $baseDir . '/src/Adore/AlphabetSt.php',
+    'Lea\\Adore\\Controversy' => $baseDir . '/src/Adore/Controversy.php',
     'Lea\\Adore\\DoveCry' => $baseDir . '/src/Adore/DoveCry.php',
     'Lea\\Adore\\Fancy' => $baseDir . '/src/Adore/Fancy.php',
     'Lea\\Adore\\Flaw' => $baseDir . '/src/Adore/Flaw.php',
     'Lea\\Adore\\Girlfriend' => $baseDir . '/src/Adore/Girlfriend.php',
+    'Lea\\Adore\\Heath' => $baseDir . '/src/Adore/Heath.php',
     'Lea\\Adore\\PaisleyPark' => $baseDir . '/src/Adore/PaisleyPark.php',
     'Lea\\Adore\\TheOpera' => $baseDir . '/src/Adore/TheOpera.php',
     'Lea\\Domain\\Author' => $baseDir . '/src/Domain/Author.php',
@@ -26,5 +28,4 @@ return array(
     'Lea\\Domain\\Target' => $baseDir . '/src/Domain/Target.php',
     'Lea\\Domain\\Text' => $baseDir . '/src/Domain/Text.php',
     'Lea\\Domain\\XMLetsGoCrazy' => $baseDir . '/src/Domain/XMLetsGoCrazy.php',
-    'SebastianBergmann\\Version' => $vendorDir . '/sebastian/version/src/Version.php',
 );

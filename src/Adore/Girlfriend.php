@@ -7,7 +7,6 @@ namespace Lea\Adore;
 use Exception;
 use Lea\Domain\Image;
 use NoDiscard;
-use SebastianBergmann\Version;
 use Throwable;
 use Lea\Domain\Ebook;
 use Lea\Domain\Text;
@@ -184,15 +183,59 @@ final class Girlfriend
     /**
      * Use git describe to compute Lea version
      *
+     * Behavior is pinned to sebastian/version v6, which this replaced:
+     * - a three-part release stays verbatim as the fallback and lets the raw
+     *   "git describe --tags" output stand;
+     * - any other release is suffixed "-dev" on fallback, and only the commit
+     *   part of the describe output when tagged;
+     * - outside a git repository, without git, or without a reachable tag, the
+     *   release string stands alone.
+     *
      * @param string $minVersion
      * @return string
      */
     private function computeLeaVersion(string $minVersion): string
     {
-        $version = new Version(release: $minVersion, path: ROOT)->asString();
+        $threePartRelease = substr_count($minVersion, ".") + 1 === 3;
+        $version = $threePartRelease ? $minVersion : $minVersion . "-dev";
+
+        $git = $this->gitDescribe(path: ROOT);
+        if ($git !== false)
+            $version = $threePartRelease
+                ? $git
+                : $minVersion . "-" . array_last(array: explode(separator: "-", string: $git));
+
         return str_contains(haystack: $version, needle: "-g")
             ? "$version (dev build) [PHP " . phpversion() . "]"
             : $version;
+    }
+
+    /**
+     * git describe --tags, in its plain two-dashes glory.
+     *
+     * Returns false when Lea is not inside a git checkout, when git itself is
+     * not callable, or when no tag is reachable — exactly the seams
+     * sebastian/version guarded, so releases from tarballs keep a version, too.
+     *
+     * @param string $path
+     * @return string|false
+     */
+    private function gitDescribe(string $path): string|false
+    {
+        if (!is_dir($path . DIRECTORY_SEPARATOR . ".git"))
+            return false;
+        $process = @proc_open(
+            ["git", "describe", "--tags"],
+            [1 => ["pipe", "w"], 2 => ["pipe", "w"]],
+            $pipes,
+            cwd: $path,
+        );
+        if (!is_resource($process))
+            return false;
+        $result = trim((string)stream_get_contents(stream: $pipes[1]));
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        return proc_close($process) !== 0 ? false : $result;
     }
 
     /**

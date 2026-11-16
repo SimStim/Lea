@@ -1,0 +1,17 @@
+<lea:title>Golden Test Ebook</lea:title>
+<lea:author>Lea Test Suite</lea:author>
+<lea:date created="January 1, 2026">January 2, 2026</lea:date>
+<lea:description>A minimal, fully valid ebook used by the Controversy test suite.</lea:description>
+<lea:publisher contact="test@example.org">Test Imprint</lea:publisher>
+<lea:rights>Public domain test fixture for the Lea Controversy test suite.</lea:rights>
+<lea:language>en</lea:language>
+<lea:subfolder tag="epub">golden</lea:subfolder>
+<lea:subfolder tag="text">golden</lea:subfolder>
+<lea:subfolder tag="images">golden</lea:subfolder>
+<lea:option value="[test illustration]">defaultcaption</lea:option>
+<lea:text>golden.xhtml</lea:text>
+<lea:subject>Testing -- Fiction</lea:subject>
+<lea:isbn>978-3-16-148410-0</lea:isbn>
+<lea:contributor roles="bkp">Lea Test Suite</lea:contributor>
+<lea:stylesheet>golden.css</lea:stylesheet>
+<lea:cover>cover.jpg</lea:cover>

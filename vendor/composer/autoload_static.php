@@ -29,10 +29,12 @@ class ComposerStaticInit2d9f93da1f99057b888d840591476990
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Lea\\Adore\\Affirmation' => __DIR__ . '/../..' . '/src/Adore/Affirmation.php',
         'Lea\\Adore\\AlphabetSt' => __DIR__ . '/../..' . '/src/Adore/AlphabetSt.php',
+        'Lea\\Adore\\Controversy' => __DIR__ . '/../..' . '/src/Adore/Controversy.php',
         'Lea\\Adore\\DoveCry' => __DIR__ . '/../..' . '/src/Adore/DoveCry.php',
         'Lea\\Adore\\Fancy' => __DIR__ . '/../..' . '/src/Adore/Fancy.php',
         'Lea\\Adore\\Flaw' => __DIR__ . '/../..' . '/src/Adore/Flaw.php',
         'Lea\\Adore\\Girlfriend' => __DIR__ . '/../..' . '/src/Adore/Girlfriend.php',
+        'Lea\\Adore\\Heath' => __DIR__ . '/../..' . '/src/Adore/Heath.php',
         'Lea\\Adore\\PaisleyPark' => __DIR__ . '/../..' . '/src/Adore/PaisleyPark.php',
         'Lea\\Adore\\TheOpera' => __DIR__ . '/../..' . '/src/Adore/TheOpera.php',
         'Lea\\Domain\\Author' => __DIR__ . '/../..' . '/src/Domain/Author.php',
@@ -46,7 +48,6 @@ class ComposerStaticInit2d9f93da1f99057b888d840591476990
         'Lea\\Domain\\Target' => __DIR__ . '/../..' . '/src/Domain/Target.php',
         'Lea\\Domain\\Text' => __DIR__ . '/../..' . '/src/Domain/Text.php',
         'Lea\\Domain\\XMLetsGoCrazy' => __DIR__ . '/../..' . '/src/Domain/XMLetsGoCrazy.php',
-        'SebastianBergmann\\Version' => __DIR__ . '/..' . '/sebastian/version/src/Version.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

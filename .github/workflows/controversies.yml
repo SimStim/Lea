@@ -1,0 +1,26 @@
+name: Controversies
+
+on:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  controversies:
+    name: Every controversy voiced correctly
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Lea
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          coverage: none
+
+      - name: Run the Controversy test suite
+        run: php tests/controversies.php --ci
