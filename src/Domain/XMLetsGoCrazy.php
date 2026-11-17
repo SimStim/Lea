@@ -110,6 +110,7 @@ final class XMLetsGoCrazy
      * Returns the innerXML of a DOMElement object
      * @param DOMElement $node
      * @return string
+     * @throws DOMException
      */
     private static function innerXML(DOMNode $node): string
     {
@@ -245,6 +246,7 @@ final class XMLetsGoCrazy
      *
      * @param DOMXPath $xpath
      * @return string
+     * @throws DOMException
      */
     #[NoDiscard]
     public static function extractRights(DOMXPath $xpath): string
@@ -371,6 +373,7 @@ final class XMLetsGoCrazy
      *
      * @param DOMXPath $xpath
      * @return string
+     * @throws DOMException
      */
     #[NoDiscard]
     public static function extractBlurb(DOMXPath $xpath): string
@@ -684,6 +687,7 @@ final class XMLetsGoCrazy
      *
      * @param Text $text
      * @return void
+     * @throws DOMException
      */
     public static function replaceLeaChapterTags(Text $text): void
     {
@@ -718,6 +722,7 @@ final class XMLetsGoCrazy
      *
      * @param Text $text
      * @return void
+     * @throws DOMException
      */
     public static function replaceLeaSectionTags(Text $text): void
     {
@@ -744,6 +749,7 @@ final class XMLetsGoCrazy
      *
      * @param Text $text
      * @return void
+     * @throws DOMException
      */
     public static function replaceLeaSubSectionTags(Text $text): void
     {
@@ -834,6 +840,7 @@ final class XMLetsGoCrazy
      * @param Text $text
      * @param array $images
      * @return void
+     * @throws Exception
      */
     public static function replaceLeaImageTags(Text $text, array $images): void
     {
@@ -981,6 +988,7 @@ final class XMLetsGoCrazy
      * @param DOMElement $node The DOM node to be replaced.
      * @param string $string The string content to generate replacement nodes.
      * @return void
+     * @throws DOMException
      */
     public static function replaceNodeWithStringContent(DOMElement $node, string $string): void
     {
