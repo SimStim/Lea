@@ -75,12 +75,21 @@ blockquote {
     text-align: center;
 }
 
+.text-align-left {
+    text-align: left;
+}
+
 .text-align-right {
     text-align: right;
 }
 
 .text-italic {
     font-style: italic;
+}
+
+.text-spaced {
+    letter-spacing: 0.15em;
+    margin-right: -0.15em;
 }
 
 .hr {
@@ -232,7 +241,7 @@ p + p, div + p, figure + p, blockquote + p {
 }
 
 .runic {
-    font-family: EBGaramond, sans-serif;
+    font-family: NotoSansRunic, sans-serif;
 }
 
 .text-smallcaps {

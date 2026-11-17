@@ -1,0 +1,88 @@
+<lea xmlns:lea="https://logophilia.eu/lea/2026/xhtml">
+    <lea:title>The Pitch Science Fiction 2026</lea:title>
+    <lea:author>Eduard Pech</lea:author>
+    <lea:date created="September 18, 2026">December 1, 2026</lea:date>
+    <lea:description>The Pitch Science Fiction is a quarterly publication
+of science fiction stories by various authors, covering diverse themes.
+Included in this issue:
+    <lea:script skip="About">Table Of Contents Plain</lea:script></lea:description>
+    <lea:collection type="series" position="27" issn="2806-4240">The Pitch Science Fiction</lea:collection>
+    <lea:publisher contact="originals@logophilia.eu">Logophilia</lea:publisher>
+    <lea:rights>All content not marked public domain or declared otherwise,
+is copyright 2026 by Eduard Pech.
+The complete edition is copyright 2026 by Logophilia.
+Logophilia is an imprint of Logophilia OÜ.</lea:rights>
+    <lea:language>en</lea:language>
+    <lea:subfolder tag="epub">tpsf</lea:subfolder>
+    <lea:subfolder tag="text">tpsf-27</lea:subfolder>
+    <lea:subfolder tag="images">tpsf-27</lea:subfolder>
+    <lea:option value="">defaultcaption</lea:option>
+    <lea:text>About the Content.xhtml</lea:text>
+    <lea:text>Table of Contents by Authors.xhtml</lea:text>
+    <lea:text>Table of Contents by Blurbs.xhtml</lea:text>
+    <lea:text>Table of Contents by Era.xhtml</lea:text>
+    <lea:text>Accept No Substitutes by Robert Sheckley.xhtml</lea:text>
+    <lea:text>The Misplaced Battleship by Harry Harrison.xhtml</lea:text>
+    <lea:text>And the Gods Laughed by Fredric Brown.xhtml</lea:text>
+    <lea:text>The Ego Machine by Henry Kuttner.xhtml</lea:text>
+    <lea:text>The Call from Beyond by Clifford D. Simak.xhtml</lea:text>
+    <lea:text>Star Ship by Poul Anderson.xhtml</lea:text>
+    <lea:text>The Creatures That Time Forgot by Ray Bradbury.xhtml</lea:text>
+    <lea:text>Masters of Space by E. E. Smith and E. Everett Evans.xhtml</lea:text>
+    <lea:text>Old Rambling House by Frank Herbert.xhtml</lea:text>
+    <lea:text>Piper in the Woods by Philip K. Dick.xhtml</lea:text>
+    <lea:text>Requiem by Edmond Hamilton.xhtml</lea:text>
+    <lea:text>Charged with Suicide by Daria Skrinitsa.xhtml</lea:text>
+    <lea:text>Coming Attraction by Fritz Leiber.xhtml</lea:text>
+    <lea:text>The Nothing Equation by Tom Godwin.xhtml</lea:text>
+    <lea:text>The Push of a Finger by Alfred Bester.xhtml</lea:text>
+    <lea:text>Age of Anxiety by Robert Silverberg.xhtml</lea:text>
+    <lea:text>Happy Ending by Mack Reynolds and Fredric Brown.xhtml</lea:text>
+    <lea:text>The Green Odyssey by Philip Jose Farmer.xhtml</lea:text>
+    <lea:text>The Ambulance Made Two Trips by Murray Leinster.xhtml</lea:text>
+    <lea:text>The Defenders by Philip K. Dick.xhtml</lea:text>
+    <lea:text>Message from Mars by Clifford D. Simak.xhtml</lea:text>
+    <lea:text>Mistake Inside by James Blish.xhtml</lea:text>
+    <lea:text>We by Evgenii Ivanovich Zamiatin.xhtml</lea:text>
+    <lea:text>The Night of Hoggy Darn by Richard McKenna.xhtml</lea:text>
+    <lea:text>Adaptation by Mack Reynolds.xhtml</lea:text>
+    <lea:text>The Worlds of If by Stanley G. Weinbaum.xhtml</lea:text>
+    <lea:text>Angel's Egg by Edgar Pangborn.xhtml</lea:text>
+    <lea:text>The Street That Wasn't There by Clifford D. Simak and Carl Jacobi.xhtml</lea:text>
+    <lea:text>DP by Arthur Dekker Savage.xhtml</lea:text>
+    <lea:text>Sentiment, Inc. by Poul Anderson.xhtml</lea:text>
+    <lea:text>The White Rain Came by Sam Merwin, Jr..xhtml</lea:text>
+    <lea:text>The Lani People by Jesse F. Bone.xhtml</lea:text>
+    <lea:text>Operation Haystack.xhtml</lea:text>
+    <lea:text>Inside Earth.xhtml</lea:text>
+    <lea:text>Ultima Thule.xhtml</lea:text>
+    <lea:text>The Stars, My Brothers.xhtml</lea:text>
+    <lea:text>The Thing in the Attic.xhtml</lea:text>
+    <lea:text>The Thinking Machine.xhtml</lea:text>
+    <lea:text>The Ambassador.xhtml</lea:text>
+    <lea:text>The Crystal Crypt.xhtml</lea:text>
+    <lea:text>I, Mars.xhtml</lea:text>
+    <lea:text>Pictures Don't Lie.xhtml</lea:text>
+    <lea:text>It Could Be Anything.xhtml</lea:text>
+    <lea:text>Nozomi.xhtml</lea:text>
+    <lea:text>Pandemic.xhtml</lea:text>
+    <lea:text>Project Mastodon.xhtml</lea:text>
+    <lea:text>The Point of View.xhtml</lea:text>
+    <lea:text>The Unseen Blushers.xhtml</lea:text>
+    <lea:text>The Last Letter.xhtml</lea:text>
+    <lea:text>The Big Fix.xhtml</lea:text>
+    <lea:text>Venus Is a Man's World.xhtml</lea:text>
+    <lea:text>Terms of Surrender.xhtml</lea:text>
+    <lea:text>About the Authors.xhtml</lea:text>
+    <lea:text>About this Publication.xhtml</lea:text>
+    <lea:text>About the Publisher.xhtml</lea:text>
+    <lea:isbn>978-9908-850-21-4</lea:isbn>
+    <lea:contributor roles="edt bkp bkd tyg mrk pfr cov ill art blw">Eduard Pech</lea:contributor>
+    <lea:font>Comfortaa-Bold.ttf</lea:font>
+    <lea:font>EBGaramond-Italic-VariableFont_wght.ttf</lea:font>
+    <lea:font>EBGaramond-VariableFont_wght.ttf</lea:font>
+    <lea:font>NotoSansRunic-Regular.ttf</lea:font>
+    <lea:stylesheet>stylesheet.css</lea:stylesheet>
+    <lea:stylesheet>fonts-runic.css</lea:stylesheet>
+    <lea:cover>2026 cover epub inside.jpg</lea:cover>
+</lea>
