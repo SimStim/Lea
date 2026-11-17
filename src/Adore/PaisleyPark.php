@@ -135,6 +135,13 @@ final class PaisleyPark
             Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookMultipleTitles,
                 $this->ebook->title, Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
+         * Checks if the <lea:title> definition contains nested tags.
+         * - Yes = severe, use flattened text, continue
+         */
+        if ($this->ebook->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:title/*")->length > 0)
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookTitleContainsTags,
+                $this->ebook->title, Girlfriend::$pathEbooks . $this->ebook->fileName);
+        /**
          * Checks if there is at least one <lea:description>.
          * - No = severe, continue
          */
@@ -268,6 +275,13 @@ final class PaisleyPark
              */
             if ($text->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:title")->length > 1)
                 Girlfriend::comeToMe()->makeDoveCry($text, Controversy::TextMultipleTitles, $text->title,
+                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName");
+            /**
+             * Checks if the <lea:title> definition contains nested tags.
+             * - Yes = severe, use flattened text, continue
+             */
+            if ($text->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:title/*")->length > 0)
+                Girlfriend::comeToMe()->makeDoveCry($text, Controversy::TextTitleContainsTags, $text->title,
                     Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName");
             /**
              * Checks if there is at least one author.

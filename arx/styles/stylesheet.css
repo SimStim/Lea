@@ -235,6 +235,23 @@ p + p, div + p, figure + p, blockquote + p {
     text-indent: 0;
 }
 
+pre {
+    color: #0B486B;
+    font-family: monospace;
+    text-align: left;
+    font-size: 0.9em;
+    line-height: 140%;
+    margin: 1em 3em;
+    padding-left: 1em;
+    border-left: 0.3em solid #0B486B;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    hyphens: none;
+    -epub-hyphens: none;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
 .qhennthyk, .qhennthyk > p {
     font-family: monospace;
     text-align: left;

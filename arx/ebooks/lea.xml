@@ -1,0 +1,28 @@
+<lea xmlns:lea="https://logophilia.eu/lea/2026/xhtml">
+    <lea:title>Effortless EPUBs</lea:title>
+    <lea:author>Eduard Pech</lea:author>
+    <lea:date created="November 16, 2026">December 1, 2026</lea:date>
+    <lea:description>Technical documentation for Lea: EPUB Anvil ⊙1.1.0</lea:description>
+    <lea:publisher contact="originals@logophilia.eu">Logophilia</lea:publisher>
+    <lea:rights>All content is copyright 2026 by Eduard Pech.
+        The complete edition is copyright 2026 by Logophilia.
+        Logophilia is an imprint of Logophilia OÜ.
+    </lea:rights>
+    <lea:language>en</lea:language>
+    <lea:subfolder>lea</lea:subfolder>
+    <lea:subfolder tag="epub"/>
+    <lea:text>About the Content.xhtml</lea:text>
+    <lea:text>Reference.xhtml</lea:text>
+    <lea:text>About the Author.xhtml</lea:text>
+    <lea:text>About this Publication.xhtml</lea:text>
+    <lea:text>About the Publisher.xhtml</lea:text>
+    <lea:isbn>978-9908-850-21-4</lea:isbn>
+    <lea:contributor roles="edt bkp bkd tyg mrk pfr cov ill art blw">Eduard Pech</lea:contributor>
+    <lea:font>Comfortaa-Bold.ttf</lea:font>
+    <lea:font>EBGaramond-Italic-VariableFont_wght.ttf</lea:font>
+    <lea:font>EBGaramond-VariableFont_wght.ttf</lea:font>
+    <lea:font>NotoSansRunic-Regular.ttf</lea:font>
+    <lea:stylesheet>stylesheet.css</lea:stylesheet>
+    <lea:stylesheet>fonts-runic.css</lea:stylesheet>
+    <lea:cover>Effortless EPUBs cover epub inside.jpg</lea:cover>
+</lea>

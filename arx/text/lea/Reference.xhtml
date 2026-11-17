@@ -1,0 +1,88 @@
+<lea xmlns:lea="https://logophilia.eu/lea/2026/xhtml">
+    <lea:comment>----- METADATA BEGIN -----</lea:comment>
+    <lea:title>Reference</lea:title>
+    <lea:author file-as="Pech, Eduard [Idoru Toei]">Idoru Toei</lea:author>
+    <lea:subject>Technical documentation</lea:subject>
+    <lea:subject>Instruction manual</lea:subject>
+    <lea:comment>----- METADATA END -----</lea:comment>
+    <lea:comment>----- CONTENT BEGIN -----</lea:comment>
+
+    <lea:chapter content-top="Walk Don’t Walk" class-top="heading break-before" class-bottom="hr heading">Reference
+    </lea:chapter>
+
+    <lea:section title="title" class="heading">title</lea:section>
+
+    <p>Purpose: No document is complete without a title. This takes care of that.</p>
+
+    <p>Contract: Exactly one title per file. Any string of Unicode characters. No XML tags allowed.
+        The tag takes no attributes; everything it does is defined by its content alone.</p>
+
+    <p>The title works hard: it serves as a link target, referenced by scripts to automatically
+        create a table of contents or to list the document rights in the back matter. It labels the
+        text in nav.xhtml and toc.ncx, which facilitate EPUB navigation, and the manifest and spine
+        entries in content.opf are derived from it. The title in the ebook definition file, combined
+        with the publisher name, becomes the filename of the EPUB file itself.</p>
+
+    <p>Example:</p>
+
+    <pre><![CDATA[<lea:title>Operation Haystack</lea:title>]]></pre>
+
+    <p>In a text whose author is defined as “Frank Herbert”, this injects into nav.xhtml:</p>
+
+    <pre><![CDATA[<li><a href="OperationHaystackByFrankHerbert.xhtml">
+  Operation Haystack</a></li>]]></pre>
+
+    <p>and into toc.ncx:</p>
+
+    <pre><![CDATA[<navPoint id='lea-ncx-operation-haystack'>
+  <navLabel>
+    <text>Operation Haystack</text>
+  </navLabel>
+  <content
+    src='Text/OperationHaystackByFrankHerbert.xhtml' />
+</navPoint>]]></pre>
+
+    <p>The author is assigned to the text in the content.opf metadata:</p>
+
+    <pre><![CDATA[<meta
+    refines='#lea-txt-operation-haystack-by-frank-herbert'
+    property='dcterms:creator'>Frank Herbert</meta>]]></pre>
+
+    <p>The manifest block receives the file itself:</p>
+
+    <pre><![CDATA[<item id='lea-txt-operation-haystack-by-frank-herbert'
+    href='Text/OperationHaystackByFrankHerbert.xhtml'
+    media-type='application/xhtml+xml'/>]]></pre>
+
+    <p>and the spine receives the reading order:</p>
+
+    <pre><![CDATA[<itemref
+    idref='lea-txt-operation-haystack-by-frank-herbert'/>]]></pre>
+
+    <p>Inside the compiled document, the string defined in lea:title becomes the xhtml head title:</p>
+
+    <pre><![CDATA[<head>
+  <title>Operation Haystack</title>
+</head>]]></pre>
+
+    <p>The title in the ebook definition file follows the same one-title contract. Defined as
+        “Effortless EPUBs,” it becomes:</p>
+
+    <pre><![CDATA[<dc:title>Effortless EPUBs</dc:title>]]></pre>
+
+    <p>All this from one tag per file, with no attributes. Effortless EPUBs it is!</p>
+
+    <p>Mistakes: The title is mandatory. A missing tag is a fatal error, and fatal errors prevent
+        the production of the EPUB file. Multiple title definitions are recoverable: the first
+        definition is used, and a severe error is entered into the production log. Both errors name
+        the file they occurred in; edit it to add a title or remove the duplicates.</p>
+
+    <p>Child tags inside the title are likewise severe: Lea strips the tags, uses the remaining
+        text as the title, and logs the guess. The flattened string may be acceptable, but editing
+        the file is the recommended fix: it keeps the production log clean.</p>
+
+    <p>Pitfalls: [placeholder]</p>
+
+    <p>See also: author.</p>
+    <lea:comment>----- CONTENT END -----</lea:comment>
+</lea>

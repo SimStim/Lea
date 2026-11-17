@@ -21,6 +21,7 @@ enum Controversy
     case EbookReadError;
     case EbookTitleRequired;
     case EbookMultipleTitles;
+    case EbookTitleContainsTags;
     case EbookDescriptionRecommended;
     case EbookMultipleDescriptions;
     case EbookPublisherMandatory;
@@ -43,6 +44,7 @@ enum Controversy
     case TextNotWellFormed;
     case TextTitleRequired;
     case TextMultipleTitles;
+    case TextTitleContainsTags;
     case TextAuthorRequired;
     case TextInvalidAuthor;
     case TextMultipleBlurbs;
@@ -100,11 +102,19 @@ enum Controversy
                     . "Ebook XML config file name given: #1#"
             ],
             self::EbookMultipleTitles => [
-                "flaw" => Flaw::Fatal,
+                "flaw" => Flaw::Severe,
                 "message" => "Multiple title tags defined in ebook." . PHP_EOL
                     . "Until this is fixed, I will be using the first valid title found." . PHP_EOL
                     . "Using title: '#1#'",
                 "suggestion" => "Edit the ebook's XML config file, making sure to use only one <lea:title> tag." . PHP_EOL
+                    . "Ebook XML config file name given: #2#"
+            ],
+            self::EbookTitleContainsTags => [
+                "flaw" => Flaw::Severe,
+                "message" => "Nested tags defined inside the <lea:title> tag." . PHP_EOL
+                    . "Until this is fixed, I will be using the text content with all tags removed." . PHP_EOL
+                    . "Using title: '#1#'",
+                "suggestion" => "Edit the ebook's XML config file, keeping the <lea:title> tag free of any tags." . PHP_EOL
                     . "Ebook XML config file name given: #2#"
             ],
             self::EbookDescriptionRecommended => [
@@ -243,6 +253,14 @@ enum Controversy
                     . "Until this is fixed, I will be using the first valid title found." . PHP_EOL
                     . "Using title: '#1#'",
                 "suggestion" => "Edit the text file, making sure to use only one <lea:title> tag." . PHP_EOL
+                    . "Text file name given: '#2#'."
+            ],
+            self::TextTitleContainsTags => [
+                "flaw" => Flaw::Severe,
+                "message" => "Nested tags defined inside the <lea:title> tag." . PHP_EOL
+                    . "Until this is fixed, I will be using the text content with all tags removed." . PHP_EOL
+                    . "Using title: '#1#'",
+                "suggestion" => "Edit the text file, keeping the <lea:title> tag free of any tags." . PHP_EOL
                     . "Text file name given: '#2#'."
             ],
             self::TextAuthorRequired => [

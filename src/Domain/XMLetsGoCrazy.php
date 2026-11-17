@@ -170,6 +170,22 @@ final class XMLetsGoCrazy
     }
 
     /**
+     * Escapes a free-text string for direct interpolation into generated XML files
+     * (content.opf, toc.ncx, nav.xhtml).
+     * - XML has exactly five predefined entities: &amp; &lt; &gt; &apos; &quot;
+     * - Not for use on slugs (strToEpubIdentifier / strToEpubTextFileName output),
+     *   which are already stripped of special characters.
+     *
+     * @param string $string
+     * @return string
+     */
+    #[NoDiscard]
+    public static function xmlEscape(string $string): string
+    {
+        return htmlspecialchars(string: $string, flags: ENT_XML1 | ENT_QUOTES, encoding: "UTF-8");
+    }
+
+    /**
      * Extract the description from an XPath object
      * - <lea:description>The Pitch Science Fiction is a quarterly publication of science-fiction stories
      *                    by various authors, covering diverse themes.</lea:description>
@@ -686,8 +702,9 @@ final class XMLetsGoCrazy
             $classBottom = $node->hasAttribute("class-bottom")
                 ? $node->getAttribute("class-bottom")
                 : "";
-            $replacement = "<h2 title='$title' class='$classTop'>$contentTop</h2>"
-                . "<h3 class='$classBottom'>$chapterTitle</h3>";
+            $replacement = "<h2 title='" . self::xmlEscape($title) . "' class='" . self::xmlEscape($classTop) . "'>"
+                . self::xmlEscape($contentTop) . "</h2>"
+                . "<h3 class='" . self::xmlEscape($classBottom) . "'>$chapterTitle</h3>";
             self::replaceNodeWithStringContent($node, $replacement);
         }
     }
@@ -713,7 +730,7 @@ final class XMLetsGoCrazy
             $class = $node->hasAttribute("class")
                 ? $node->getAttribute("class")
                 : "";
-            $replacement = "<h2 title='$title' class='$class'>$sectionTitle</h2>";
+            $replacement = "<h2 title='" . self::xmlEscape($title) . "' class='" . self::xmlEscape($class) . "'>$sectionTitle</h2>";
             self::replaceNodeWithStringContent($node, $replacement);
         }
     }
@@ -736,7 +753,7 @@ final class XMLetsGoCrazy
             $class = $node->hasAttribute("class")
                 ? $node->getAttribute("class")
                 : "";
-            $replacement = "<h3 class='$class'>$subSectionTitle</h3>";
+            $replacement = "<h3 class='" . self::xmlEscape($class) . "'>" . self::xmlEscape($subSectionTitle) . "</h3>";
             self::replaceNodeWithStringContent($node, $replacement);
         }
     }
@@ -918,7 +935,8 @@ final class XMLetsGoCrazy
         $generator->setAttribute(qualifiedName: "name", value: "generator");
         $generator->setAttribute(qualifiedName: "content", value: Girlfriend::comeToMe()->leaNameShort);
         $head->appendChild($generator);
-        $titleTag = $dom->createElement(localName: "title", value: $title);
+        $titleTag = $dom->createElement(localName: "title");
+        $titleTag->textContent = $title;
         $head->appendChild($titleTag);
         foreach ($stylesheets as $stylesheet) {
             $stylesheetTag = $dom->createElement('link');
