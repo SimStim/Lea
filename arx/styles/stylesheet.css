@@ -225,7 +225,7 @@ p {
     -epub-hyphens: none
 }
 
-p + p, div + p, figure + p, blockquote + p {
+p + p, div + p, pre + p, figure + p, blockquote + p {
     text-indent: 1.2em;
 }
 

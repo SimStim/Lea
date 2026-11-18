@@ -92,22 +92,369 @@
 
     <p>See also: <span class="code">lea:title</span>, <span class="code">lea:target</span>.</p>
 
+    <h3 title="lea:block" class="heading">lea:block</h3>
+
+    <p>Purpose: Some fragments appear again and again: colophons, dedications, recurring
+        notices. This tag keeps them written once, in a block file of their own.</p>
+
+    <p>Contract: The tag content is the name of a file in Lea’s blocks folder; the optional
+        <span class="code">folder</span> attribute names a subfolder in it. The tag may appear
+        anywhere in a text, as often as needed. The block file holds XML fragments: whatever it
+        contains is imported in place of the <span class="code">lea:block</span> tag.</p>
+
+    <p>Blocks are resolved after the text scripts have run their first pass and before their
+        second, so a block may contain <span class="code">lea:script</span> tags, and scripts may
+        generate <span class="code">lea:block</span> tags; both are carried out.</p>
+
+    <p>Example: with a file “colophon.xhtml” waiting in the blocks folder,</p>
+
+    <pre class="code"><![CDATA[<lea:block>colophon.xhtml</lea:block>]]></pre>
+
+    <p>compiles the file’s content into the text at the tag’s position.</p>
+
+    <p>Attention: A block file that cannot be read, or that is empty, is a fatal error: Lea
+        reports the declared block file name and the text containing the declaration, and no
+        EPUB will be produced.</p>
+
+    <p>See also: <span class="code">lea:script</span>.</p>
+
+    <h3 title="lea:blurb" class="heading">lea:blurb</h3>
+
+    <p>Purpose: The back-cover copy. A short, tempting text per story, gathered later by a
+        script into a blurbs chapter of your making.</p>
+
+    <p>Contract: Defined in a text file, directly under the lea root. The content is free-form
+        text; simple inline markup is kept. No attributes. More than one
+        <span class="code">lea:blurb</span> per text is a severe error: the first definition
+        is used.</p>
+
+    <p>Blurbs are not placed automatically. The <span class="code">lea:script</span> named
+        <span class="code">blurbs</span> collects them, and links each blurb’s heading back to
+        its story.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:blurb>
+  Six-legged conspiracies, radio silence from Proxima, and one very
+  stubborn postman. Six stories from the 2026 annual edition.
+</lea:blurb>]]></pre>
+
+    <p>Attention: A second <span class="code">lea:blurb</span> in the same text is severe: Lea
+        names the blurb she will use and the file it occurs in. The EPUB is produced, but it
+        must not be published.</p>
+
+    <p>See also: <span class="code">lea:script</span>.</p>
+
+    <h3 title="lea:caption" class="heading">lea:caption</h3>
+
+    <p>Purpose: The words beneath the picture. A caption turns an illustration into a
+        statement.</p>
+
+    <p>Contract: Lives inside a <span class="code">lea:image</span> tag; that is its only home.
+        The content is free-form text; simple inline markup is kept, and a line break tag is
+        honored. No attributes.</p>
+
+    <p>The caption becomes the figure’s caption in the compiled text. It also doubles as the
+        image’s alt text, flattened: markup removed, line breaks and repeated whitespace
+        collapsed to single spaces.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:image source="chapter-01-face.jpg">
+  <lea:caption>Face before the fall.<br/>(Illustration is in the public domain.)</lea:caption>
+</lea:image>]]></pre>
+
+    <p>Attention: More than one <span class="code">lea:caption</span> inside the same
+        <span class="code">lea:image</span> is severe: the first one is used. An image without
+        a caption receives the caption defined in the <span class="code">defaultcaption</span>
+        option, if one is defined.</p>
+
+    <p>See also: <span class="code">lea:image</span>, <span class="code">lea:option</span>.</p>
+
+    <h3 title="lea:chapter" class="heading">lea:chapter</h3>
+
+    <p>Purpose: The grand division of a story: a line like “CHAPTER ONE” set above the chapter
+        name. This tag sets both in one move.</p>
+
+    <p>Contract: Defined in a text file, directly under the lea root. The content is the chapter
+        name; simple inline markup is kept. Attributes: <span class="code">content-top</span>
+        carries the overline, <span class="code">class-top</span> and
+        <span class="code">class-bottom</span> carry CSS classes for the two headings, and
+        <span class="code">title</span> overrides the label written into the first heading.</p>
+
+    <p>The tag compiles into a pair of headings:</p>
+
+    <pre class="code"><![CDATA[<lea:chapter content-top="CHAPTER ONE" class-top="heading break-before"
+              class-bottom="hr heading">The Pyramid of Bottles</lea:chapter>]]></pre>
+
+    <p>compiles to:</p>
+
+    <pre class="code"><![CDATA[<h2 title="Operation Haystack—The Pyramid of Bottles"
+    class="heading break-before">CHAPTER ONE</h2>
+<h3 class="hr heading">The Pyramid of Bottles</h3>]]></pre>
+
+    <p>Without a <span class="code">title</span> attribute, the label defaults to the text’s
+        title, an em-dash, and the chapter name. Without
+        <span class="code">content-top</span>, the upper heading is left empty; define it, or
+        style the empty heading away.</p>
+
+    <p>Attention: <span class="code">lea:chapter</span> must be defined directly under the lea
+        root. A chapter tag found nested inside other markup is reported as severe, and omitted
+        from the EPUB entirely.</p>
+
+    <p>See also: <span class="code">lea:section</span>, <span class="code">lea:subsection</span>.</p>
+
+    <h3 title="lea:collection" class="heading">lea:collection</h3>
+
+    <p>Purpose: Binds the book into a series, so readers and bookstores can line the volumes up
+        in order.</p>
+
+    <p>Contract: Defined in the ebook definition file, directly under the lea root, at most
+        once. The content is the collection title. Three attributes are required:
+        <span class="code">type</span>, only “series” being supported at the moment;
+        <span class="code">position</span>, the volume’s number in the series; and
+        <span class="code">issn</span>, the ISSN under which the series is registered.</p>
+
+    <p>The collection travels into the content.opf as
+        <span class="code">belongs-to-collection</span> metadata with its type and group
+        position, and the ISSN is registered both as <span class="code">dcterms:isPartOf</span>
+        and as an identifier of its own.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:collection type="series" position="27" issn="2806-4240">The Pitch Science Fiction</lea:collection>]]></pre>
+
+    <p>Attention: A declaration that is incomplete, or whose type is not “series,” is ignored
+        silently: the EPUB is compiled as a stand-alone title, without a murmur. Lea believes
+        in series, but she believes in correct data more.</p>
+
+    <h3 title="lea:comment" class="heading">lea:comment</h3>
+
+    <p>Purpose: A note to yourself, or to the next editor of the file. Lea reads it, nods,
+        and says nothing.</p>
+
+    <p>Contract: No attributes; the content is ignored. The tag may appear anywhere, as often
+        as you like, in the ebook definition file and in text files alike.</p>
+
+    <p>Comments are carried through compilation and stripped at packaging: they never appear in
+        the EPUB. This makes them a reliable way to fence off regions of a file, such as the
+        metadata block at its top.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:comment>----- METADATA BEGIN -----</lea:comment>]]></pre>
+
+    <h3 title="lea:contributor" class="heading">lea:contributor</h3>
+
+    <p>Purpose: Credit where credit is due: editors, translators, cover artists, and everyone
+        else who is an author of nothing and indispensable besides.</p>
+
+    <p>Contract: Defined in the ebook definition file, directly under the lea root, as often as
+        needed. The content is the contributor’s name. The <span class="code">roles</span>
+        attribute carries one or more MARC relator codes, separated by spaces; only permitted
+        codes are kept: <span class="code">edt</span>, <span class="code">trl</span>,
+        <span class="code">bkp</span>, <span class="code">bkd</span>,
+        <span class="code">tyg</span>, <span class="code">mrk</span>,
+        <span class="code">pfr</span>, <span class="code">cov</span>,
+        <span class="code">ill</span>, <span class="code">art</span>, and
+        <span class="code">blw</span>.</p>
+
+    <p>Each contributor is written to the content.opf as a
+        <span class="code">dc:contributor</span> entry with one role refinement per code. The
+        authors declared with <span class="code">lea:author</span> receive their author role
+        automatically.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:contributor roles="edt trl">Eduard Pech</lea:contributor>]]></pre>
+
+    <p>Attention: A <span class="code">lea:contributor</span> without at least one permitted role
+        is not included. If no contributor in the ebook carries a valid role, the error is
+        fatal: no EPUB will be produced.</p>
+
+    <p>See also: <span class="code">lea:author</span>.</p>
+
+    <h3 title="lea:cover" class="heading">lea:cover</h3>
+
+    <p>Purpose: The face the book shows the world. This tag commissions the cover page.</p>
+
+    <p>Contract: Defined in the ebook definition file, directly under the lea root, at most
+        once. The content is the cover image’s file name, resolved in the images folder. No
+        attributes.</p>
+
+    <p>When a cover is declared, Lea compiles a dedicated cover page: it becomes the first
+        document in the reading order, is listed as “Cover” in the navigation documents, and the
+        image itself travels with the EPUB, registered as the cover in the content.opf.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:cover>2025Q4-cover-inside.jpg</lea:cover>]]></pre>
+
+    <p>Attention: Two things about the cover are fatal: a declared cover file that cannot be
+        found in the file system, and more than one <span class="code">lea:cover</span>
+        definition. In both cases no EPUB will be produced.</p>
+
+    <p>See also: <span class="code">lea:image</span>.</p>
+
+    <h3 title="lea:date" class="heading">lea:date</h3>
+
+    <p>Purpose: The date the book belongs to. Ebooks are published into time; this tag says
+        when.</p>
+
+    <p>Contract: Defined in the ebook definition file, directly under the lea root, exactly
+        once. The content is the issue date. The optional <span class="code">created</span>
+        attribute records the date work on the book began; without it, the issue date is used.
+        The modification date is set by Lea herself, at compile time, and cannot be defined.</p>
+
+    <p>Dates are given as <span class="code">YYYY-MM-DD</span>. Lea also accepts natural
+        language: “today” and “yesterday” compile as faithfully as a calendar does.</p>
+
+    <p>The three dates travel into the content.opf as
+        <span class="code">dcterms:created</span>,
+        <span class="code">dcterms:modified</span>, and
+        <span class="code">dcterms:issued</span>, with the issue date doubling as
+        <span class="code">dc:date</span>.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:date created="2025-11-01">2026-01-01</lea:date>]]></pre>
+
+    <p>Attention: A missing, multiple, or unparseable <span class="code">lea:date</span>
+        definition is fatal: no EPUB will be produced.</p>
+
+    <h3 title="lea:description" class="heading">lea:description</h3>
+
+    <p>Purpose: The book’s own blurb: what the reader is holding, told to the metadata records
+        of the world.</p>
+
+    <p>Contract: Defined in the ebook definition file, directly under the lea root, exactly
+        once. The content is plain text; markup is not kept. No attributes.</p>
+
+    <p>The description travels into the content.opf as
+        <span class="code">dc:description</span>.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:description>The Pitch Science Fiction is a quarterly publication of
+  science-fiction stories by various authors, covering diverse themes.
+  This is the 2026 annual omnibus edition.</lea:description>]]></pre>
+
+    <p>Attention: A missing description is severe: the EPUB is produced, but it must not be
+        published. More than one description is severe as well; the first definition is
+        used.</p>
+
+    <h3 title="lea:font" class="heading">lea:font</h3>
+
+    <p>Purpose: Books have voices, and typography is how they sound. This tag embeds a font
+        file into the EPUB.</p>
+
+    <p>Contract: Defined in the ebook definition file, directly under the lea root, as often as
+        needed. The content is the font file’s name, resolved in Lea’s fonts folder. No
+        attributes.</p>
+
+    <p>Each font is embedded under a normalized name and registered in the manifest. Embedding
+        is half the work: to make the font speak, reference it from your stylesheet with a
+        <span class="code">@font-face</span> rule.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:font>TeXGyreHeros-Regular.otf</lea:font>]]></pre>
+
+    <p>See also: <span class="code">lea:stylesheet</span>.</p>
+
+    <h3 title="lea:image" class="heading">lea:image</h3>
+
+    <p>Purpose: Illustrations. Lea wraps the picture, names it, and gives it its caption.</p>
+
+    <p>Contract: Defined in a text file or in the ebook definition file, directly under the lea
+        root. The <span class="code">source</span> attribute carries the image file’s name and
+        is mandatory; the optional <span class="code">folder</span> attribute names a subfolder
+        of the images folder, defaulting to the configured images subfolder. An optional
+        <span class="code">lea:caption</span> child carries the caption.</p>
+
+    <p>In a text, the tag compiles into a figure:</p>
+
+    <pre class="code"><![CDATA[<lea:image source="chapter-01-face.jpg">
+  <lea:caption>Face before the fall.</lea:caption>
+</lea:image>]]></pre>
+
+    <p>compiles to:</p>
+
+    <pre class="code"><![CDATA[<figure>
+  <img src="../Images/lea-img-chapter-01-face.jpg" alt="Face before the fall."/>
+  <figcaption>Face before the fall.</figcaption>
+</figure>]]></pre>
+
+    <p>Every image defined anywhere in the ebook is collected, normalized, and embedded into
+        the EPUB. Images defined in the ebook definition file are embedded without being placed
+        in a text; they wait there for a script or a stylesheet to point at them.</p>
+
+    <p>Attention: Three things can rouse Lea’s temper. An image without a
+        <span class="code">source</span> attribute is fatal. A misplaced
+        <span class="code">lea:image</span> is severe and omitted from the EPUB entirely. More
+        than one caption is severe; the first is used. The option
+        <span class="code">include-images</span>, set to “no,” spares her all of it: images are
+        then omitted entirely.</p>
+
+    <p>See also: <span class="code">lea:caption</span>, <span class="code">lea:option</span>.</p>
+
+    <h3 title="lea:isbn" class="heading">lea:isbn</h3>
+
+    <p>Purpose: The number the book trade knows you by. Lea takes ISBNs seriously: she checks
+        the checksum.</p>
+
+    <p>Contract: Defined in the ebook definition file, directly under the lea root. The content
+        is the ISBN; ISBN-13 is expected, with or without hyphens and spaces, which Lea removes
+        before validating. No attributes.</p>
+
+    <p>A valid ISBN becomes the unique identifier of the EPUB: it travels into the content.opf
+        as <span class="code">dc:identifier</span> with its type refinement, and the whole
+        package hangs its identity on it.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:isbn>978-3-9823160-0-3</lea:isbn>]]></pre>
+
+    <p>Attention: An ISBN that fails the checksum is severe, and so is more than one
+        <span class="code">lea:isbn</span> definition; in the latter case the first valid ISBN
+        is used. The EPUB is produced, but it must not be published.</p>
+
+    <h3 title="lea:language" class="heading">lea:language</h3>
+
+    <p>Purpose: The tongue the book speaks.</p>
+
+    <p>Contract: Defined in the ebook definition file, directly under the lea root. The content
+        is the language code, such as <span class="code">en</span> or
+        <span class="code">et</span>. No attributes.</p>
+
+    <p>The language travels into the content.opf as
+        <span class="code">dc:language</span>. It also reaches into Lea’s scripts: the
+        author-biography script appends the language code to the file names it looks up when the
+        book is not in English.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:language>en</lea:language>]]></pre>
+
+    <p>Attention: A missing language is severe: the EPUB is produced, but it must not be
+        published.</p>
+
     <h3 title="lea:link" class="heading">lea:link</h3>
 
     <p>Purpose: Cross-references are the soul of non-fiction. This tag turns a name into a
         link, within the EPUB or beyond it.</p>
 
     <p>Contract: The tag content names the destination and serves as the visible link text in
-        one. A to attribute decouples the two: it names the destination, and the content stays
+        one. A <span class="code">to</span> attribute decouples the two: it names the destination, and the content stays
         the visible link text, markup included. Destination names are case-insensitive. No
         other attributes.</p>
 
-    <p>Lea resolves every lea:link against the link targets available in the ebook. Every
-        document answers to its lea:title alone and to its “title by author” form; every
-        lea:target answers to its content (see the next section). A link to a document points
-        at that document; a link to a lea:target additionally jumps to the anchor’s position.
-        If the destination is a full URL, Lea skips the lookup and the link points to the wide
-        world outside the EPUB; add check-urls to the command to have those verified at compile
+    <p>Lea resolves every <span class="code">lea:link</span> against the link targets available in the ebook. Every
+        document answers to its <span class="code">lea:title</span> alone and to its “title by author” form; every
+        <span class="code">lea:target</span> answers to its content (see the next section). A link to a document points
+        at that document; a link to a <span class="code">lea:target</span> additionally jumps to the anchor’s position.
+        If the destination is an external URL, Lea skips the lookup and the link points to the wide
+        world outside the EPUB; add <span class="code">check-urls</span> to the command to have those URLs verified at compile
         time. A link to an undefined target is fatal: Lea reports the file name and dumps the
         surrounding markup, and no EPUB will be produced.</p>
 
@@ -138,6 +485,222 @@
 
     <p>See also: <span class="code">lea:target</span>.</p>
 
+    <h3 title="lea:option" class="heading">lea:option</h3>
+
+    <p>Purpose: Switches and knobs for the compile run. Options change how Lea treats the
+        book, without changing the book.</p>
+
+    <p>Contract: Defined in the ebook definition file, directly under the lea root. The content
+        is the option’s name; the <span class="code">value</span> attribute carries its value. A
+        declaration without a <span class="code">value</span> attribute is ignored. Options may
+        appear as often as needed; unknown options are remembered but harmless.</p>
+
+    <p>Two options are defined at the moment. <span class="code">include-images</span>, set to
+        “no,” omits images from the EPUB entirely. <span class="code">defaultcaption</span>
+        defines the caption given to images that carry none of their own.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:option value="Illustration is in the public domain.">defaultcaption</lea:option>
+<lea:option value="no">include-images</lea:option>]]></pre>
+
+    <p>See also: <span class="code">lea:image</span>, <span class="code">lea:caption</span>.</p>
+
+    <h3 title="lea:publisher" class="heading">lea:publisher</h3>
+
+    <p>Purpose: The imprint. The publisher’s name is the second half of the EPUB’s file name,
+        and the contact is the address the specification wants on file.</p>
+
+    <p>Contract: Defined in the ebook definition file, directly under the lea root, exactly
+        once. The content is the imprint; the <span class="code">contact</span> attribute
+        carries the publisher’s contact and is mandatory. Its value is free-form text: an email
+        address, a telephone number, or the string of your choosing.</p>
+
+    <p>The imprint travels into the content.opf as <span class="code">dc:publisher</span> and
+        <span class="code">dcterms:identifier</span>, the contact as
+        <span class="code">dcterms:contact</span>. Together with the book’s title, the imprint
+        forms the EPUB’s file name.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:publisher contact="origins@logophilia.eu">Logophilia</lea:publisher>]]></pre>
+
+    <p>Attention: A missing or incomplete <span class="code">lea:publisher</span> definition,
+        be it imprint or contact, is fatal: no EPUB will be produced.</p>
+
+    <h3 title="lea:rights" class="heading">lea:rights</h3>
+
+    <p>Purpose: Who may do what with the book. The law has a taste for fine print; this tag is
+        where it lives.</p>
+
+    <p>Contract: Defined directly under the lea root, in the ebook definition file and in text
+        files alike. The content is free-form text; simple inline markup is kept. No attributes.
+        In the ebook definition file, only the first declaration is used.</p>
+
+    <p>The ebook’s rights travel into the content.opf as
+        <span class="code">dc:rights</span>. A text’s rights are gathered by the colophon
+        script, which collects the rights of every text into the back matter; this is how
+        anthologies credit each story separately.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:rights>English translation (C) 2025 by Eduard Pech.
+Published by permission of the translator’s cat.</lea:rights>]]></pre>
+
+    <p>Attention: A missing ebook rights declaration is severe, and so is more than one; the
+        EPUB is produced, but it must not be published.</p>
+
+    <p>See also: <span class="code">lea:script</span>.</p>
+
+    <h3 title="lea:script" class="heading">lea:script</h3>
+
+    <p>Purpose: Lea’s small built-in programs. A script tag asks her to generate content from
+        the book’s own data: tables of contents, colophons, blurbs, author biographies, images
+        with links.</p>
+
+    <p>Contract: The content is the script’s name, case-insensitive. The tag may appear anywhere
+        in a text or in the ebook definition file, as often as needed. Individual scripts read
+        attributes of their own, such as <span class="code">skip</span>,
+        <span class="code">folder</span>, <span class="code">class</span>,
+        <span class="code">heading</span>, <span class="code">to</span>,
+        <span class="code">image</span>, and <span class="code">caption</span>.</p>
+
+    <p>The scripts on file: <span class="code">toc</span>, also answering to “table of
+        contents” and “list content,” generates a linked table of contents;
+        <span class="code">toc plain</span> generates a plain, alphabetized one;
+        <span class="code">colophon</span>, also answering to “list rights,” gathers the texts’
+        rights; <span class="code">blurbs</span> gathers the texts’ blurbs;
+        <span class="code">list authors</span> builds a chapter of author biographies from block
+        files; <span class="code">linked image</span> places an image wrapped in a link; and
+        <span class="code">image</span>, also “locked image,” places an image that is not
+        linked.</p>
+
+    <p>Scripts are executed in waves: the ebook definition’s scripts run first; then the texts’
+        scripts; then blocks are resolved; then the texts’ scripts run again. A script may
+        therefore generate a <span class="code">lea:block</span>, and a block may contain a
+        <span class="code">lea:script</span>.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:script>toc</lea:script>]]></pre>
+
+    <p>Attention: An unknown script name is severe: the script is skipped, its tag omitted from
+        the EPUB, and the offense recorded in the production log.</p>
+
+    <p>See also: <span class="code">lea:block</span>.</p>
+
+    <h3 title="lea:section" class="heading">lea:section</h3>
+
+    <p>Purpose: The signposts within a text. A section marks a chapter-level division inside a
+        document that carries several of them.</p>
+
+    <p>Contract: Defined in a text file, directly under the lea root. The content is the
+        heading; simple inline markup is kept. Attributes: <span class="code">title</span>
+        overrides the label written into the heading, and
+        <span class="code">class</span> carries a CSS class. Without a
+        <span class="code">title</span> attribute, the label defaults to the text’s title, an
+        em-dash, and the section’s content.</p>
+
+    <p>The tag compiles into a second-level heading:</p>
+
+    <pre class="code"><![CDATA[<lea:section title="Namespace Tags" class="heading">Namespace Tags</lea:section>]]></pre>
+
+    <p>compiles to:</p>
+
+    <pre class="code"><![CDATA[<h2 title="Namespace Tags" class="heading">Namespace Tags</h2>]]></pre>
+
+    <p>Attention: <span class="code">lea:section</span> must be defined directly under the lea
+        root. A section tag found nested inside other markup is reported as severe, and omitted
+        from the EPUB entirely. The navigation documents list whole documents, not the sections
+        within them; the <span class="code">title</span> attribute is there for reading systems
+        and their users.</p>
+
+    <p>See also: <span class="code">lea:chapter</span>, <span class="code">lea:subsection</span>.</p>
+
+    <h3 title="lea:stylesheet" class="heading">lea:stylesheet</h3>
+
+    <p>Purpose: The book’s wardrobe. A stylesheet defines how everything Lea compiles is
+        dressed.</p>
+
+    <p>Contract: Defined in the ebook definition file, directly under the lea root, as often as
+        needed. The content is the stylesheet’s file name, resolved in Lea’s styles folder;
+        subfolders are allowed. No attributes.</p>
+
+    <p>Every stylesheet is embedded in the EPUB and linked from the head of every compiled
+        document. Image files referenced from within a stylesheet are collected and embedded
+        along with it: background images travel with their CSS.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:stylesheet>golden.css</lea:stylesheet>]]></pre>
+
+    <p>See also: <span class="code">lea:font</span>, <span class="code">lea:image</span>.</p>
+
+    <h3 title="lea:subfolder" class="heading">lea:subfolder</h3>
+
+    <p>Purpose: For books whose sources live in subfolders, so that several books can share one
+        repository without crowding each other.</p>
+
+    <p>Contract: Defined in the ebook definition file, directly under the lea root, as often as
+        needed. The content is the subfolder name; leading and trailing slashes are optional.
+        Without attributes, the subfolder applies to the EPUB output, the text files, and the
+        images alike. The <span class="code">tag</span> attribute narrows it to one of those:
+        <span class="code">epub</span>, <span class="code">text</span>, or
+        <span class="code">images</span>.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:subfolder>tpsf-27</lea:subfolder>
+<lea:subfolder tag="images">tpsf-shared</lea:subfolder>]]></pre>
+
+    <p>Attention: A <span class="code">tag</span> attribute naming anything but
+        <span class="code">epub</span>, <span class="code">text</span>, or
+        <span class="code">images</span> is severe: the declaration is skipped, and the offense
+        recorded in the production log.</p>
+
+    <h3 title="lea:subject" class="heading">lea:subject</h3>
+
+    <p>Purpose: What the book is about, in the bookseller’s shorthand. Subjects are how readers
+        find a book they did not know they wanted.</p>
+
+    <p>Contract: Defined directly under the lea root, in the ebook definition file and in text
+        files alike, as often as needed. The content is the subject term. No attributes.</p>
+
+    <p>All subjects of the ebook and its texts are collected, duplicates removed, sorted
+        alphabetically, and written to the content.opf as
+        <span class="code">dc:subject</span> entries.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:subject>Diplomats -- Fiction</lea:subject>
+<lea:subject>Extraterrestrial beings -- Fiction</lea:subject>]]></pre>
+
+    <p>Attention: A book without any subject declaration receives a warning: the EPUB is
+        produced, but Lea makes her disappointment known.</p>
+
+    <h3 title="lea:subsection" class="heading">lea:subsection</h3>
+
+    <p>Purpose: The finest division of a text: a heading beneath the sections, for structure
+        that should be felt rather than seen.</p>
+
+    <p>Contract: Defined in a text file, directly under the lea root. The content is the
+        heading, given as plain text; markup is not kept. The
+        <span class="code">class</span> attribute carries a CSS class. No other attributes.</p>
+
+    <p>The tag compiles into a third-level heading:</p>
+
+    <pre class="code"><![CDATA[<lea:subsection class="heading">The Postman’s Route</lea:subsection>]]></pre>
+
+    <p>compiles to:</p>
+
+    <pre class="code"><![CDATA[<h3 class="heading">The Postman’s Route</h3>]]></pre>
+
+    <p>Attention: <span class="code">lea:subsection</span> must be defined directly under the
+        lea root. A subsection tag found nested inside other markup is reported as severe, and
+        omitted from the EPUB entirely.</p>
+
+    <p>See also: <span class="code">lea:section</span>, <span class="code">lea:chapter</span>.</p>
+
     <h3 title="lea:target" class="heading">lea:target</h3>
 
     <p>Purpose: Sometimes a link must not land at the top of a document but at an exact spot
@@ -147,9 +710,9 @@
         content itself is not rendered: the tag compiles into an invisible anchor at its
         position. Place it right where the landing should be.</p>
 
-    <p>Every lea:target in the ebook is registered under its name, so any lea:link in any
-        document can link to it. A target name may be claimed once: two lea:target tags
-        sharing one name are severe, the last one compiled wins, and a controversy is logged.
+    <p>Every <span class="code">lea:target</span> in the ebook is registered under its name, and any <span class="code">lea:link</span> is cross-document.
+        A target name may be claimed once: when two identical <span class="code">lea:target</span> tags
+        are declared, the later declaration wins, and a severe error is logged.
         A target sharing its name with a document, however, is harmless: it upgrades the
         document link with a jump to the anchor.</p>
 
@@ -161,13 +724,39 @@
 
     <pre class="code"><![CDATA[<a id="lea-tgt-paul"/>]]></pre>
 
-    <p>A lea:link to it, from any document in the ebook, compiles to:</p>
+    <p>A <span class="code">lea:link</span> to it, from any source text in the ebook, e.g.</p>
 
     <pre class="code"><![CDATA[<lea:link>Paul</lea:link>]]></pre>
 
+    <p>compiles to:</p>
+    
     <pre class="code"><![CDATA[<a href="DuneByFrankHerbert.xhtml#lea-tgt-paul">Paul</a>]]></pre>
 
     <p>See also: <span class="code">lea:link</span>.</p>
+
+    <h3 title="lea:text" class="heading">lea:text</h3>
+
+    <p>Purpose: The declaration of a single text file, and through its position in the ebook
+        definition file, its place in the reading order.</p>
+
+    <p>Contract: Defined in the ebook definition file, directly under the lea root, as often as
+        needed. The content is the text file’s name, resolved in the text folder together with
+        the configured text subfolder. No attributes. The order of the declarations is the order
+        of the book: the cover page is set before them and the navigation document after them,
+        both by Lea.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:text>about-the-authors.xhtml</lea:text>
+<lea:text>operation-haystack.xhtml</lea:text>]]></pre>
+
+    <p>Attention: Every text must carry a <span class="code">lea:title</span> and at least one
+        <span class="code">lea:author</span> of its own. A text file that cannot be read, or
+        that is not well-formed XML, is fatal, as is a text without its title or author. Each
+        error names the file at fault.</p>
+
+    <p>See also: <span class="code">lea:title</span>, <span class="code">lea:author</span>,
+        <span class="code">lea:subfolder</span>.</p>
 
     <h3 title="lea:title" class="heading">lea:title</h3>
 
