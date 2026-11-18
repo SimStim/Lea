@@ -62,6 +62,7 @@ enum Controversy
 
     // LINK
     case LinkTargetUndefined;
+    case LinkTargetDuplicate;
     case LinkUrlsNotChecked;
     case LinkExternalCheckFailed;
     case LinkExternalCheckTimeout;
@@ -75,6 +76,7 @@ enum Controversy
     case CoreFileReadSimilar;
     case CoreBlockReadError;
     case CorePreflightErrors;
+    case CoreMisplacedLeaTags;
     case CoreGirlfriendMemory;
 
     /**
@@ -351,6 +353,13 @@ enum Controversy
                     . "Text file name: #1#" . PHP_EOL
                     . "Context dump: '#2#'"
             ],
+            self::LinkTargetDuplicate => [
+                "flaw" => Flaw::Severe,
+                "message" => "Duplicate link target definition." . PHP_EOL
+                    . "Until this is fixed, I will be using the last definition compiled.",
+                "suggestion" => "Check the text content files, making sure every <lea:target> name is unique across the ebook." . PHP_EOL
+                    . "Duplicate target name given: '#1#'."
+            ],
             self::LinkUrlsNotChecked => [
                 "flaw" => Flaw::Info,
                 "message" => "External links were not checked this time.",
@@ -408,6 +417,14 @@ enum Controversy
                 "message" => "Preflight found errors with lea:tag names. List of misspelled lea:tags:" . PHP_EOL
                     . "#1#" . PHP_EOL,
                 "suggestion" => "Please fix them in your favorite editor before continuing." . PHP_EOL
+            ],
+            self::CoreMisplacedLeaTags => [
+                "flaw" => Flaw::Severe,
+                "message" => "Misplaced lea:tag(s) detected. These tags must be defined directly under the lea root." . PHP_EOL
+                    . "Until this is fixed, I will be omitting them from the EPUB." . PHP_EOL
+                    . "Misplaced tag(s): '#1#'",
+                "suggestion" => "Edit the file, making sure the misplaced tag(s) are defined directly under the lea root." . PHP_EOL
+                    . "Tags like <lea:link>, <lea:target>, <lea:script> and <lea:block> may be defined anywhere."
             ],
             self::CoreGirlfriendMemory => [
                 "flaw" => Flaw::Debug,

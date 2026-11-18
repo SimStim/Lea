@@ -45,10 +45,10 @@ final class PaisleyPark
     {
         $preflightErrors = XMLetsGoCrazy::checkLeaTags(XMLetsGoCrazy::extractAllLeaTags($this->ebook));
         foreach ($this->ebook->texts as $text) {
-            $preflightErrors[0] = array_merge($preflightErrors[0],
-                XMLetsGoCrazy::checkLeaTags(XMLetsGoCrazy::extractAllLeaTags($text))[0]);
-            $preflightErrors[1] = array_merge($preflightErrors[1],
-                XMLetsGoCrazy::checkLeaTags(XMLetsGoCrazy::extractAllLeaTags($text))[1]);
+            $textErrors = XMLetsGoCrazy::checkLeaTags(XMLetsGoCrazy::extractAllLeaTags($text));
+            $preflightErrors[0] = array_merge($preflightErrors[0], $textErrors[0]);
+            $preflightErrors[1] = array_merge($preflightErrors[1], $textErrors[1]);
+            $preflightErrors[2] = array_merge($preflightErrors[2], $textErrors[2]);
         }
         if (count($preflightErrors[0]) > 0) {
             $preflightErrors[0]
@@ -61,6 +61,12 @@ final class PaisleyPark
                 |> array_unique(...)
                 |> (fn($x) => implode(separator: PHP_EOL, array: $x))
                 |> (fn($x) => Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::CorePreflightErrors, $x));
+        }
+        if (count($preflightErrors[2]) > 0) {
+            $preflightErrors[2]
+                |> array_unique(...)
+                |> (fn($x) => implode(separator: PHP_EOL, array: $x))
+                |> (fn($x) => Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::CoreMisplacedLeaTags, $x));
         }
         if (!$this->inThisBedEyeScream()) exit(1);
         Girlfriend::comeToMe()->silenceDoves(); // only non-fatal at this point
@@ -557,12 +563,22 @@ final class PaisleyPark
                 string: $text->title . " by " . $text->authors[0]->name)]
                 = $target;
         }
-        foreach ($this->ebook->targets as $target)
+        $declaredTargets = [];
+        foreach ($this->ebook->targets as $target) {
+            /**
+             * Checks if the target name was already claimed by another lea:target.
+             * - Yes = severe, last definition compiled wins, continue
+             */
+            if (isset($declaredTargets[$target->identifier]))
+                Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::LinkTargetDuplicate,
+                    $target->name);
+            $declaredTargets[$target->identifier] = true;
             $targetData[$target->identifier] = [
                 "name" => $target->name,
                 "identifier" => $target->identifier,
                 "targetFileName" => $target->targetFileName
             ];
+        }
         foreach ($this->ebook->texts as $text) {
             XMLetsGoCrazy::replaceLeaTargetTags($text);
             XMLetsGoCrazy::replaceLeaLinkTags($text, $targetData);

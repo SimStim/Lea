@@ -128,17 +128,21 @@ final class XMLetsGoCrazy
      */
     public static function extractAllLeaTags(Ebook|Text $domObject): DOMNodeList
     {
-        return $domObject->xpath->query(expression: "//lea:*");
+        return $domObject->xpath->query(expression: "/" . self::$rootElement . "//lea:*");
     }
 
     /**
-     * Checks a DOMNodeList of lea:tag DOMNode objects for the proper case and spelling errors.
+     * Checks a DOMNodeList of lea:tag DOMNode objects for the proper case, spelling
+     * and placement errors. Tags that must be defined directly under the lea root
+     * are flagged when they are found nested inside other elements — and removed
+     * from the DOM right away, so no later check or pass will see them again.
      * @param DOMNodeList $nodes
      * @return array
      */
     public static function checkLeaTags(DOMNodeList $nodes): array
     {
-        $caseErrors = $spellingErrors = [];
+        $caseErrors = $spellingErrors = $placementErrors = [];
+        $misplacedNodes = [];
         foreach ($nodes as $node) {
             if ($node->nodeName !== strtolower($node->nodeName))
                 $caseErrors[] = $node->nodeName;
@@ -153,8 +157,22 @@ final class XMLetsGoCrazy
                     "lea:target", "lea:block", "lea:comment",
                 ]))
                 $spellingErrors[] = $node->nodeName;
+            if (in_array(
+                needle: $node->nodeName,
+                haystack: ["lea:image", "lea:chapter", "lea:section", "lea:subsection"],
+            ) && $node->parentNode?->nodeName !== self::$rootElement) {
+                $placementErrors[] = $node->nodeName;
+                $misplacedNodes[] = $node;
+            }
         }
-        return [$caseErrors, $spellingErrors];
+        /**
+         * The node list is live: removing a node while iterating it would shift the
+         * indices and silently skip the next tag. So the misplaced tags are removed
+         * after the check loop, in document order (parents before their descendants).
+         */
+        foreach ($misplacedNodes as $node)
+            $node->parentNode?->removeChild($node);
+        return [$caseErrors, $spellingErrors, $placementErrors];
     }
 
     /**
@@ -409,7 +427,7 @@ final class XMLetsGoCrazy
     #[NoDiscard]
     public static function extractImages(Ebook|Text $domObject): array
     {
-        $nodes = $domObject->xpath->query(expression: "//lea:image");
+        $nodes = $domObject->xpath->query(expression: "/" . self::$rootElement . "/lea:image");
         $images = [];
         foreach ($nodes as $node) {
             if (!$node->hasAttribute("source")) {
@@ -580,7 +598,7 @@ final class XMLetsGoCrazy
     #[NoDiscard]
     public static function extractTargets(DOMXPath $xpath, string $targetFileName): array
     {
-        $nodes = $xpath->query(expression: "//lea:target");
+        $nodes = $xpath->query(expression: "/" . self::$rootElement . "//lea:target");
         $targets = [];
         foreach ($nodes as $node)
             $targets[] = new Target(
@@ -604,7 +622,7 @@ final class XMLetsGoCrazy
     #[NoDiscard]
     public static function extractLinks(DOMXPath $xpath): array
     {
-        $nodes = $xpath->query(expression: "//lea:link");
+        $nodes = $xpath->query(expression: "/" . self::$rootElement . "//lea:link");
         $links = [];
         foreach ($nodes as $node)
             $links[] = strtolower(string: $node->hasAttribute("to")
@@ -626,7 +644,7 @@ final class XMLetsGoCrazy
      */
     public static function replaceLeaLinkTags(Text $text, array $targetData): void
     {
-        $nodes = $text->xpath->query(expression: "//lea:link");
+        $nodes = $text->xpath->query(expression: "/" . self::$rootElement . "//lea:link");
         foreach ($nodes as $node) {
             $linkTarget = trim(string: $node->hasAttribute('to')
                 ? $node->getAttribute('to')
@@ -637,7 +655,7 @@ final class XMLetsGoCrazy
             if (filter_var($linkTarget, filter: FILTER_VALIDATE_URL) === false) {
                 if (!isset($targetData[$linkTargetIdentifier])) {
                     Girlfriend::comeToMe()->makeDoveCry($text, Controversy::LinkTargetUndefined,
-                        Girlfriend::$pathEbooks . $text->fileName,
+                        Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName",
                         $node->parentNode->ownerDocument->saveXML($node->parentNode));
                     continue;
                 }
@@ -666,7 +684,7 @@ final class XMLetsGoCrazy
      */
     public static function replaceLeaTargetTags(Text $text): void
     {
-        $nodes = $text->xpath->query(expression: "//lea:target");
+        $nodes = $text->xpath->query(expression: "/" . self::$rootElement . "//lea:target");
         foreach ($nodes as $node) {
             $replacement = "<a id='" . Girlfriend::$leaPrefixes["target"]
                 . Girlfriend::comeToMe()->strToEpubIdentifier($node->textContent) . "'></a>";
@@ -691,7 +709,7 @@ final class XMLetsGoCrazy
      */
     public static function replaceLeaChapterTags(Text $text): void
     {
-        $nodes = $text->xpath->query(expression: "//lea:chapter");
+        $nodes = $text->xpath->query(expression: "/" . self::$rootElement . "/lea:chapter");
         foreach ($nodes as $node) {
             $chapterTitle = self::innerXML($node);
             $title = $node->hasAttribute("title")
@@ -726,7 +744,7 @@ final class XMLetsGoCrazy
      */
     public static function replaceLeaSectionTags(Text $text): void
     {
-        $nodes = $text->xpath->query(expression: "//lea:section");
+        $nodes = $text->xpath->query(expression: "/" . self::$rootElement . "/lea:section");
         foreach ($nodes as $node) {
             $sectionTitle = self::innerXML($node);
             $title = $node->hasAttribute("title")
@@ -753,7 +771,7 @@ final class XMLetsGoCrazy
      */
     public static function replaceLeaSubSectionTags(Text $text): void
     {
-        $nodes = $text->xpath->query(expression: "//lea:subsection");
+        $nodes = $text->xpath->query(expression: "/" . self::$rootElement . "/lea:subsection");
         foreach ($nodes as $node) {
             $subSectionTitle = trim($node->textContent);
             $class = $node->hasAttribute("class")
@@ -773,7 +791,7 @@ final class XMLetsGoCrazy
      */
     public static function executeLeaScriptTags(Ebook|Text $text, AlphabetSt $scripts, Ebook $ebook): void
     {
-        $nodes = $text->xpath->query(expression: "//lea:script");
+        $nodes = $text->xpath->query(expression: "/" . self::$rootElement . "//lea:script");
         foreach ($nodes as $node) {
             $scriptName = strtolower(trim($node->textContent));
             if (!array_key_exists($scriptName, $scripts->lut)) {
@@ -823,7 +841,7 @@ final class XMLetsGoCrazy
      */
     public static function extractOptions(DOMXPath $xpath): void
     {
-        $nodes = $xpath->query(expression: "//lea:option");
+        $nodes = $xpath->query(expression: "/" . self::$rootElement . "/lea:option");
         foreach ($nodes as $node) {
             $option = trim($node->textContent);
             $value = $node->hasAttribute("value")
@@ -847,7 +865,7 @@ final class XMLetsGoCrazy
         $indexedImages = [];
         foreach ($images as $image)
             $indexedImages[$image->fileName] = $image;
-        $nodes = $text->xpath->query(expression: "//lea:image");
+        $nodes = $text->xpath->query(expression: "/" . self::$rootElement . "/lea:image");
         foreach ($nodes as $node) {
             $fileName = trim(string: $node->getAttribute(qualifiedName: "source"));
             if (!isset($indexedImages[$fileName]))  // in case of "include-images" = "no"
@@ -884,7 +902,7 @@ final class XMLetsGoCrazy
      */
     public static function replaceLeaBlockTags(Text $text): void
     {
-        $nodes = $text->xpath->query(expression: "//lea:block");
+        $nodes = $text->xpath->query(expression: "/" . self::$rootElement . "//lea:block");
         foreach ($nodes as $node) {
             $blockFileName = Girlfriend::$pathBlocks
                 . ($node->hasAttribute("folder")

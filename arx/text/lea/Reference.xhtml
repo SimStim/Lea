@@ -73,7 +73,7 @@
     property='file-as'>Reynolds, Dallas McCord
         [Mack Reynolds]</meta>]]></pre>
 
-    <p>The documents compiled from your text files are marked as Lea's work: each carries
+    <p>The documents compiled from your text files are marked as Lea’s work: each carries
         this meta tag in its head:</p>
 
     <pre class="code"><![CDATA[<meta name="generator" content="Lea"/>]]></pre>
@@ -91,6 +91,83 @@
         typo ate it.</p>
 
     <p>See also: <span class="code">lea:title</span>, <span class="code">lea:target</span>.</p>
+
+    <h3 title="lea:link" class="heading">lea:link</h3>
+
+    <p>Purpose: Cross-references are the soul of non-fiction. This tag turns a name into a
+        link, within the EPUB or beyond it.</p>
+
+    <p>Contract: The tag content names the destination and serves as the visible link text in
+        one. A to attribute decouples the two: it names the destination, and the content stays
+        the visible link text, markup included. Destination names are case-insensitive. No
+        other attributes.</p>
+
+    <p>Lea resolves every lea:link against the link targets available in the ebook. Every
+        document answers to its lea:title alone and to its “title by author” form; every
+        lea:target answers to its content (see the next section). A link to a document points
+        at that document; a link to a lea:target additionally jumps to the anchor’s position.
+        If the destination is a full URL, Lea skips the lookup and the link points to the wide
+        world outside the EPUB; add check-urls to the command to have those verified at compile
+        time. A link to an undefined target is fatal: Lea reports the file name and dumps the
+        surrounding markup, and no EPUB will be produced.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:link>Dune</lea:link>]]></pre>
+
+    <p>links to the document compiled from the text titled “Dune,” authored by Frank Herbert:</p>
+
+    <pre class="code"><![CDATA[<a href="DuneByFrankHerbert.xhtml#">Dune</a>]]></pre>
+
+    <p>with an empty fragment, pointing at the top of the document. The to attribute decouples
+        destination and label:</p>
+
+    <pre class="code"><![CDATA[<lea:link to="Dune">the novel</lea:link>]]></pre>
+
+    <p>compiles to:</p>
+
+    <pre class="code"><![CDATA[<a href="DuneByFrankHerbert.xhtml#">the novel</a>]]></pre>
+
+    <p>A destination outside the EPUB is taken as it is:</p>
+
+    <pre class="code"><![CDATA[<lea:link to="https://logophilia.eu">Logophilia</lea:link>]]></pre>
+
+    <p>compiles to:</p>
+
+    <pre class="code"><![CDATA[<a href="https://logophilia.eu">Logophilia</a>]]></pre>
+
+    <p>See also: <span class="code">lea:target</span>.</p>
+
+    <h3 title="lea:target" class="heading">lea:target</h3>
+
+    <p>Purpose: Sometimes a link must not land at the top of a document but at an exact spot
+        within it. This tag marks that spot.</p>
+
+    <p>Contract: The tag content names the target, case-insensitively. No attributes. The
+        content itself is not rendered: the tag compiles into an invisible anchor at its
+        position. Place it right where the landing should be.</p>
+
+    <p>Every lea:target in the ebook is registered under its name, so any lea:link in any
+        document can link to it. A target name may be claimed once: two lea:target tags
+        sharing one name are severe, the last one compiled wins, and a controversy is logged.
+        A target sharing its name with a document, however, is harmless: it upgrades the
+        document link with a jump to the anchor.</p>
+
+    <p>Example:</p>
+
+    <pre class="code"><![CDATA[<lea:target>Paul</lea:target>]]></pre>
+
+    <p>compiles to an invisible anchor:</p>
+
+    <pre class="code"><![CDATA[<a id="lea-tgt-paul"/>]]></pre>
+
+    <p>A lea:link to it, from any document in the ebook, compiles to:</p>
+
+    <pre class="code"><![CDATA[<lea:link>Paul</lea:link>]]></pre>
+
+    <pre class="code"><![CDATA[<a href="DuneByFrankHerbert.xhtml#lea-tgt-paul">Paul</a>]]></pre>
+
+    <p>See also: <span class="code">lea:link</span>.</p>
 
     <h3 title="lea:title" class="heading">lea:title</h3>
 

@@ -17,7 +17,7 @@ use Lea\Domain\Text;
 final class Girlfriend
 {
     private static ?self $instance = null;
-    private static string $minVersion = "⊙1.1.0";
+    private static string $minVersion = "⊙1.1.1";
     private(set) static string $pathEbooks = REPO . "ebooks/";
     private(set) static string $pathBlocks = REPO . "blocks/";
     private(set) static string $pathFonts = REPO . "fonts/";
