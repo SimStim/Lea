@@ -255,6 +255,20 @@ pre {
     font-size: 0.9em;
 }
 
+.inverse {
+    background-color: black;
+    color: white;
+    padding: 0 0.3em;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+.bold {
+    font-weight: bold;
+}
+
 .qhennthyk, .qhennthyk > p {
     font-family: monospace;
     text-align: left;

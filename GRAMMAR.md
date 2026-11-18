@@ -164,6 +164,7 @@ Conventions:
 - count: `>= 0` (optional convenience tag, both per-file and globally)
 - format: `string` (resolved via `textContent`)
 - attributes:
+    - `title` — count `[0,1]`, format `string`
     - `class` — count `[0,1]`, format `string`
 
 ## `<lea:block>`

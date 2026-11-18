@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lea\Domain;
 
+use DOMCdataSection;
 use DOMDocument;
 use DOMElement;
 use DOMException;
@@ -774,10 +775,13 @@ final class XMLetsGoCrazy
         $nodes = $text->xpath->query(expression: "/" . self::$rootElement . "/lea:subsection");
         foreach ($nodes as $node) {
             $subSectionTitle = trim($node->textContent);
+            $title = $node->hasAttribute("title")
+                ? $node->getAttribute("title")
+                : $text->title . "—" . $node->textContent;
             $class = $node->hasAttribute("class")
                 ? $node->getAttribute("class")
                 : "";
-            $replacement = "<h3 class='" . self::xmlEscape($class) . "'>" . self::xmlEscape($subSectionTitle) . "</h3>";
+            $replacement = "<h3 title='" . self::xmlEscape($title) . "' class='" . self::xmlEscape($class) . "'>" . self::xmlEscape($subSectionTitle) . "</h3>";
             self::replaceNodeWithStringContent($node, $replacement);
         }
     }
@@ -987,6 +991,10 @@ final class XMLetsGoCrazy
      *
      * Strips all Lea tags from a passed DOMDocument.
      *
+     * CDATA sections inside <pre> are replaced by plain text nodes, so the XML
+     * serializer escapes their content. The EPUB then carries the same text in
+     * every parser, rather than raw markup that HTML-based editors read as elements.
+     *
      * @param DOMDocument $leaDom
      * @return DOMDocument
      * @throws DOMException
@@ -997,6 +1005,9 @@ final class XMLetsGoCrazy
         $nodes = $xpath->query(expression: "//lea:*");
         foreach ($nodes as $node)
             $node->parentNode->removeChild($node);
+        foreach ($xpath->query(expression: "//*[local-name()='pre']//text()") as $node)
+            if ($node instanceof DOMCdataSection)
+                $node->parentNode->replaceChild($leaDom->createTextNode($node->data), $node);
         return $leaDom;
     }
 
