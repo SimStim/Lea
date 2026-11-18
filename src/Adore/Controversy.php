@@ -30,6 +30,7 @@ enum Controversy
     case EbookLanguageRecommended;
     case EbookAuthorRequired;
     case EbookInvalidAuthor;
+    case EbookAuthorContainsTags;
     case EbookInvalidDate;
     case EbookInvalidContributor;
     case EbookInvalidISBN;
@@ -47,6 +48,7 @@ enum Controversy
     case TextTitleContainsTags;
     case TextAuthorRequired;
     case TextInvalidAuthor;
+    case TextAuthorContainsTags;
     case TextMultipleBlurbs;
     case TextScriptUndefined;
 
@@ -171,6 +173,13 @@ enum Controversy
                 "suggestion" => "Edit the ebook's XML config file, checking all <lea:author> tags." . PHP_EOL
                     . "Ebook XML config file name given: #2#"
             ],
+            self::EbookAuthorContainsTags => [
+                "flaw" => Flaw::Severe,
+                "message" => "Nested tags defined inside the <lea:author> tag." . PHP_EOL
+                    . "Until this is fixed, I will be using the text content with all tags removed.",
+                "suggestion" => "Edit the ebook's XML config file, keeping the <lea:author> tags free of any tags." . PHP_EOL
+                    . "Ebook XML config file name given: #1#"
+            ],
             self::EbookInvalidDate => [
                 "flaw" => Flaw::Fatal,
                 "message" => "The date is missing or invalid; possibly multiple date tags declared.",
@@ -275,6 +284,13 @@ enum Controversy
                     . "#1# valid author definition(s) in total.",
                 "suggestion" => "Edit the text file, checking all <lea:author> tags." . PHP_EOL
                     . "Text file name given: '#2#'."
+            ],
+            self::TextAuthorContainsTags => [
+                "flaw" => Flaw::Severe,
+                "message" => "Nested tags defined inside the <lea:author> tag." . PHP_EOL
+                    . "Until this is fixed, I will be using the text content with all tags removed.",
+                "suggestion" => "Edit the text file, keeping the <lea:author> tags free of any tags." . PHP_EOL
+                    . "Text file name given: '#1#'."
             ],
             self::TextMultipleBlurbs => [
                 "flaw" => Flaw::Severe,

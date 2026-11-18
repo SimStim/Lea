@@ -198,6 +198,13 @@ final class PaisleyPark
             Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookInvalidAuthor,
                 (string)count($this->ebook->authors), Girlfriend::$pathEbooks . $this->ebook->fileName);
         /**
+         * Checks if any <lea:author> definition contains nested tags.
+         * - Yes = severe, use flattened text, continue
+         */
+        if ($this->ebook->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:author/*")->length > 0)
+            Girlfriend::comeToMe()->makeDoveCry($this->ebook, Controversy::EbookAuthorContainsTags,
+                Girlfriend::$pathEbooks . $this->ebook->fileName);
+        /**
          * Checks if the date has been extracted successfully
          * - No = fatal
          */
@@ -296,6 +303,13 @@ final class PaisleyPark
              */
             if (XMLetsGoCrazy::validateAuthors($text->xpath) === false)
                 Girlfriend::comeToMe()->makeDoveCry($text, Controversy::TextInvalidAuthor, (string)count($text->authors),
+                    Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName");
+            /**
+             * Checks if any <lea:author> definition contains nested tags.
+             * - Yes = severe, use flattened text, continue
+             */
+            if ($text->xpath->query(expression: "/" . XMLetsGoCrazy::$rootElement . "/lea:author/*")->length > 0)
+                Girlfriend::comeToMe()->makeDoveCry($text, Controversy::TextAuthorContainsTags,
                     Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName");
             /**
              * Checks if there are more than one <lea:blurb> definitions.

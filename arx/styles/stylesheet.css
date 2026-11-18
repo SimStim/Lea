@@ -236,10 +236,7 @@ p + p, div + p, figure + p, blockquote + p {
 }
 
 pre {
-    color: #0B486B;
-    font-family: monospace;
     text-align: left;
-    font-size: 0.9em;
     line-height: 140%;
     margin: 1em 3em;
     padding-left: 1em;
@@ -250,6 +247,12 @@ pre {
     -epub-hyphens: none;
     page-break-inside: avoid;
     break-inside: avoid;
+}
+
+.code {
+    color: #0B486B;
+    font-family: monospace;
+    font-size: 0.9em;
 }
 
 .qhennthyk, .qhennthyk > p {

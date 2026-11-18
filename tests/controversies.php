@@ -192,6 +192,16 @@ function buildCases(): array
             ),
             new ControversyCase(
                 group: "ebook",
+                name: "EbookAuthorContainsTags",
+                exit: 0,
+                label: LABEL_SEVERE,
+                frag: "Nested tags defined inside the <lea:author> tag.",
+                mutate: fn(string $s) => editEbook($s,
+                    fn($x) => str_replace("<lea:author>Lea Test Suite</lea:author>",
+                        "<lea:author>Lea <em>Test</em> Suite</lea:author>", $x)),
+            ),
+            new ControversyCase(
+                group: "ebook",
                 name: "EbookInvalidDate",
                 exit: 1,
                 label: LABEL_FATAL,
@@ -337,6 +347,16 @@ function buildCases(): array
                 label: LABEL_FATAL,
                 frag: "Invalid author tag(s) detected in text.",
                 mutate: fn(string $s) => editText($s, fn($x) => dropLine($x, "<lea:author>")),
+            ),
+            new ControversyCase(
+                group: "text",
+                name: "TextAuthorContainsTags",
+                exit: 0,
+                label: LABEL_SEVERE,
+                frag: "Nested tags defined inside the <lea:author> tag.",
+                mutate: fn(string $s) => editText($s,
+                    fn($x) => str_replace("<lea:author>Lea Test Suite</lea:author>",
+                        "<lea:author>Lea <em>Test</em> Suite</lea:author>", $x)),
             ),
             new ControversyCase(
                 group: "text",
