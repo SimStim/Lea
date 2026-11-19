@@ -9,6 +9,13 @@ use Lea\Adore\Girlfriend;
 use Lea\Adore\Heath;
 use Lea\Adore\PaisleyPark;
 
+foreach (['curl', 'dom', 'libxml', 'mbstring', 'zip'] as $extension) {
+    if (!extension_loaded($extension)) {
+        fwrite(STDERR, "Missing required PHP extension: $extension" . PHP_EOL);
+        exit(1);
+    }
+}
+
 define(constant_name: 'ROOT', value: dirname(path: __DIR__) . "/Lea");
 define(constant_name: 'REPO', value: realpath(path: ".") . "/arx/");
 require_once ROOT . "/vendor/autoload.php";

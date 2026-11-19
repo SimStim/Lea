@@ -34,6 +34,7 @@ human editors can add meaning later.
 - all generated content is XML-escaped
 - source files may be well-formed XML documents or bare XML fragments
 - generated EPUB is backwards-compatible with the EPUB2 standard
+- checking for the existence of all extensions before execution
 - repo includes a fully Lea-produced, actually published title:
   the 2026 annual omnibus edition "The Pitch Science Fiction 2026". Over 3000 pages,
   700,000+ words, more than 200 illustrations, compiled in a fraction of a second.
@@ -43,7 +44,6 @@ human editors can add meaning later.
 
 * new helper class NewPowerGeneration.
 * pipe every file access through Girlfriend for centralized error handling.
-* check for the existence of extensions before using them, e.g., curl.
 
 ## 1.0.0 and ⊙
 
