@@ -13,6 +13,7 @@ use DOMNode;
 use DOMNodeList;
 use DOMXPath;
 use Exception;
+use Lea\Adore\Fancy;
 use NoDiscard;
 use ReflectionException;
 use Lea\Adore\AlphabetSt;
@@ -123,6 +124,26 @@ final class XMLetsGoCrazy
     }
 
     /**
+     * Return the complete source line that contains a node, and the line number if possible.
+     * - The line number comes from the original source file, not the compiled DOM.
+     * - Nodes created by scripts have no source line; their serialized form is returned.
+     *
+     * @param DOMNode $node
+     * @param string $text
+     * @return string
+     * @throws DOMException
+     */
+    #[NoDiscard]
+    public static function sourceLine(DOMNode $node, string $text): string
+    {
+        $line = $node->getLineNo();
+        $lines = preg_split(pattern: "/\R/", subject: $text);
+        if ($line < 1 || !is_array($lines) || !isset($lines[$line - 1]))
+            return trim(string: $node->ownerDocument?->saveXML($node) ?: "");
+        return Fancy::INVERSE . "[ Line $line ]" . Fancy::RESET . " " . trim($lines[$line - 1]);
+    }
+
+    /**
      * Extracts all <lea:*> tags from a DOMXPath object.
      * @param Ebook|Text $domObject
      * @return DOMNodeList
@@ -159,9 +180,9 @@ final class XMLetsGoCrazy
                 ]))
                 $spellingErrors[] = $node->nodeName;
             if (in_array(
-                needle: $node->nodeName,
-                haystack: ["lea:image", "lea:chapter", "lea:section", "lea:subsection"],
-            ) && $node->parentNode?->nodeName !== self::$rootElement) {
+                    needle: $node->nodeName,
+                    haystack: ["lea:image", "lea:chapter", "lea:section", "lea:subsection"],
+                ) && $node->parentNode?->nodeName !== self::$rootElement) {
                 $placementErrors[] = $node->nodeName;
                 $misplacedNodes[] = $node;
             }
@@ -200,7 +221,7 @@ final class XMLetsGoCrazy
      * @return string
      */
     #[NoDiscard]
-    public static function xmlEscape(string $string): string
+    public static function escapeXML(string $string): string
     {
         return htmlspecialchars(string: $string, flags: ENT_XML1 | ENT_QUOTES, encoding: "UTF-8");
     }
@@ -657,7 +678,7 @@ final class XMLetsGoCrazy
                 if (!isset($targetData[$linkTargetIdentifier])) {
                     Girlfriend::comeToMe()->makeDoveCry($text, Controversy::LinkTargetUndefined,
                         Girlfriend::$pathText . Girlfriend::comeToMe()->recall(name: "subfolder-text") . "$text->fileName",
-                        $node->parentNode->ownerDocument->saveXML($node->parentNode));
+                        self::sourceLine($node, $text->xhtml));
                     continue;
                 }
             }
@@ -725,9 +746,9 @@ final class XMLetsGoCrazy
             $classBottom = $node->hasAttribute("class-bottom")
                 ? $node->getAttribute("class-bottom")
                 : "";
-            $replacement = "<h2 title='" . self::xmlEscape($title) . "' class='" . self::xmlEscape($classTop) . "'>"
-                . self::xmlEscape($contentTop) . "</h2>"
-                . "<h3 class='" . self::xmlEscape($classBottom) . "'>$chapterTitle</h3>";
+            $replacement = "<h2 title='" . self::escapeXML($title) . "' class='" . self::escapeXML($classTop) . "'>"
+                . self::escapeXML($contentTop) . "</h2>"
+                . "<h3 class='" . self::escapeXML($classBottom) . "'>$chapterTitle</h3>";
             self::replaceNodeWithStringContent($node, $replacement);
         }
     }
@@ -754,7 +775,7 @@ final class XMLetsGoCrazy
             $class = $node->hasAttribute("class")
                 ? $node->getAttribute("class")
                 : "";
-            $replacement = "<h2 title='" . self::xmlEscape($title) . "' class='" . self::xmlEscape($class) . "'>$sectionTitle</h2>";
+            $replacement = "<h2 title='" . self::escapeXML($title) . "' class='" . self::escapeXML($class) . "'>$sectionTitle</h2>";
             self::replaceNodeWithStringContent($node, $replacement);
         }
     }
@@ -781,7 +802,7 @@ final class XMLetsGoCrazy
             $class = $node->hasAttribute("class")
                 ? $node->getAttribute("class")
                 : "";
-            $replacement = "<h3 title='" . self::xmlEscape($title) . "' class='" . self::xmlEscape($class) . "'>" . self::xmlEscape($subSectionTitle) . "</h3>";
+            $replacement = "<h3 title='" . self::escapeXML($title) . "' class='" . self::escapeXML($class) . "'>" . self::escapeXML($subSectionTitle) . "</h3>";
             self::replaceNodeWithStringContent($node, $replacement);
         }
     }

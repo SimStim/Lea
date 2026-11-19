@@ -167,7 +167,7 @@ final class TheOpera
                 $toc .= sprintf(
                     $format,
                     $this->identifiers[$this->idMarkers["text"] . $text->fileName]["epubFileName"],
-                    XMLetsGoCrazy::xmlEscape($text->title),
+                    XMLetsGoCrazy::escapeXML($text->title),
                 );
         }
         $toc .= sprintf(
@@ -196,33 +196,33 @@ final class TheOpera
             . "<meta property='dcterms:modified'>" . $this->ebook->date->modified . "</meta>" . PHP_EOL
             . "<meta property='dcterms:issued'>" . $this->ebook->date->issued . "</meta>" . PHP_EOL
             . "<dc:date>" . $this->ebook->date->issued . "</dc:date>" . PHP_EOL
-            . "<dc:title>" . XMLetsGoCrazy::xmlEscape($this->ebook->title) . "</dc:title>" . PHP_EOL
-            . "<dc:description>" . XMLetsGoCrazy::xmlEscape($this->ebook->description) . "</dc:description>" . PHP_EOL;
+            . "<dc:title>" . XMLetsGoCrazy::escapeXML($this->ebook->title) . "</dc:title>" . PHP_EOL
+            . "<dc:description>" . XMLetsGoCrazy::escapeXML($this->ebook->description) . "</dc:description>" . PHP_EOL;
         if ($this->ebook->collection->title !== "") {
             $collectionId = Girlfriend::$leaPrefixes["collection"] . Girlfriend::comeToMe()->strToEpubIdentifier($this->ebook->collection->title);
-            $metadata .= "<meta property='dcterms:isPartOf'>urn:issn:" . XMLetsGoCrazy::xmlEscape($this->ebook->collection->issn) . "</meta>" . PHP_EOL
-                . "<meta property='belongs-to-collection' id='$collectionId'>" . XMLetsGoCrazy::xmlEscape($this->ebook->collection->title) . "</meta>" . PHP_EOL
+            $metadata .= "<meta property='dcterms:isPartOf'>urn:issn:" . XMLetsGoCrazy::escapeXML($this->ebook->collection->issn) . "</meta>" . PHP_EOL
+                . "<meta property='belongs-to-collection' id='$collectionId'>" . XMLetsGoCrazy::escapeXML($this->ebook->collection->title) . "</meta>" . PHP_EOL
                 . "<meta refines='#$collectionId' property='collection-type'>series</meta>" . PHP_EOL
-                . "<meta refines='#$collectionId' property='group-position'>" . XMLetsGoCrazy::xmlEscape($this->ebook->collection->position) . "</meta>" . PHP_EOL;
+                . "<meta refines='#$collectionId' property='group-position'>" . XMLetsGoCrazy::escapeXML($this->ebook->collection->position) . "</meta>" . PHP_EOL;
         }
-        $metadata .= "<dc:identifier id='isbn'>" . XMLetsGoCrazy::xmlEscape($this->ebook->isbn->isbn) . "</dc:identifier>" . PHP_EOL
+        $metadata .= "<dc:identifier id='isbn'>" . XMLetsGoCrazy::escapeXML($this->ebook->isbn->isbn) . "</dc:identifier>" . PHP_EOL
             . "<meta refines='#isbn' property='identifier-type'>ISBN</meta>" . PHP_EOL;
         if ($collectionId !== "")
-            $metadata .= "<dc:identifier id='issn'>urn:issn:" . XMLetsGoCrazy::xmlEscape($this->ebook->collection->issn) . "</dc:identifier>" . PHP_EOL
+            $metadata .= "<dc:identifier id='issn'>urn:issn:" . XMLetsGoCrazy::escapeXML($this->ebook->collection->issn) . "</dc:identifier>" . PHP_EOL
                 . "<meta refines='#issn' property='identifier-type'>ISSN</meta>" . PHP_EOL;
-        $metadata .= "<dc:publisher>" . XMLetsGoCrazy::xmlEscape($this->ebook->publisher->imprint) . "</dc:publisher>" . PHP_EOL
-            . "<meta property='dcterms:contact'>" . XMLetsGoCrazy::xmlEscape($this->ebook->publisher->contact) . "</meta>" . PHP_EOL
-            . "<meta property='dcterms:identifier' id='imprint'>" . XMLetsGoCrazy::xmlEscape($this->ebook->publisher->imprint) . "</meta>" . PHP_EOL
-            . "<dc:rights>" . XMLetsGoCrazy::xmlEscape($this->ebook->rights) . "</dc:rights>" . PHP_EOL
-            . "<dc:language>" . XMLetsGoCrazy::xmlEscape($this->ebook->language) . "</dc:language>" . PHP_EOL;
+        $metadata .= "<dc:publisher>" . XMLetsGoCrazy::escapeXML($this->ebook->publisher->imprint) . "</dc:publisher>" . PHP_EOL
+            . "<meta property='dcterms:contact'>" . XMLetsGoCrazy::escapeXML($this->ebook->publisher->contact) . "</meta>" . PHP_EOL
+            . "<meta property='dcterms:identifier' id='imprint'>" . XMLetsGoCrazy::escapeXML($this->ebook->publisher->imprint) . "</meta>" . PHP_EOL
+            . "<dc:rights>" . XMLetsGoCrazy::escapeXML($this->ebook->rights) . "</dc:rights>" . PHP_EOL
+            . "<dc:language>" . XMLetsGoCrazy::escapeXML($this->ebook->language) . "</dc:language>" . PHP_EOL;
         foreach ($this->ebook->authors as $author) {
             $metadata .= "<dc:creator id='" . Girlfriend::$leaPrefixes["creator"]
                 . Girlfriend::comeToMe()->strToEpubIdentifier($author->name)
-                . "'>" . XMLetsGoCrazy::xmlEscape($author->name) . "</dc:creator>" . PHP_EOL;
+                . "'>" . XMLetsGoCrazy::escapeXML($author->name) . "</dc:creator>" . PHP_EOL;
             if ($author->fileAs !== "")
                 $metadata .= "<meta refines='#" . Girlfriend::$leaPrefixes["creator"]
                     . Girlfriend::comeToMe()->strToEpubIdentifier($author->name)
-                    . "' property='file-as'>" . XMLetsGoCrazy::xmlEscape($author->fileAs) . "</meta>" . PHP_EOL;
+                    . "' property='file-as'>" . XMLetsGoCrazy::escapeXML($author->fileAs) . "</meta>" . PHP_EOL;
         }
         foreach ($this->ebook->authors as $author)
             $metadata .= "<meta refines='#" . Girlfriend::$leaPrefixes["creator"]
@@ -236,22 +236,22 @@ final class TheOpera
         foreach ($this->ebook->contributors as $contributor) {
             $metadata .= "<dc:contributor id='" . Girlfriend::$leaPrefixes["contributor"]
                 . Girlfriend::comeToMe()->strToEpubIdentifier($contributor->name)
-                . "'>" . XMLetsGoCrazy::xmlEscape($contributor->name) . "</dc:contributor>" . PHP_EOL;
+                . "'>" . XMLetsGoCrazy::escapeXML($contributor->name) . "</dc:contributor>" . PHP_EOL;
             foreach ($contributor->roles as $role)
                 $metadata .= "<meta refines='#" . Girlfriend::$leaPrefixes["contributor"]
                     . Girlfriend::comeToMe()->strToEpubIdentifier($contributor->name)
-                    . "' property='role' scheme='marc:relators'>" . XMLetsGoCrazy::xmlEscape($role) . "</meta>" . PHP_EOL;
+                    . "' property='role' scheme='marc:relators'>" . XMLetsGoCrazy::escapeXML($role) . "</meta>" . PHP_EOL;
         }
         foreach ($this->ebook->texts as $text)
             foreach ($text->authors as $author)
                 if ($author->name !== Girlfriend::comeToMe()->leaNamePlain)
                     $metadata .= "<meta refines='#" . Girlfriend::$leaPrefixes["text"]
                         . Girlfriend::comeToMe()->strToEpubIdentifier($text->title . " by " . $text->authors[0]->name)
-                        . "' property='dcterms:creator'>" . XMLetsGoCrazy::xmlEscape($author->name) . "</meta>" . PHP_EOL;
+                        . "' property='dcterms:creator'>" . XMLetsGoCrazy::escapeXML($author->name) . "</meta>" . PHP_EOL;
         $subjects = $this->ebook->subjects;
         sort($subjects);
         foreach ($subjects as $subject)
-            $metadata .= "<dc:subject>" . XMLetsGoCrazy::xmlEscape($subject) . "</dc:subject>" . PHP_EOL;
+            $metadata .= "<dc:subject>" . XMLetsGoCrazy::escapeXML($subject) . "</dc:subject>" . PHP_EOL;
         if ($this->ebook->cover !== "")
             $metadata .= "<meta name='cover' content='" . Girlfriend::$leaPrefixes["image"]
                 . Girlfriend::comeToMe()->strToEpubIdentifier($this->ebook->cover) . "'/>" . PHP_EOL;
@@ -368,7 +368,7 @@ final class TheOpera
                     $format,
                     Girlfriend::$leaPrefixes["ncx"]
                     . Girlfriend::comeToMe()->strToEpubIdentifier($text->title),
-                    XMLetsGoCrazy::xmlEscape($text->title),
+                    XMLetsGoCrazy::escapeXML($text->title),
                     $this->identifiers[$this->idMarkers["text"] . $text->fileName]["epubFileName"],
                 );
         }
@@ -385,10 +385,10 @@ final class TheOpera
             $toc,
             str_replace(
                 "#2#",
-                XMLetsGoCrazy::xmlEscape($this->ebook->title),
+                XMLetsGoCrazy::escapeXML($this->ebook->title),
                 str_replace(
                     search: "#1#",
-                    replace: XMLetsGoCrazy::xmlEscape($this->ebook->isbn->isbn),
+                    replace: XMLetsGoCrazy::escapeXML($this->ebook->isbn->isbn),
                     subject: Girlfriend::comeToMe()->readFile(
                         filePath: Girlfriend::$pathPurpleRain . "tocncxtemplate.xhtml"
                     ),
