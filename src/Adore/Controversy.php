@@ -78,6 +78,7 @@ enum Controversy
     case CorePreflightErrors;
     case CoreMisplacedLeaTags;
     case CoreGirlfriendMemory;
+    case CoreArxExists;
 
     /**
      * The complaint belonging to this controversy.
@@ -430,6 +431,12 @@ enum Controversy
                 "flaw" => Flaw::Debug,
                 "message" => "Your girlfriend couldn't recall something: '#1#'",
                 "suggestion" => "Contact current Lea maintainers."
+            ],
+            self::CoreArxExists => [
+                "flaw" => Flaw::Fatal,
+                "message" => "The arx directory already exists: '#1#'.",
+                "suggestion" => "Genesis will not overwrite an existing repository." . PHP_EOL
+                    . "Run 'lea genesis' in a different folder.",
             ],
         };
     }

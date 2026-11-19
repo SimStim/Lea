@@ -116,6 +116,7 @@ final class Girlfriend
     public function parseArguments(array $argv): void
     {
         self::remember(name: "heath-mode", data: in_array(needle: "heath", haystack: $argv) ? "yes" : "no");
+        self::remember(name: "genesis", data: in_array(needle: "genesis", haystack: $argv) ? "yes" : "no");
         self::remember(name: "check-urls", data: in_array(needle: "check-urls", haystack: $argv) ? "yes" : "no");
         self::remember(name: "check-epub", data: in_array(needle: "check-epub", haystack: $argv) ? "yes" : "no");
     }
@@ -164,20 +165,31 @@ final class Girlfriend
     }
 
     /**
-     * Concentrate on you is all I have to do.
+     * git describe --tags, in its plain two-dashes glory.
      *
-     * Purport:
-     * With a proper emotional pump, you'll gain reliable internal focus.
-     * I'll do this with my one and only Girlfriend.
+     * Returns false when Lea is not inside a git checkout, when git itself is
+     * not callable, or when no tag is reachable — exactly the seams
+     * sebastian/version guarded, so releases from tarballs keep a version, too.
      *
-     * Some initialization.
-     *
-     * @return void
+     * @param string $path
+     * @return string|false
      */
-    public function emotionalPump(): void
+    private function gitDescribe(string $path): string|false
     {
-        libxml_use_internal_errors(use_errors: true); // suppress all libxml warnings/errors
-        libxml_clear_errors(); // clear any previous
+        if (!is_dir($path . DIRECTORY_SEPARATOR . ".git"))
+            return false;
+        $process = @proc_open(
+            ["git", "describe", "--tags"],
+            [1 => ["pipe", "w"], 2 => ["pipe", "w"]],
+            $pipes,
+            cwd: $path,
+        );
+        if (!is_resource($process))
+            return false;
+        $result = trim((string)stream_get_contents(stream: $pipes[1]));
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        return proc_close($process) !== 0 ? false : $result;
     }
 
     /**
@@ -211,31 +223,20 @@ final class Girlfriend
     }
 
     /**
-     * git describe --tags, in its plain two-dashes glory.
+     * Concentrate on you is all I have to do.
      *
-     * Returns false when Lea is not inside a git checkout, when git itself is
-     * not callable, or when no tag is reachable — exactly the seams
-     * sebastian/version guarded, so releases from tarballs keep a version, too.
+     * Purport:
+     * With a proper emotional pump, you'll gain reliable internal focus.
+     * I'll do this with my one and only Girlfriend.
      *
-     * @param string $path
-     * @return string|false
+     * Some initialization.
+     *
+     * @return void
      */
-    private function gitDescribe(string $path): string|false
+    public function emotionalPump(): void
     {
-        if (!is_dir($path . DIRECTORY_SEPARATOR . ".git"))
-            return false;
-        $process = @proc_open(
-            ["git", "describe", "--tags"],
-            [1 => ["pipe", "w"], 2 => ["pipe", "w"]],
-            $pipes,
-            cwd: $path,
-        );
-        if (!is_resource($process))
-            return false;
-        $result = trim((string)stream_get_contents(stream: $pipes[1]));
-        fclose($pipes[1]);
-        fclose($pipes[2]);
-        return proc_close($process) !== 0 ? false : $result;
+        libxml_use_internal_errors(use_errors: true); // suppress all libxml warnings/errors
+        libxml_clear_errors(); // clear any previous
     }
 
     /**

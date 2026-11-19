@@ -54,6 +54,9 @@ final class TheOpera
             "navtemplate.xhtml" => "00b2b08eab2ce2b7069dd7b942f9333b5dd643e6d21a19753cc4ff33b3c64647",
             "tocncxtemplate.xhtml" => "ee8ed1d413f0dfe19be08f3ee6e95a033dbd4e955f20204457f566d8c2a4711c",
             "lea-logo-ascii.txt" => "fa89b6f5ec8ba63ccc5b1f83dff81208e0cb7a272824caaeea464cc16ae67a0b",
+            "lea-template-ebook.xml" => "b7bd58a7418de13f88f67ec4e48f94d65d252a0fad26115bff5ba0e9a7681fee",
+            "lea-template-text.xhtml" => "dd112adf0868391bd7b9888387472d6f6301dd88843e3f11626c47d9b590ecdc",
+            "lea-borax-3-image.jpg" => "eb757816eead94e1b0615bb0347290cf8c3639b5dc70a52b370935a3553a3e6b",
         ];
         foreach ($hashes as $fileName => $hash) {
             $content = Girlfriend::comeToMe()->readFile(filePath: Girlfriend::$pathPurpleRain . $fileName);

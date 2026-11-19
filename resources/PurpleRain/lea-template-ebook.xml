@@ -1,0 +1,14 @@
+<lea xmlns:lea="https://logophilia.eu/lea/2026/xhtml">
+    <lea:title>Purple Rain</lea:title>
+    <lea:author>Lea</lea:author>
+    <lea:contributor roles="bkp mrk">Lea</lea:contributor>
+    <lea:date>Today</lea:date>
+    <lea:description>Just a Prince-themed template</lea:description>
+    <lea:language>en</lea:language>
+    <lea:subject>Prince</lea:subject>
+    <lea:publisher contact="idoru.toei@logophilia.eu">Logophilia</lea:publisher>
+    <lea:rights>Everything is copyrighted material, unless declared public domain.</lea:rights>
+    <lea:isbn>You really need to get your own</lea:isbn>
+    <lea:cover>borax-3.jpg</lea:cover>
+    <lea:text>lea.xhtml</lea:text>
+</lea>

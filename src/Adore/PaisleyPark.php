@@ -597,30 +597,53 @@ final class PaisleyPark
      * I'm known as the Player of the Year
      *
      * @return bool
+     * @throws Exception
      */
     public function pControl(): bool
     {
-        try {
-            $this->theOpera->theOverture();         // make sure we're laughing in the purple rain
-            $errorLog = [];
-            $this->segue();
-            if (Girlfriend::comeToMe()->recall(name: "heath-mode") === "no") {
+        if (Girlfriend::comeToMe()->recall(name: "genesis") === "yes") {
+            $arxPath = realpath(path: ".") . "/arx/";
+            if (is_dir($arxPath)) {
+                Girlfriend::comeToMe()->makeDoveCry(
+                    new Text(fileName: "genesis"),
+                    Controversy::CoreArxExists,
+                    $arxPath
+                );
                 if (!$this->inThisBedEyeScream()) exit(1);
-                $errorLog = Girlfriend::comeToMe()->doveCries;
+            } else {
+                $subfolders = ["blocks", "ebooks", "epubs", "fonts", "images", "styles", "text"];
+                foreach ($subfolders as $subfolder)
+                    mkdir(directory: $arxPath . $subfolder, recursive: true);
+                file_put_contents(filename: $arxPath . "ebooks/lea.xml",
+                    data: Girlfriend::comeToMe()->readFile(filePath: Girlfriend::$pathPurpleRain . "lea-template-ebook.xml"));
+                file_put_contents(filename: $arxPath . "text/lea.xhtml",
+                    data: Girlfriend::comeToMe()->readFile(filePath: Girlfriend::$pathPurpleRain . "lea-template-text.xhtml"));
+                file_put_contents(filename: $arxPath . "images/borax-3.jpg",
+                    data: Girlfriend::comeToMe()->readFile(filePath: Girlfriend::$pathPurpleRain . "lea-borax-3-image.jpg"));
+            }
+            echo "Genesis complete." . PHP_EOL . PHP_EOL;
+        } else
+            try {
+                $this->theOpera->theOverture();         // make sure we're laughing in the purple rain
+                $errorLog = [];
+                $this->segue();
+                if (Girlfriend::comeToMe()->recall(name: "heath-mode") === "no") {
+                    if (!$this->inThisBedEyeScream()) exit(1);
+                    $errorLog = Girlfriend::comeToMe()->doveCries;
+                    Girlfriend::comeToMe()->silenceDoves();
+                }
+                $this->seguePartTwo();
+                if (!$this->inThisBedEyeScream()) exit(1);
+                if (Girlfriend::comeToMe()->recall(name: "heath-mode") === "no")
+                    $errorLog = array_merge($errorLog, Girlfriend::comeToMe()->doveCries);
                 Girlfriend::comeToMe()->silenceDoves();
+                if (Girlfriend::comeToMe()->recall(name: "heath-mode") === "no") {
+                    $return = $this->theOpera->conductor($errorLog);
+                    if (!$this->inThisBedEyeScream()) exit(1); // error log already written into ePub, nothing to save here
+                }
+            } catch (Throwable $e) {
+                Girlfriend::comeToMe()->extraordinary(throwable: $e);
             }
-            $this->seguePartTwo();
-            if (!$this->inThisBedEyeScream()) exit(1);
-            if (Girlfriend::comeToMe()->recall(name: "heath-mode") === "no")
-                $errorLog = array_merge($errorLog, Girlfriend::comeToMe()->doveCries);
-            Girlfriend::comeToMe()->silenceDoves();
-            if (Girlfriend::comeToMe()->recall(name: "heath-mode") === "no") {
-                $return = $this->theOpera->conductor($errorLog);
-                if (!$this->inThisBedEyeScream()) exit(1); // error log already written into ePub, nothing to save here
-            }
-        } catch (Throwable $e) {
-            Girlfriend::comeToMe()->extraordinary(throwable: $e);
-        }
         echo "READY." . PHP_EOL . PHP_EOL
             . sprintf("0 OK, %s:8%s", Girlfriend::comeToMe()->whereAmI()["line"], PHP_EOL);
         return $return ?? true;
