@@ -256,9 +256,9 @@ pre {
 }
 
 .inverse {
-    background-color: black;
+    background-color: #0B486B;
     color: white;
-    padding: 0 0.3em;
+    padding: 0 0.5em 0.08em;
 }
 
 .uppercase {

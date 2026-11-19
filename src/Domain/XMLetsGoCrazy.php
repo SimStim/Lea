@@ -13,11 +13,11 @@ use DOMNode;
 use DOMNodeList;
 use DOMXPath;
 use Exception;
-use Lea\Adore\Fancy;
 use NoDiscard;
 use ReflectionException;
 use Lea\Adore\AlphabetSt;
 use Lea\Adore\Controversy;
+use Lea\Adore\Fancy;
 use Lea\Adore\Girlfriend;
 
 /**

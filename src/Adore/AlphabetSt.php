@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lea\Adore;
 
 use DOMElement;
+use DOMException;
 use Exception;
 use Lea\Domain\Ebook;
 use Lea\Domain\Image;
@@ -48,6 +49,7 @@ class AlphabetSt
      * @param DOMElement $node The DOM node where the table of contents will be inserted. This node will be replaced.
      * @param Ebook $ebook The ebook object containing the texts from which the table of contents will be generated.
      * @return void
+     * @throws DOMException
      */
     public function tableOfContents(DOMElement $node, Ebook $ebook): void
     {
@@ -64,6 +66,7 @@ class AlphabetSt
      * @param DOMElement $node
      * @param Ebook $ebook
      * @return void
+     * @throws DOMException
      */
     public function tableOfContentsPlain(DOMElement $node, Ebook $ebook): void
     {
@@ -89,6 +92,7 @@ class AlphabetSt
      * @param DOMElement $node The DOM node where the colophon will be inserted. This node will be replaced.
      * @param Ebook $ebook The ebook object containing the texts with rights information for generating the colophon.
      * @return void
+     * @throws DOMException
      */
     public function listRights(DOMElement $node, Ebook $ebook): void
     {
@@ -108,6 +112,7 @@ class AlphabetSt
      * @param DOMElement $node
      * @param Ebook $ebook
      * @return void
+     * @throws DOMException
      */
     public function listBlurbs(DOMElement $node, Ebook $ebook): void
     {
@@ -141,6 +146,7 @@ class AlphabetSt
      * @param DOMElement $node
      * @param Ebook $ebook
      * @return void
+     * @throws DOMException
      */
     public function listAuthors(DOMElement $node, Ebook $ebook): void
     {
@@ -218,7 +224,9 @@ class AlphabetSt
      * Processes an image node, generates a corresponding figure element with an image and caption,
      * and replaces the original node in the DOM structure. Also adds the image to the ebook's image collection.
      *
-     * @param DOMElement $node The DOM node that represents the image. This node should have attributes for the image file, caption, and folder.
+     * @param DOMElement $node The DOM node that represents the image. The "image" attribute is mandatory.
+     *   The optional "caption" attribute defaults to the defaultcaption option; the optional "folder"
+     *   attribute defaults to the configured images subfolder.
      * @param Ebook $ebook The ebook object to which the processed image and its metadata will be added.
      * @return void
      * @throws Exception

@@ -21,14 +21,15 @@
         This Lea tag signs it.</p>
 
     <p class="no-indent inverse code uppercase bold">Contract</p>
-    <lea:link>lea:ttitle</lea:link>
-    <p>At least one <span class="code">lea:author</span> per file. Any string of Unicode characters as the
-        name.
-        The optional <span class="code">file-as</span> attribute allows filing of authors writing under
+
+    <p>At least one <span class="code">lea:author</span> per file. Any string of
+        Unicode characters as the name. The optional <span class="code">file-as</span>
+        attribute allows filing of authors writing under
         pseudonyms, following standard library filing rules.
         Multiple <span class="code">lea:author</span> tags are allowed; the first one
         carries special weight, as will be shown below. An empty tag passes validation, but
-        Lea will credit the void: keep every <span class="code">lea:author</span> tag filled.</p>
+        Lea will credit the void: keep every <span class="code">lea:author</span> tag filled.
+    </p>
 
     <p>The <span class="code">lea:author</span> tag works hand in hand with <span class="code"><lea:link>lea:title</lea:link></span>.
         Lea
@@ -1228,7 +1229,398 @@ Published by permission of the translator’s cat.</lea:rights>]]></pre>
 
     <lea:section title="Scripts" class="heading break-before">Scripts</lea:section>
 
+    <p>Lea’s built-in programs turn the book’s own data into generated content:
+        tables of contents, colophons, blurb lists, author biographies, and placed
+        images. A <span class="code"><lea:link>lea:script</lea:link></span> tag names the script; Lea resolves
+        the name against the look-up table on file, case-insensitively. Scripts run
+        in waves — ebook definition scripts first, then text scripts, then blocks,
+        then text scripts again — so a script may generate a
+        <span class="code"><lea:link>lea:block</lea:link></span> and a block may contain a
+        <span class="code">lea:script</span>.</p>
+
+    <lea:target>toc</lea:target>
+
+    <lea:subsection class="heading" title="toc">toc</lea:subsection>
+
+    <p class="no-indent inverse code uppercase bold">Purpose</p>
+
+    <p>A linked table of contents, one entry per text in reading order.</p>
+
+    <p class="no-indent inverse code uppercase bold">Contract</p>
+
+    <p>The content is the script name, case-insensitive: <span class="code">toc</span>,
+        <span class="code">table of contents</span>, or
+        <span class="code">list content</span>. No attributes. The
+        <span class="code">lea:script</span> node is replaced by an ordered list:
+        <span class="code">&lt;ol&gt;</span> with one
+        <span class="code">&lt;li&gt;</span> per text, each containing a
+        <span class="code"><lea:link>lea:link</lea:link></span> to the text’s title.</p>
+
+    <p class="no-indent inverse code uppercase bold">Example</p>
+
+    <pre class="code"><![CDATA[<lea:script>toc</lea:script>]]></pre>
+
+    <p>compiles to:</p>
+
+    <pre class="code"><![CDATA[<ol>
+<li><lea:link>Operation Haystack</lea:link></li>
+<li><lea:link>The Long Way to a Small, Angry Planet</lea:link></li>
+</ol>]]></pre>
+
+    <p class="no-indent inverse code uppercase bold">See also</p>
+
+    <p><span class="code"><lea:link>lea:link</lea:link></span>,
+        <span class="code"><lea:link>lea:script</lea:link></span>,
+        <span class="code"><lea:link>lea:title</lea:link></span>.</p>
+
+    <hr class="asterism"/>
+
+    <lea:target>toc plain</lea:target>
+
+    <lea:subsection class="heading" title="toc plain">toc plain</lea:subsection>
+
+    <p class="no-indent inverse code uppercase bold">Purpose</p>
+
+    <p>A plain, alphabetized table of contents: titles only, no links.</p>
+
+    <p class="no-indent inverse code uppercase bold">Contract</p>
+
+    <p>Alternative names: <span class="code">toc plain</span>,
+        <span class="code">list content plain</span>, or
+        <span class="code">table of contents plain</span>. The optional
+        <span class="code">skip</span> attribute holds a regular expression (matched
+        case-insensitively); any text whose title matches is omitted. Without
+        <span class="code">skip</span>, every text is listed. Output is the titles,
+        alphabetized, comma-separated, and terminated by a period.</p>
+
+    <p class="no-indent inverse code uppercase bold">Example</p>
+
+    <pre class="code"><![CDATA[<lea:script skip="front|back">toc plain</lea:script>]]></pre>
+
+    <p class="no-indent inverse code uppercase bold">See also</p>
+
+    <p><span class="code"><lea:link>lea:script</lea:link></span>.</p>
+
+    <hr class="asterism"/>
+
+    <lea:target>colophon</lea:target>
+
+    <lea:subsection class="heading" title="colophon">colophon</lea:subsection>
+
+    <p class="no-indent inverse code uppercase bold">Purpose</p>
+
+    <p>Gathers the rights declarations of all texts into a colophon.</p>
+
+    <p class="no-indent inverse code uppercase bold">Contract</p>
+
+    <p>Alternative names: <span class="code">colophon</span>,
+        <span class="code">list rights</span>, <span class="code">text rights</span>, or
+        <span class="code">list text rights</span>. The optional
+        <span class="code">skip</span> attribute holds a regular expression (matched
+        case-insensitively); any text whose title matches is omitted. Without
+        <span class="code">skip</span>, all texts are considered. Only texts with
+        non-empty rights contribute. Output is the rights texts, separated by newlines.</p>
+
+    <p class="no-indent inverse code uppercase bold">Example</p>
+
+    <pre class="code"><![CDATA[<lea:script>colophon</lea:script>]]></pre>
+
+    <p class="no-indent inverse code uppercase bold">See also</p>
+
+    <p><span class="code"><lea:link>lea:rights</lea:link></span>,
+        <span class="code"><lea:link>lea:script</lea:link></span>.</p>
+
+    <hr class="asterism"/>
+
+    <lea:target>blurbs</lea:target>
+
+    <lea:subsection class="heading" title="blurbs">blurbs</lea:subsection>
+
+    <p class="no-indent inverse code uppercase bold">Purpose</p>
+
+    <p>Collects the blurbs of all texts into a back-matter section, each linked back
+        to its story.</p>
+
+    <p class="no-indent inverse code uppercase bold">Contract</p>
+
+    <p>Alternative names: <span class="code">blurbs</span>,
+        <span class="code">list blurbs</span>, or
+        <span class="code">text blurbs</span>. The optional
+        <span class="code">class</span> attribute sets the CSS class of each heading
+        (default: none). The optional <span class="code">heading</span> attribute sets
+        the heading element name (default: <span class="code">h4</span>). Only texts
+        with non-empty blurbs are included. Each entry is a heading containing a
+        <span class="code"><lea:link>lea:link</lea:link></span> to “title by author,”
+        followed by the blurb text.</p>
+
+    <p class="no-indent inverse code uppercase bold">Example</p>
+
+    <pre class="code"><![CDATA[<lea:script class="blurb" heading="h3">blurbs</lea:script>]]></pre>
+
+    <p class="no-indent inverse code uppercase bold">See also</p>
+
+    <p><span class="code"><lea:link>lea:blurb</lea:link></span>,
+        <span class="code"><lea:link>lea:link</lea:link></span>,
+        <span class="code"><lea:link>lea:script</lea:link></span>.</p>
+
+    <hr class="asterism"/>
+
+    <lea:target>list authors</lea:target>
+
+    <lea:subsection class="heading" title="list authors">list authors</lea:subsection>
+
+    <p class="no-indent inverse code uppercase bold">Purpose</p>
+
+    <p>Builds a chapter of author biographies from block files, one per author.</p>
+
+    <p class="no-indent inverse code uppercase bold">Contract</p>
+
+    <p>Alternative names: <span class="code">list authors</span>,
+        <span class="code">authors</span>, or
+        <span class="code">text authors</span>. The optional
+        <span class="code">folder</span> attribute names the subfolder for block files
+        (default: none). The optional <span class="code">class</span> attribute sets the
+        CSS class of the separator
+        <span class="code">&lt;div /&gt;</span> between authors (default: none). The
+        optional <span class="code">skip</span> attribute holds a regular expression
+        (matched case-insensitively); any author whose name matches is omitted.
+        Output is one <span class="code"><lea:link>lea:block</lea:link></span> per
+        unique author, pointing to
+        <span class="code">folder/author-name.xhtml</span> (with the language code
+        appended when the book is not English).</p>
+
+    <p class="no-indent inverse code uppercase bold">Example</p>
+
+    <pre class="code"><![CDATA[<lea:script folder="authors" class="sep">list authors</lea:script>]]></pre>
+
+    <p class="no-indent inverse code uppercase bold">See also</p>
+
+    <p><span class="code"><lea:link>lea:block</lea:link></span>,
+        <span class="code"><lea:link>lea:script</lea:link></span>,
+        <span class="code"><lea:link>lea:subfolder</lea:link></span>.</p>
+
+    <hr class="asterism"/>
+
+    <lea:target>linked image</lea:target>
+
+    <lea:subsection class="heading" title="linked image">linked image</lea:subsection>
+
+    <p class="no-indent inverse code uppercase bold">Purpose</p>
+
+    <p>Places an image wrapped in a link.</p>
+
+    <p class="no-indent inverse code uppercase bold">Contract</p>
+
+    <p>The <span class="code">to</span> attribute is mandatory: it names the link
+        destination. The <span class="code">image</span> attribute is mandatory: it
+        names the image file. The optional
+        <span class="code">caption</span> attribute supplies the caption
+        (default: the <span class="code">defaultcaption</span> option). The optional
+        <span class="code">folder</span> attribute names the images subfolder
+        (default: the configured images subfolder). Output is a
+        <span class="code">&lt;figure&gt;</span> containing a linked image and a
+        figcaption. The image is also added to the ebook’s image collection.</p>
+
+    <p class="no-indent inverse code uppercase bold">Example</p>
+
+    <pre class="code"><![CDATA[<lea:script to="Dune" image="dune-cover.jpg" caption="Cover art">linked image</lea:script>]]></pre>
+
+    <p class="no-indent inverse code uppercase bold">See also</p>
+
+    <p><span class="code"><lea:link>lea:image</lea:link></span>,
+        <span class="code"><lea:link>lea:link</lea:link></span>,
+        <span class="code"><lea:link>lea:option</lea:link></span>,
+        <span class="code"><lea:link>lea:script</lea:link></span>.</p>
+
+    <hr class="asterism"/>
+
+    <lea:target>image</lea:target>
+
+    <lea:subsection class="heading" title="image">image</lea:subsection>
+
+    <p class="no-indent inverse code uppercase bold">Purpose</p>
+
+    <p>Places an image that is not linked — a “locked” image.</p>
+
+    <p class="no-indent inverse code uppercase bold">Contract</p>
+
+    <p>Alternative names: <span class="code">image</span> or
+        <span class="code">locked image</span>. The
+        <span class="code">image</span> attribute is mandatory: it names the image
+        file. The optional <span class="code">caption</span> attribute supplies the
+        caption (default: the <span class="code">defaultcaption</span> option). The
+        optional <span class="code">folder</span> attribute names the images subfolder
+        (default: the configured images subfolder). Output is a
+        <span class="code">&lt;figure&gt;</span> containing the image and a figcaption.
+        The image is also added to the ebook’s image collection.</p>
+
+    <p class="no-indent inverse code uppercase bold">Example</p>
+
+    <pre class="code"><![CDATA[<lea:script image="face.jpg" caption="Face before the fall.">locked image</lea:script>]]></pre>
+
+    <p class="no-indent inverse code uppercase bold">See also</p>
+
+    <p><span class="code"><lea:link>lea:image</lea:link></span>,
+        <span class="code"><lea:link>lea:option</lea:link></span>,
+        <span class="code"><lea:link>lea:script</lea:link></span>.</p>
+
+    <hr class="asterism"/>
+
     <lea:section title="Templates" class="heading break-before">Templates</lea:section>
+
+    <p>Templates are pre-formatted files that Lea uses to assemble parts of the EPUB
+        that cannot be authored directly in your text files. Lea fills in placeholder
+        values — such as ### or #1# — with data from your ebook definition and text
+        files during compilation.</p>
+
+    <p>The templates carry checksums as a simple tampering protection: Lea verifies
+        that the template files have not been altered before she uses them. Changing
+        a template by hand is possible in principle, but it is advanced work —
+        anyone who recalculates the checksums can update them in The Opera’s
+        <span class="code">theOverture()</span>. Lea discourages it: a mistyped
+        template can break the entire EPUB, and Lea will not produce a book she
+        cannot vouch for.</p>
+
+    <lea:target>container.xml</lea:target>
+
+    <lea:subsection class="heading" title="container.xml">container.xml</lea:subsection>
+
+    <p class="no-indent inverse code uppercase bold">Purpose</p>
+
+    <p>This is the entry point of the EPUB package. Every EPUB file carries a
+        <span class="code">META-INF/container.xml</span> at its root. Reading systems
+        open it first to find out where the book’s content lives. It points to
+        <span class="code">content.opf</span>, the package document that lists every
+        file in the EPUB, its metadata, and the reading order.</p>
+
+    <p class="no-indent inverse code uppercase bold">Template</p>
+
+    <pre class="code"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<container version="1.0"
+    xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+    <rootfiles>
+        <rootfile full-path="OEBPS/content.opf"
+            media-type="application/oebps-package+xml"/>
+    </rootfiles>
+</container>]]></pre>
+
+    <hr class="asterism"/>
+
+    <lea:target>covertemplate.xhtml</lea:target>
+
+    <lea:subsection class="heading" title="covertemplate.xhtml">covertemplate.xhtml</lea:subsection>
+
+    <p class="no-indent inverse code uppercase bold">Purpose</p>
+
+    <p>This template builds the cover page of your EPUB. Lea replaces the
+        <span class="code">###</span> placeholder with the file name of your cover
+        image, which lives in the Images folder. The page uses an SVG so the cover
+        scales cleanly to fill the reading device’s screen, centered vertically and
+        horizontally.</p>
+
+    <p class="no-indent inverse code uppercase bold">Template</p>
+
+    <pre class="code"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:epub="http://www.idpf.org/2007/ops">
+<head>
+    <title>Cover</title>
+</head>
+
+<body>
+<div style="height: 100vh; text-align: center; padding: 0pt; margin: 0pt;">
+    <svg xmlns="http://www.w3.org/2000/svg" height="100%"
+        preserveAspectRatio="xMidYMid meet" version="1.1"
+        viewBox="0 0 1600 2560" width="100%"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <image width="1600" height="2560" xlink:href="../Images/###"/>
+    </svg>
+</div>
+</body>
+</html>]]></pre>
+
+    <hr class="asterism"/>
+
+    <lea:target>navtemplate.xhtml</lea:target>
+
+    <lea:subsection class="heading" title="navtemplate.xhtml">navtemplate.xhtml</lea:subsection>
+
+    <p class="no-indent inverse code uppercase bold">Purpose</p>
+
+    <p>This template builds the EPUB 3 navigation document. It lives at
+        <span class="code">OEBPS/nav.xhtml</span> inside the EPUB and contains the
+        clickable table of contents plus a landmarks list (such as a link back to the
+        table of contents). Lea replaces the
+        <span class="code">###</span> placeholder with the list of links to all your
+        texts. Modern reading systems use this file for navigation.</p>
+
+    <p class="no-indent inverse code uppercase bold">Template</p>
+
+    <pre class="code"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:epub="http://www.idpf.org/2007/ops"
+    lang="en" xml:lang="en">
+<head>
+    <title>EPUB NAV</title>
+    <meta charset="utf-8"/>
+</head>
+<body epub:type="frontmatter">
+<nav epub:type="toc" id="toc" role="doc-toc">
+    <h1>Table of Contents</h1>
+    <ol>
+        ###
+    </ol>
+</nav>
+<nav epub:type="landmarks" id="landmarks" hidden="">
+    <h2>Landmarks</h2>
+    <ol>
+        <li>
+            <a epub:type="toc" href="#toc">Table of Contents</a>
+        </li>
+    </ol>
+</nav>
+</body>
+</html>]]></pre>
+
+    <hr class="asterism"/>
+
+    <lea:target>tocncxtemplate.xhtml</lea:target>
+
+    <lea:subsection class="heading" title="tocncxtemplate.xhtml">tocncxtemplate.xhtml</lea:subsection>
+
+    <p class="no-indent inverse code uppercase bold">Purpose</p>
+
+    <p>This template builds the EPUB 2 navigation file,
+        <span class="code">toc.ncx</span>, which lives in the
+        <span class="code">OEBPS/</span> folder. EPUB 2 reading systems — older
+        devices and apps that predate EPUB 3 — rely on this file instead of the
+        navigation document. Lea guarantees EPUB 2 backward compatibility, so this
+        file is always included. Lea replaces the placeholders
+        <span class="code">#1#</span> (the book’s unique identifier),
+        <span class="code">#2#</span> (the book’s title), and
+        <span class="code">#3#</span> (the navigation map with all entries) during
+        compilation.</p>
+
+    <p class="no-indent inverse code uppercase bold">Template</p>
+
+    <pre class="code"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+    <head>
+        <meta name="dtb:uid" content="#1#"/>
+        <meta name="dtb:depth" content="1"/>
+        <meta name="dtb:totalPageCount" content="0"/>
+        <meta name="dtb:maxPageNumber" content="0"/>
+    </head>
+    <docTitle>
+        <text>#2#</text>
+    </docTitle>
+    <navMap>#3#</navMap>
+</ncx>]]></pre>
+
+    <hr class="asterism"/>
 
     <lea:section title="Notes" class="heading break-before">Notes</lea:section>
 
