@@ -9,11 +9,12 @@ use Lea\Adore\Girlfriend;
 use Lea\Adore\Heath;
 use Lea\Adore\PaisleyPark;
 
-foreach (['curl', 'dom', 'libxml', 'mbstring', 'zip'] as $extension) {
-    if (!extension_loaded($extension)) {
-        fwrite(STDERR, "Missing required PHP extension: $extension" . PHP_EOL);
-        exit(1);
-    }
+foreach (['curl', 'dom', 'libxml', 'mbstring', 'zip'] as $extension)
+    if (!extension_loaded($extension))
+        $missing[] = $extension;
+if (isset($missing)) {
+    fwrite(stream: STDERR, data: "Missing PHP extensions: " . implode(separator: ', ', array: $missing) . PHP_EOL);
+    exit(1);
 }
 
 define(constant_name: 'ROOT', value: dirname(path: __DIR__) . "/Lea");
