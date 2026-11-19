@@ -12,8 +12,13 @@
     <lea:subfolder>lea</lea:subfolder>
     <lea:subfolder tag="epub"/>
     <lea:text>About the Content.xhtml</lea:text>
-    <lea:text>Reference.xhtml</lea:text>
+    <lea:text>Getting Started.xhtml</lea:text>
+    <lea:text>Introduction.xhtml</lea:text>
     <lea:text>Recipes.xhtml</lea:text>
+    <lea:text>Cooking.xhtml</lea:text>
+    <lea:text>Reference.xhtml</lea:text>
+    <lea:text>Glossary.xhtml</lea:text>
+    <lea:text>Index.xhtml</lea:text>
     <lea:text>About the Author.xhtml</lea:text>
     <lea:text>About this Publication.xhtml</lea:text>
     <lea:text>About the Publisher.xhtml</lea:text>

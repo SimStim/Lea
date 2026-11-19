@@ -1,0 +1,78 @@
+<lea xmlns:lea="https://logophilia.eu/lea/2026/xhtml">
+    <lea:comment>----- METADATA BEGIN -----</lea:comment>
+    <lea:title>Getting Started</lea:title>
+    <lea:author file-as="Pech, Eduard [Idoru Toei]">Idoru Toei</lea:author>
+    <lea:subject>Technical documentation</lea:subject>
+    <lea:subject>Instruction manual</lea:subject>
+    <lea:subject>Getting Started</lea:subject>
+    <lea:comment>----- METADATA END -----</lea:comment>
+    <lea:comment>----- CONTENT BEGIN -----</lea:comment>
+
+    <h1 title="Getting Started" class="heading">Getting Started</h1>
+
+    <lea:section title="Installation" class="heading">Installation</lea:section>
+
+    <p class="no-indent inverse code uppercase bold">What you need</p>
+
+    <p>PHP ⊙8.5 or newer with the <span class="code">dom</span>,
+        <span class="code">mbstring</span>, <span class="code">zip</span>, and
+        <span class="code">curl</span> extensions. Clone or download the Lea
+        repository and run <span class="code">composer install</span> to fetch
+        dependencies.</p>
+
+    <p class="no-indent inverse code uppercase bold">One-liner setup</p>
+
+    <pre class="code"><![CDATA[git clone <repository-url>
+cd Lea
+composer install]]></pre>
+
+    <lea:section title="Arx Structure" class="heading">Arx Structure</lea:section>
+
+    <p>Lea expects the <span class="code">arx/</span> folders under the current
+        working directory: <span class="code">arx/ebooks/</span> for the ebook
+        definition, <span class="code">arx/text/</span> for text files,
+        <span class="code">arx/styles/</span> for stylesheets, and
+        <span class="code">arx/images/</span> for images.</p>
+
+    <lea:section title="First Project" class="heading">First Project</lea:section>
+
+    <p class="no-indent inverse code uppercase bold">Invocation</p>
+
+    <p>Run <span class="code">lea.php</span> from the repository root with your
+        ebook definition file:</p>
+
+    <pre class="code"><![CDATA[php lea.php lea.xml check-epub]]></pre>
+
+    <p>The first argument is the ebook definition file (relative to
+        <span class="code">arx/ebooks/</span>). The optional
+        <span class="code">check-epub</span> argument runs EPUBCheck after
+        compilation.</p>
+
+    <p class="no-indent inverse code uppercase bold">Minimal ebook definition</p>
+
+    <p>A minimal <span class="code">lea.xml</span> needs a
+        <span class="code">lea:title</span>, at least one
+        <span class="code">lea:author</span>, and at least one
+        <span class="code">lea:text</span> declaration.</p>
+
+    <p class="no-indent inverse code uppercase bold">Text file requirements</p>
+
+    <p>Every text file needs its own <span class="code">lea:title</span> and at
+        least one <span class="code">lea:author</span>.</p>
+
+    <lea:section title="Reading Order" class="heading">Reading Order</lea:section>
+
+    <p>Now that you can compile a minimal EPUB, here is how the rest of this
+        documentation fits together:</p>
+
+    <ul>
+        <li><span class="code"><lea:link>Introduction</lea:link></span> — what Lea is and what it does</li>
+        <li><span class="code"><lea:link>Reference</lea:link></span> — every Lea tag, script, and template</li>
+        <li><span class="code"><lea:link>Recipes</lea:link></span> — task-oriented how-to guides</li>
+        <li><span class="code"><lea:link>Cooking</lea:link></span> — a real-world walkthrough from start to finish</li>
+        <li><span class="code"><lea:link>Glossary</lea:link></span> — terms used throughout this documentation</li>
+        <li><span class="code"><lea:link>Index</lea:link></span> — alphabetical lookup of concepts</li>
+    </ul>
+
+    <lea:comment>----- CONTENT END -----</lea:comment>
+</lea>

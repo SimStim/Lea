@@ -1622,6 +1622,20 @@ Published by permission of the translator’s cat.</lea:rights>]]></pre>
 
     <hr class="asterism"/>
 
+    <lea:section title="Errors" class="heading break-before">Errors</lea:section>
+
+    <p>Lea reports problems as controversies: fatal, severe, warning, or info.
+        Fatal errors prevent the EPUB from being produced at all; severe errors
+        allow compilation but the result must not be published. Every
+        controversy names the file where it occurred and, where helpful, the
+        offending markup.</p>
+
+    <p>This section lists the controversies Lea can raise, what triggers each
+        one, and how to fix it. Where a controversy can only be triggered in a
+        specific position (for example, an undefined <span
+        class="code">lea:link</span> at the top level dumps the entire parent
+        element as context), the behaviour is noted here.</p>
+
     <lea:section title="Notes" class="heading break-before">Notes</lea:section>
 
     <p>Code examples in this Reference are authored as CDATA sections inside a
