@@ -7,7 +7,7 @@ namespace Lea\Adore;
 /**
  * Controversy
  *
- * Lea is an EPUB compiler, and every now and then she pushes back against the task at hand.
+ * Lea is an EPUB compiler, and sometimes she pushes back against the task at hand.
  * Each of her objections is a controversy — and, like the song goes, a controversy
  * usually implies a misunderstanding. Hers or yours; you decide.
  *

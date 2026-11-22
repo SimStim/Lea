@@ -30,7 +30,7 @@ final class Affirmation
         $message = $identifier->message();
         if (preg_match_all(pattern: "/#\d#/", subject: $message["message"] . $message["suggestion"]) !== count($params))
             throw new Exception(
-                message: "Parameter count does not match required number of placeholders for message '{$identifier->name}'"
+                message: "Parameter count does not match required number of placeholders for message '$identifier->name'"
             );
         foreach ($params as $key => $value) {
             $message["message"] = str_replace(

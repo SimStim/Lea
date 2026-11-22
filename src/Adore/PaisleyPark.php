@@ -19,6 +19,9 @@ use Lea\Domain\XMLetsGoCrazy;
 final class PaisleyPark
 {
     private(set) Ebook $ebook {
+        /**
+         * @throws Exception
+         */
         get => $this->ebook ??= $this->cream($this->fileName);
     }
     private(set) TheOpera $theOpera {
@@ -445,7 +448,7 @@ final class PaisleyPark
          * and therefore, compiling all normalized identifiers
          * should not be done before that happens.
          */
-        $discard = Girlfriend::comeToMe()->sanitizeStylesheets($this->ebook);
+        (void)Girlfriend::comeToMe()->sanitizeStylesheets($this->ebook);
         /**
          * Execute all <lea:script> tags.
          */

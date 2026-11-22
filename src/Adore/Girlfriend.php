@@ -171,18 +171,17 @@ final class Girlfriend
      * not callable, or when no tag is reachable — exactly the seams
      * sebastian/version guarded, so releases from tarballs keep a version, too.
      *
-     * @param string $path
      * @return string|false
      */
-    private function gitDescribe(string $path): string|false
+    private function gitDescribe(): string|false
     {
-        if (!is_dir($path . DIRECTORY_SEPARATOR . ".git"))
+        if (!is_dir(ROOT . DIRECTORY_SEPARATOR . ".git"))
             return false;
         $process = @proc_open(
             ["git", "describe", "--tags"],
             [1 => ["pipe", "w"], 2 => ["pipe", "w"]],
             $pipes,
-            cwd: $path,
+            cwd: ROOT,
         );
         if (!is_resource($process))
             return false;
@@ -211,7 +210,7 @@ final class Girlfriend
         $threePartRelease = substr_count($minVersion, ".") + 1 === 3;
         $version = $threePartRelease ? $minVersion : $minVersion . "-dev";
 
-        $git = $this->gitDescribe(path: ROOT);
+        $git = $this->gitDescribe();
         if ($git !== false)
             $version = $threePartRelease
                 ? $git
