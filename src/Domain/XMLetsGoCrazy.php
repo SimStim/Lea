@@ -160,6 +160,7 @@ final class XMLetsGoCrazy
      * from the DOM right away, so no later check or pass will see them again.
      * @param DOMNodeList $nodes
      * @return array
+     * @throws DOMException
      */
     public static function checkLeaTags(DOMNodeList $nodes): array
     {
@@ -183,7 +184,11 @@ final class XMLetsGoCrazy
                     needle: $node->nodeName,
                     haystack: ["lea:image", "lea:chapter", "lea:section", "lea:subsection"],
                 ) && $node->parentNode?->nodeName !== self::$rootElement) {
-                $placementErrors[] = $node->nodeName;
+                $placementErrors[] = str_replace(
+                    search: self::sourceLine($node, "<lea:"),
+                    replace: Fancy::INVERSE . self::sourceLine($node, "<lea:") . Fancy::RESET,
+                    subject: self::sourceLine($node->parentNode, "<lea:")
+                );
                 $misplacedNodes[] = $node;
             }
         }
